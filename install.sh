@@ -169,6 +169,22 @@ detect_os_or_die() {
 # Build Tools
 # ═══════════════════════════════════════════════════════════════════════
 
+windows_redirect_and_exit() {
+    echo ""
+    echo -e "  ${ACCENT}${BOLD}🅰  Angles Code CLI Installer${NC}"
+    echo ""
+    ui_error "检测到 Windows 环境，本 bash 脚本不支持原生 Windows。"
+    echo ""
+    echo -e "  ${MUTED}请使用 PowerShell 安装脚本：${NC}"
+    echo ""
+    echo -e "    ${ACCENT}irm https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.ps1 | iex${NC}"
+    echo ""
+    echo -e "  ${MUTED}或在 WSL2 中运行本脚本 (bash)：${NC}"
+    echo -e "    ${ACCENT}curl -fsSL https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash${NC}"
+    echo ""
+    exit 1
+}
+
 install_build_tools_linux() {
     ui_info "安装编译工具..."
     if command -v apt-get &>/dev/null; then
@@ -208,7 +224,9 @@ install_build_tools() {
     case "$OS" in
         linux)  install_build_tools_linux ;;
         macos)  install_build_tools_macos ;;
-        windows) ui_warn "Windows 建议使用 WSL2" ;;
+        windows)
+            windows_redirect_and_exit
+            ;;
     esac
 }
 
@@ -489,6 +507,13 @@ show_footer() {
 
 main() {
     if [[ "$HELP" == "1" ]]; then print_usage; return 0; fi
+
+    # ── Windows early redirect (before root check — Windows has no root) ──
+    local early_os
+    early_os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+    if [[ "$early_os" == msys* || "$early_os" == mingw* || "$early_os" == cygwin* ]]; then
+        windows_redirect_and_exit
+    fi
 
     # ── Root check ──
     if [[ "$(id -u)" -ne 0 ]]; then
