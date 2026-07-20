@@ -1,0 +1,16 @@
+# .npmignore — 双重保险 (files 白名单已限定打包内容)
+# 排除 Rust 源码与构建产物
+src/
+target/
+dist/
+Cargo.toml
+Cross.toml
+Makefile
+.github/
+AGENTS.md
+gateway-flow.md
+instructions.txt
+providers.toml
+config.example.json
+.git/
+.gitignore

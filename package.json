@@ -1,0 +1,45 @@
+{
+  "name": "@angleschina/angles",
+  "version": "0.1.0",
+  "description": "Angles Code CLI — AI coding companion (installer + launcher, Rust-powered)",
+  "bin": {
+    "angles": "bin/angles.js"
+  },
+  "files": [
+    "bin/",
+    "install.sh",
+    "install.ps1",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "postinstall": "node bin/postinstall.js"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "keywords": [
+    "angles",
+    "cli",
+    "ai",
+    "code",
+    "coding-assistant",
+    "installer",
+    "rust"
+  ],
+  "author": "ZSJ",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZSJ305/angles-cli.git"
+  },
+  "homepage": "https://github.com/ZSJ305/angles-cli#readme",
+  "bugs": {
+    "url": "https://github.com/ZSJ305/angles-cli/issues"
+  }
+}
