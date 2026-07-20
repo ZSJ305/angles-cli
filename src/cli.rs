@@ -51,13 +51,6 @@ pub enum Commands {
 
     /// 检查并更新 Angles CLI
     Update,
-
-    /// 启动本地 HTTP 网关服务器（Web 控制台 + API）
-    Serve {
-        /// 端口号（默认 8080）
-        #[arg(short, long, default_value = "8080")]
-        port: u16,
-    },
 }
 
 pub fn print_help() {

@@ -158,8 +158,10 @@ async fn chat(Json(req): Json<ChatRequest>) -> impl IntoResponse {
     // Run the exec in a blocking task to avoid blocking the async runtime
     match tokio::task::spawn_blocking(move || {
         crate::api::exec_once(cfg, &req.message)
+            .map(|_| "执行完成".to_string())
+            .map_err(|e| e.to_string())
     }).await {
-        Ok(Ok(output)) => (StatusCode::OK, Json(serde_json::json!({"reply": output}))),
+        Ok(Ok(msg)) => (StatusCode::OK, Json(serde_json::json!({"reply": msg}))),
         Ok(Err(e)) => (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": format!("Task failed: {}", e)}))),
     }
