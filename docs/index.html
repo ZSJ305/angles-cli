@@ -226,6 +226,27 @@ footer a:hover{color:var(--blue)}
 .milestone .tag{display:inline-block;margin-left:8px;font-size:.72rem;padding:1px 8px;border-radius:4px;background:rgba(0,229,204,.15);color:var(--green);font-weight:600}
 .milestone.next .tag{background:rgba(255,176,32,.15);color:var(--orange)}
 .milestone.later .tag{background:var(--bg-2);color:var(--muted)}
+
+/* Platform showcase (招牌) */
+.showcase{padding:80px 5vw 20px;max-width:1100px;margin:0 auto;text-align:center}
+.showcase .eyebrow{font-family:"SF Mono",Fira Code,Consolas,monospace;font-size:.78rem;color:var(--blue);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;font-weight:700}
+.showcase h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:14px;letter-spacing:-.02em}
+.showcase h2 .grad{background:linear-gradient(135deg,var(--blue-bright),var(--green));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.showcase .sub{color:var(--muted);font-size:1.05rem;max-width:680px;margin:0 auto 48px}
+.plat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;max-width:980px;margin:0 auto 32px}
+.plat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px 22px;text-align:left;position:relative;overflow:hidden;transition:all .3s}
+.plat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--green))}
+.plat:hover{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 12px 32px rgba(90,200,255,.12)}
+.plat .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.plat .icon{font-size:1.8rem}
+.plat .badge-ok{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:5px;background:rgba(0,229,204,.15);color:var(--green);border:1px solid rgba(0,229,204,.3);font-family:monospace;letter-spacing:.04em}
+.plat h3{font-size:1.05rem;font-weight:700;margin-bottom:4px}
+.plat .arch{color:var(--muted);font-size:.82rem;font-family:monospace;margin-bottom:12px}
+.plat .size{color:var(--blue-bright);font-size:.82rem;font-family:monospace}
+.plat .size b{color:var(--text);font-weight:600}
+.showcase-foot{color:var(--muted);font-size:.9rem;margin-top:8px}
+.showcase-foot code{background:var(--card);color:var(--blue-bright);padding:2px 8px;border-radius:5px;font-size:.85em;border:1px solid var(--border)}
+.showcase-foot .sep{color:var(--border-2);margin:0 8px}
 </style>
 </head>
 <body>
@@ -233,6 +254,7 @@ footer a:hover{color:var(--blue)}
 <nav>
   <div class="logo">🅰 <span>Angles</span></div>
   <div class="links">
+    <a href="#platforms">平台</a>
     <a href="#install">安装</a>
     <a href="#features">特性</a>
     <a href="tools.html">工具</a>
@@ -275,6 +297,44 @@ footer a:hover{color:var(--blue)}
     <div class="stat"><div class="num">6+</div><div class="lbl">平台架构</div></div>
     <div class="stat"><div class="num">MIT</div><div class="lbl">开源许可</div></div>
   </div>
+</section>
+
+<section class="showcase" id="platforms">
+  <div class="eyebrow">// 招牌</div>
+  <h2>全平台<span class="grad">预编译</span>，装好就能用</h2>
+  <p class="sub">4 个平台一行装好，不用 Rust、不用编译工具链、不用 root。下载一个 1.6 MB 静态二进制，几秒搞定。</p>
+  <div class="plat-grid">
+    <div class="plat">
+      <div class="top"><span class="icon">🐧</span><span class="badge-ok">预编译 ✓</span></div>
+      <h3>Linux ARM64</h3>
+      <div class="arch">aarch64-unknown-linux-musl</div>
+      <div class="size">📦 <b>1.6 MB</b> · musl 静态</div>
+    </div>
+    <div class="plat">
+      <div class="top"><span class="icon">🐧</span><span class="badge-ok">预编译 ✓</span></div>
+      <h3>Linux x64</h3>
+      <div class="arch">x86_64-unknown-linux-musl</div>
+      <div class="size">📦 <b>1.8 MB</b> · musl 静态</div>
+    </div>
+    <div class="plat">
+      <div class="top"><span class="icon">🍎</span><span class="badge-ok">预编译 ✓</span></div>
+      <h3>macOS Apple Silicon</h3>
+      <div class="arch">aarch64-apple-darwin</div>
+      <div class="size">📦 <b>1.6 MB</b> · 原生 ARM</div>
+    </div>
+    <div class="plat">
+      <div class="top"><span class="icon">🍎</span><span class="badge-ok">预编译 ✓</span></div>
+      <h3>macOS Intel</h3>
+      <div class="arch">x86_64-apple-darwin</div>
+      <div class="size">📦 <b>1.6 MB</b> · 原生 x86</div>
+    </div>
+  </div>
+  <p class="showcase-foot">
+    实测可跑：<code>树莓派</code><span class="sep">·</span><code>iSH (iOS)</code><span class="sep">·</span><code>Alpine</code><span class="sep">·</span><code>WSL2</code><span class="sep">·</span><code>无 root 环境</code>
+  </p>
+  <p class="showcase-foot" style="margin-top:12px;color:var(--muted-2);font-size:.82rem">
+    Windows / armv7 / riscv64 暂无预编译，fallback 到源码编译 — 详见 <a href="docs.html#install">技术文档</a>
+  </p>
 </section>
 
 <section class="section" id="quickstart" style="padding-top:0">
