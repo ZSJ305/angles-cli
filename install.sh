@@ -553,17 +553,29 @@ main() {
     # ── Start timer for progress estimates ──
     INSTALL_START_TIME=$SECONDS
 
-    # ── Step 1: Environment ──
-    progress_advance "准备环境 (编译工具 / Git / Rust)"
+    # ── Step 1: Environment (skip build tools if prebuilt available) ──
+    progress_advance "准备环境"
 
-    if [[ "$OS" == "linux" ]]; then
-        export DEBIAN_FRONTEND="${DEBIAN_FRONTEND:-noninteractive}"
-        export NEEDRESTART_MODE="${NEEDRESTART_MODE:-a}"
+    # 先探测预编译二进制是否可用 —— 可用则跳过编译工具 / Rust
+    local prebuilt_available=false
+    local _bn="angles-${OS}-${ARCH}"
+    local _cu="${ANGLES_REPO}/releases/latest/download/${_bn}.tar.gz"
+    if curl -fsSL --connect-timeout 10 --head "$_cu" 2>/dev/null; then
+        prebuilt_available=true
+        ui_info "预编译二进制可用，跳过编译工具 / Git / Rust 安装"
+    else
+        ui_info "预编译不可用，将需要从源码编译"
     fi
 
-    install_build_tools
-    install_git
-    install_rust
+    if [[ "$prebuilt_available" != "true" ]]; then
+        if [[ "$OS" == "linux" ]]; then
+            export DEBIAN_FRONTEND="${DEBIAN_FRONTEND:-noninteractive}"
+            export NEEDRESTART_MODE="${NEEDRESTART_MODE:-a}"
+        fi
+        install_build_tools
+        install_git
+        install_rust
+    fi
 
     # ── Step 2: Install Angles ──
     progress_advance "安装 Angles Code CLI (二进制 / 源码编译)"

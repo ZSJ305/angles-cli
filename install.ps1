@@ -451,11 +451,22 @@ function main {
         # ── Start timer for progress estimates ──
         $script:INSTALL_START_TIME = Get-Date
 
-        # ── Step 1: Environment ──
-        progress_advance "准备环境 (Git / Rust / Build Tools)"
-        install_build_tools
-        install_git
-        install_rust
+        # ── Step 1: Environment (skip build tools if prebuilt available) ──
+        progress_advance "准备环境"
+
+        # 先探测预编译二进制是否可用 —— 可用则跳过编译工具 / Rust
+        $bn = "angles-$($script:OS)-$($script:ARCH)"
+        $cu = "$($script:ANGLES_REPO)/releases/latest/download/$bn.tar.gz"
+        $prebuiltAvailable = test_url $cu
+
+        if ($prebuiltAvailable) {
+            ui_info "预编译二进制可用，跳过编译工具 / Git / Rust 安装"
+        } else {
+            ui_info "预编译不可用，将需要从源码编译"
+            install_build_tools
+            install_git
+            install_rust
+        }
 
         # ── Step 2: Install Angles ──
         progress_advance "安装 Angles Code CLI (二进制 / 源码编译)"
