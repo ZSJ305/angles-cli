@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zsj305.github.io/angles-cli/sitemap.xml
