@@ -123,7 +123,9 @@ print_banner() {
 }
 
 print_usage() {
-    echo "Usage: curl -fsSL https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash"
+    echo "Usage:"
+    echo "  curl -fsSL https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash"
+    echo "  npm i -g @angleschina/angles && angles install"
     echo ""
     echo "Options (via environment):"
     echo "  NO_PROMPT=1          Skip all interactive prompts"
@@ -175,11 +177,13 @@ windows_redirect_and_exit() {
     echo ""
     ui_error "检测到 Windows 环境，本 bash 脚本不支持原生 Windows。"
     echo ""
-    echo -e "  ${MUTED}请使用 PowerShell 安装脚本：${NC}"
+    echo -e "  ${MUTED}方式 1 — npm (推荐)：${NC}"
+    echo -e "    ${ACCENT}npm i -g @angleschina/angles && angles install${NC}"
     echo ""
+    echo -e "  ${MUTED}方式 2 — PowerShell 脚本：${NC}"
     echo -e "    ${ACCENT}irm https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.ps1 | iex${NC}"
     echo ""
-    echo -e "  ${MUTED}或在 WSL2 中运行本脚本 (bash)：${NC}"
+    echo -e "  ${MUTED}方式 3 — WSL2 中运行本脚本：${NC}"
     echo -e "    ${ACCENT}curl -fsSL https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash${NC}"
     echo ""
     exit 1
@@ -486,6 +490,9 @@ show_install_plan() {
     ui_kv "配置目录"      "$ANGLES_HOME"
     ui_kv "安装方式"      "预编译二进制 (fallback: 源码编译)"
     echo ""
+    echo -e "  ${MUTED}也可通过 npm 安装：${NC}"
+    echo -e "    ${ACCENT}npm i -g @angleschina/angles && angles install${NC}"
+    echo ""
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -496,6 +503,7 @@ show_footer() {
     echo ""
     echo -e "  ${MUTED}━$(printf '━%.0s' {1..43})━${NC}"
     echo -e "  ${MUTED}GitHub:${NC}  https://github.com/ZSJ305/angles-cli"
+    echo -e "  ${MUTED}npm:${NC}     npm i -g @angleschina/angles"
     echo -e "  ${MUTED}Docs:${NC}    https://github.com/ZSJ305/angles-cli#readme"
     echo -e "  ${MUTED}Report:${NC}  https://github.com/ZSJ305/angles-cli/issues"
     echo ""

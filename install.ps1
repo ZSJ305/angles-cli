@@ -133,7 +133,9 @@ function print_banner {
 }
 
 function print_usage {
-    Write-Host "Usage: irm https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.ps1 | iex"
+    Write-Host "Usage:"
+    Write-Host "  irm https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.ps1 | iex"
+    Write-Host "  npm i -g @angleschina/angles; angles install"
     Write-Host ""
     Write-Host "Options (via environment):"
     Write-Host "  `$env:NO_PROMPT=1          Skip all interactive prompts"
@@ -403,6 +405,9 @@ function show_install_plan {
     ui_kv "配置目录"      $script:ANGLES_HOME
     ui_kv "安装方式"      "预编译二进制 (fallback: 源码编译)"
     Write-Host ""
+    Write-Host "  $MUTED也可通过 npm 安装：$NC"
+    Write-Host "    $ACCENT npm i -g @angleschina/angles; angles install$NC"
+    Write-Host ""
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -414,6 +419,7 @@ function show_footer {
     $line = "-" * 44
     Write-Host "  $MUTED$line$NC"
     Write-Host "  $MUTED`GitHub:$NC  https://github.com/ZSJ305/angles-cli"
+    Write-Host "  $MUTED npm:$NC     npm i -g @angleschina/angles"
     Write-Host "  $MUTED`Docs:$NC    https://github.com/ZSJ305/angles-cli#readme"
     Write-Host "  $MUTED`Report:$NC  https://github.com/ZSJ305/angles-cli/issues"
     Write-Host ""
