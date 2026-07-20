@@ -5,6 +5,7 @@ mod gateway;
 mod instructions;
 mod provider;
 mod search;
+mod server;
 mod tools;
 
 use clap::Parser;

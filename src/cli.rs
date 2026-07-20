@@ -21,6 +21,13 @@ pub enum Commands {
     /// 启动设置向导（TUI 交互式）
     Gateway,
 
+    /// 启动本地 HTTP 网关服务器（Web 控制台 + API）
+    Serve {
+        /// 端口号（默认 8080）
+        #[arg(short, long, default_value = "8080")]
+        port: u16,
+    },
+
     /// 显示当前配置
     Config,
 
@@ -44,6 +51,13 @@ pub enum Commands {
 
     /// 检查并更新 Angles CLI
     Update,
+
+    /// 启动本地 HTTP 网关服务器（Web 控制台 + API）
+    Serve {
+        /// 端口号（默认 8080）
+        #[arg(short, long, default_value = "8080")]
+        port: u16,
+    },
 }
 
 pub fn print_help() {
@@ -65,6 +79,8 @@ pub fn print_help() {
     println!("  angles resume    恢复历史会话");
     println!("  angles plan      显示/管理当前计划");
     println!("  angles update    检查并更新");
+    println!();
+    println!("  angles serve     启动本地 HTTP 网关 (默认 :8080)");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!();

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angles Gateway — 控制台</title>
+<style>
+:root{--bg:#0a0e1a;--card:#131a2e;--card-2:#172037;--border:#1f2942;--text:#e6ebf5;--muted:#8a93b0;--blue:#5ac8ff;--blue-bright:#82dcff;--green:#00e5cc;--orange:#ffb020;--red:#e63946}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+a{color:var(--blue);text-decoration:none}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px}
+
+header{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo{font-size:1.15rem;font-weight:800;color:var(--blue)}.logo span{color:var(--text)}
+.status{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+
+.layout{max-width:1200px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--border);font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:8px}
+.panel-body{padding:20px}
+
+/* Form */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:5px;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--card-2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:.88rem;font-family:inherit;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--blue)}
+.form-group textarea{resize:vertical;min-height:60px;font-family:inherit}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-block;padding:9px 20px;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--blue);color:var(--bg)}.btn-primary:hover{background:var(--blue-bright)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* KV display */
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.86rem}
+.kv:last-child{border-bottom:none}
+.kv .k{color:var(--muted)}.kv .v{color:var(--text);font-family:monospace;max-width:60%;text-align:right;overflow:hidden;text-overflow:ellipsis}
+
+/* Chat */
+.chat-log{max-height:350px;overflow-y:auto;padding:8px 0;margin-bottom:14px}
+.chat-msg{padding:10px 14px;margin-bottom:8px;border-radius:10px;font-size:.88rem;line-height:1.6}
+.chat-msg.user{background:var(--card-2);border:1px solid var(--border)}
+.chat-msg.bot{background:rgba(90,200,255,.06);border:1px solid rgba(90,200,255,.2)}
+.chat-msg .who{font-size:.74rem;color:var(--muted);margin-bottom:4px;font-weight:600}
+.chat-msg.bot .who{color:var(--blue)}
+.chat-input{display:flex;gap:10px}
+.chat-input input{flex:1;background:var(--card-2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:.88rem}
+.chat-input input:focus{outline:none;border-color:var(--blue)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--green);color:var(--green);padding:12px 20px;border-radius:10px;font-size:.88rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.toast.show{opacity:1}
+
+.provider-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600;margin-left:6px}
+.pb-green{background:rgba(0,229,204,.15);color:var(--green)}
+.pb-blue{background:rgba(90,200,255,.12);color:var(--blue-bright)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🅰 <span>Angles</span> Gateway</div>
+  <div class="status"><span class="dot"></span> <span id="status-text">连接中...</span></div>
+</header>
+
+<div class="layout">
+
+  <!-- Left: Config -->
+  <div class="panel">
+    <div class="panel-head">⚙️ 配置管理</div>
+    <div class="panel-body">
+      <div id="config-display" style="margin-bottom:20px"></div>
+
+      <div class="form-group">
+        <label>Provider</label>
+        <select id="cfg-provider" onchange="onProviderChange()">
+          <option value="">加载中...</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>模型 Model</label>
+          <input id="cfg-model" type="text" placeholder="model id">
+        </div>
+        <div class="form-group">
+          <label>API Key</label>
+          <input id="cfg-apikey" type="password" placeholder="sk-...">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Agent 人设</label>
+        <textarea id="cfg-persona" rows="2"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>搜索引擎</label>
+          <select id="cfg-search">
+            <option value="bing">Bing</option>
+            <option value="baidu">Baidu</option>
+            <option value="google">Google</option>
+            <option value="yahoo">Yahoo</option>
+            <option value="disabled">关闭</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>审批策略</label>
+          <select id="cfg-approval">
+            <option value="untrusted">untrusted (安全)</option>
+            <option value="on-request">on-request</option>
+            <option value="never">never (全自动)</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="saveConfig()">保存配置</button>
+    </div>
+  </div>
+
+  <!-- Right: Chat + Providers -->
+  <div class="panel">
+    <div class="panel-head">💬 对话测试</div>
+    <div class="panel-body">
+      <div class="chat-log" id="chat-log">
+        <div class="chat-msg bot"><div class="who">angles</div>配置好后，在这里测试对话。agent 会使用配置的模型和工具。</div>
+      </div>
+      <div class="chat-input">
+        <input id="chat-input" placeholder="输入消息，Enter 发送..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-primary" onclick="sendChat()" id="send-btn">发送</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+
+async function api(path, opts={}) {
+  const r = await fetch(API+path, {headers:{'Content-Type':'application/json'},...opts});
+  return r.json();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// ── Health check ──
+async function checkHealth() {
+  try {
+    const h = await api('/health');
+    document.getElementById('status-text').textContent =
+      `${h.provider} · ${h.model} · ${h.api_key_configured ? 'key ✓' : 'key ✗'}`;
+  } catch {
+    document.getElementById('status-text').textContent = '连接失败';
+  }
+}
+
+// ── Load config ──
+async function loadConfig() {
+  const cfg = await api('/api/config');
+  document.getElementById('config-display').innerHTML = `
+    <div class="kv"><span class="k">Provider</span><span class="v">${cfg.provider}</span></div>
+    <div class="kv"><span class="k">Base URL</span><span class="v">${cfg.base_url}</span></div>
+    <div class="kv"><span class="k">Model</span><span class="v">${cfg.model}</span></div>
+    <div class="kv"><span class="k">API Key</span><span class="v">${cfg.api_key_masked || '(未设置)'}</span></div>
+    <div class="kv"><span class="k">协议</span><span class="v">${cfg.wire_api}</span></div>
+    <div class="kv"><span class="k">Max Tokens</span><span class="v">${cfg.max_tokens}</span></div>
+  `;
+  document.getElementById('cfg-model').value = cfg.model || '';
+  document.getElementById('cfg-persona').value = cfg.agent_persona || '';
+  document.getElementById('cfg-search').value = cfg.search_engine || 'bing';
+  document.getElementById('cfg-approval').value = cfg.approval_policy || 'untrusted';
+}
+
+// ── Load providers into select ──
+async function loadProviders() {
+  const data = await api('/api/providers');
+  const sel = document.getElementById('cfg-provider');
+  sel.innerHTML = data.providers.map(p =>
+    `<option value="${p.id}">${p.name} — ${p.default_model}</option>`).join('');
+  const cfg = await api('/api/config');
+  sel.value = cfg.provider;
+}
+
+function onProviderChange() {
+  const sel = document.getElementById('cfg-provider');
+  if (!sel.value) return;
+  fetch(API+'/api/providers').then(r=>r.json()).then(data=>{
+    const p = data.providers.find(x=>x.id===sel.value);
+    if (p) {
+      document.getElementById('cfg-model').value = p.default_model;
+    }
+  });
+}
+
+// ── Save config ──
+async function saveConfig() {
+  const body = {
+    provider: document.getElementById('cfg-provider').value,
+    model: document.getElementById('cfg-model').value,
+    agent_persona: document.getElementById('cfg-persona').value,
+    search_engine: document.getElementById('cfg-search').value,
+    approval_policy: document.getElementById('cfg-approval').value,
+  };
+  const key = document.getElementById('cfg-apikey').value;
+  if (key) body.api_key = key;
+  const r = await api('/api/config', {method:'PUT', body:JSON.stringify(body)});
+  if (r.status === 'saved') {
+    toast('✅ 配置已保存');
+    document.getElementById('cfg-apikey').value = '';
+    loadConfig(); checkHealth();
+  } else {
+    toast('❌ ' + (r.error || '保存失败'));
+  }
+}
+
+// ── Chat ──
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true; btn.textContent = '思考中...';
+
+  const log = document.getElementById('chat-log');
+  log.innerHTML += `<div class="chat-msg user"><div class="who">you</div>${esc(msg)}</div>`;
+  log.scrollTop = log.scrollHeight;
+
+  try {
+    const r = await api('/api/chat', {method:'POST', body:JSON.stringify({message:msg})});
+    if (r.reply) {
+      log.innerHTML += `<div class="chat-msg bot"><div class="who">angles</div>${esc(r.reply)}</div>`;
+    } else {
+      log.innerHTML += `<div class="chat-msg bot" style="border-color:rgba(230,57,70,.3);background:rgba(230,57,70,.06)"><div class="who" style="color:var(--red)">error</div>${esc(r.error||'未知错误')}</div>`;
+    }
+  } catch(e) {
+    log.innerHTML += `<div class="chat-msg bot" style="border-color:rgba(230,57,70,.3)"><div class="who" style="color:var(--red)">error</div>${e.message}</div>`;
+  }
+  log.scrollTop = log.scrollHeight;
+  btn.disabled = false; btn.textContent = '发送';
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Init ──
+checkHealth();
+loadConfig();
+loadProviders();
+</script>
+</body>
+</html>
