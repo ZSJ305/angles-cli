@@ -256,12 +256,31 @@ footer a:hover{color:var(--blue)}
 <h3>安装器内部流程</h3>
 <p><code>install.sh</code> / <code>install.ps1</code> 共享同一套四步流程，带进度条与剩余时间估算：</p>
 <ol>
-<li><strong>准备环境</strong> — 检测 OS / 架构，装编译工具（apt / apk / dnf / yum / pacman / zypper / emerge / xbps / homebrew / winget / VS Build Tools），装 Git，装/升级 Rust (≤ 1.75 则升级)</li>
+<li><strong>准备环境</strong> — 先探测预编译二进制 URL 是否可用：<ul><li>✅ 可用 → 跳过编译工具 / Git / Rust 安装，直接进 Step 2 下二进制</li><li>❌ 不可用 → 装 apt / apk / dnf / yum / pacman / zypper / emerge / xbps / homebrew / winget / VS Build Tools + Git + Rust (≤ 1.75 则升级)</li></ul></li>
 <li><strong>安装 Angles</strong> — 优先拉取预编译 tar.gz（<code>angles-&lt;os&gt;-&lt;arch&gt;.tar.gz</code>），失败则 clone 仓库从源码 <code>cargo build --release</code></li>
 <li><strong>配置 PATH</strong> — 写入 <code>~/.bashrc</code> / <code>.zshrc</code> / <code>.fish</code> / <code>.nu</code>，可选 symlink 到 <code>/usr/local/bin</code></li>
 <li><strong>验证 & 初始配置</strong> — 执行 <code>angles --version</code> 确认，首次安装（无 <code>config.json</code>）触发 <code>angles gateway</code> 向导</li>
 </ol>
 <p>支持的环境变量：<code>NO_PROMPT=1</code>（跳过交互）、<code>NO_GATEWAY=1</code>（跳过向导）、<code>DRY_RUN=1</code>（只演示不改）、<code>ANGLES_REPO</code>（自定义仓库）、<code>ANGLES_INSTALL_DIR</code>（自定义安装目录）。</p>
+
+<h3>预编译支持矩阵</h3>
+<p>不是所有平台都有预编译二进制——没有的会 fallback 到源码编译（需要 Rust 工具链）。下表列出 Release v0.1.0 当前覆盖的情况：</p>
+<table>
+<thead><tr><th>平台</th><th>预编译二进制</th><th>安装方式</th></tr></thead>
+<tbody>
+<tr><td>Linux arm64 (musl 静态)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 root / Rust</td></tr>
+<tr><td>Linux x64 (musl 静态)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 root / Rust</td></tr>
+<tr><td>macOS arm64 (Apple Silicon)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 Xcode CLT / Rust</td></tr>
+<tr><td>macOS x64 (Intel)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 Xcode CLT / Rust</td></tr>
+<tr><td>Windows x64</td><td><span class="badge b-orange">无（规划中）</span></td><td>fallback 编译：需 VS Build Tools + Rust</td></tr>
+<tr><td>Linux armv7</td><td><span class="badge b-orange">无</span></td><td>fallback 编译：需 Rust 交叉编译</td></tr>
+<tr><td>Linux riscv64</td><td><span class="badge b-orange">无</span></td><td>fallback 编译：需 Rust 交叉编译</td></tr>
+</tbody>
+</table>
+<div class="callout">
+<div class="ct">为什么分两种路径</div>
+有预编译的平台（Linux/macOS 4 个 target）整个安装只需几秒下载一个 ~1.6 MB tar.gz，iSH / 树莓派 / Alpine / 无 root 环境都能直接装。没预编译的平台（Windows / armv7 / riscv64）必须装重型工具链源码编译。Windows 预编译是 v0.2 的重点。
+</div>
 
 <h2 id="build">源码构建 <a class="anchor" href="#build">#</a></h2>
 <h3>本地构建</h3>
