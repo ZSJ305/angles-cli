@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Angles Code CLI</title>
+<meta name="description" content="Angles Code CLI 常见问题：安装、配置、模型、工具、安全、开发。">
+<style>
+:root{
+  --bg:#0a0e1a; --bg-2:#0f1424; --card:#131a2e; --card-2:#172037;
+  --border:#1f2942; --border-2:#2a3656;
+  --text:#e6ebf5; --muted:#8a93b0; --muted-2:#6a7390;
+  --blue:#5ac8ff; --blue-bright:#82dcff; --blue-dim:rgba(90,200,255,.12);
+  --green:#00e5cc; --orange:#ffb020; --red:#e63946; --purple:#b388ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+a{color:var(--blue);text-decoration:none}
+code{background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.85em;border:1px solid var(--border)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 5vw;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-size:1.2rem;font-weight:800;color:var(--blue)}
+.logo span{color:var(--text)}
+nav .links{display:flex;gap:24px;align-items:center}
+nav a{color:var(--muted);font-size:.92rem;transition:color .2s}
+nav a:hover{color:var(--text)}
+.btn{display:inline-block;padding:8px 18px;border-radius:8px;font-weight:600;font-size:.88rem;border:none;cursor:pointer}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+
+.layout{display:flex;max-width:1200px;margin:0 auto;padding:90px 5vw 60px;gap:40px}
+.side{position:sticky;top:90px;align-self:flex-start;width:200px;flex-shrink:0;font-size:.86rem}
+.side h4{color:var(--muted-2);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px;font-weight:700}
+.side a{display:block;color:var(--muted);padding:5px 0 5px 12px;border-left:2px solid transparent;transition:all .15s;line-height:1.4}
+.side a:hover{color:var(--blue);border-left-color:var(--blue)}
+.content{flex:1;min-width:0}
+
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:10px;background:linear-gradient(135deg,var(--text),var(--blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{color:var(--muted);font-size:1.05rem;margin-bottom:40px}
+
+h2{font-size:1.4rem;font-weight:700;margin:48px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border);scroll-margin-top:80px;color:var(--blue-bright)}
+h2:first-of-type{margin-top:0}
+
+.faq-list{display:flex;flex-direction:column;gap:10px}
+.faq{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s}
+.faq[open]{border-color:var(--blue)}
+.faq summary{padding:16px 20px;cursor:pointer;font-weight:600;font-size:.96rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--blue);font-size:1.3rem;font-weight:300;transition:transform .2s}
+.faq[open] summary::after{transform:rotate(45deg)}
+.faq .ans{padding:0 20px 16px;color:var(--muted);font-size:.92rem;line-height:1.7}
+.faq .ans p{margin-bottom:10px}
+.faq .ans p:last-child{margin-bottom:0}
+.faq .ans ul{margin:6px 0 10px 20px}
+.faq .ans pre{background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:.84rem;overflow-x:auto;margin:10px 0}
+.faq .ans pre code{background:none;border:none;padding:0;color:var(--green)}
+
+footer{text-align:center;padding:50px 5vw 40px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+footer .links{display:flex;gap:24px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
+.credit{margin-top:12px;font-size:.85rem}.credit span{color:var(--blue)}
+
+@media(max-width:860px){.side{display:none}.content{max-width:100%}}
+@media(max-width:600px){nav .links a:not(.btn){display:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🅰 <span>Angles</span> <span style="color:var(--muted-2);font-weight:400">/ FAQ</span></div>
+  <div class="links">
+    <a href="https://zsj305.github.io/angles-cli/">主页</a>
+    <a href="docs.html">文档</a>
+    <a href="tools.html">工具</a>
+    <a href="https://github.com/ZSJ305/angles-cli" class="btn btn-ghost">GitHub</a>
+  </div>
+</nav>
+
+<div class="layout">
+<aside class="side">
+  <h4>分类</h4>
+  <a href="#install">安装</a>
+  <a href="#config">配置</a>
+  <a href="#models">模型 & Provider</a>
+  <a href="#tools">工具 & 使用</a>
+  <a href="#safety">安全 & 审批</a>
+  <a href="#trouble">故障排查</a>
+  <a href="#dev">开发 & 贡献</a>
+</aside>
+
+<main class="content">
+<h1>常见问题</h1>
+<p class="lead">没找到答案？<a href="https://github.com/ZSJ305/angles-cli/issues">开个 issue</a> 问我们。</p>
+
+<h2 id="install">安装</h2>
+<div class="faq-list">
+<details class="faq"><summary>系统要求是什么？</summary>
+<div class="ans"><p>支持 Linux (x64 / arm64 / armv7 / riscv64)、macOS (Intel / Apple Silicon)、Windows、WSL2、Alpine。预编译二进制优先；如需源码编译则要求 Rust ≥ 1.75（安装器会自动装好 Rust）。</p></div>
+</details>
+<details class="faq"><summary>必须用 root / 管理员吗？</summary>
+<div class="ans"><p>install.sh 当前需要 root（因为要装编译工具链）。Windows 的 install.ps1 需要管理员权限装 Build Tools。npm 方式（<code>npm i -g</code>）不需要 root，但系统级命令仍然会在 <code>angles install</code> 步骤里要求权限。</p></div>
+</details>
+<details class="faq"><summary>四种安装方式有什么区别？装的不一样吗？</summary>
+<div class="ans"><p>完全一样，最终都是 <code>~/.local/bin/angles</code> 这个 Rust 单二进制：</p><ul><li>npm：打包了安装器，跨平台、国内走 npmmirror 镜像最快</li><li>curl / wget：直接拉 install.sh，最适合 Linux/macOS/WSL2 服务器</li><li>PowerShell irm：原生 Windows 首选</li></ul></div>
+</details>
+<details class="faq"><summary>安装到一半中断了怎么办？</summary>
+<div class="ans"><p>重跑同一条安装命令即可，安装器是幂等的：已装的依赖会跳过，不足的会补齐。配置文件 <code>~/.angles/config.json</code> 不会被覆盖。</p></div>
+</details>
+<details class="faq"><summary>GitHub raw 在国内打不开 / 太慢？</summary>
+<div class="ans"><p>用 npm 方式最稳（默认走 npmmirror）。或给_install.sh_ 换 GitHub 加速前缀，例如：</p><pre><code>curl -fsSL https://ghfast.top/https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash</code></pre><p>也可在终端设代理：<code>export https_proxy=http://127.0.0.1:7890</code></p></div>
+</details>
+</div>
+
+<h2 id="config">配置</h2>
+<div class="faq-list">
+<details class="faq"><summary>配置文件在哪？</summary>
+<div class="ans"><p><code>~/.angles/config.json</code>（Windows: <code>%USERPROFILE%\.angles\config.json</code>）。想重置就删掉它，下次启动会触发 Gateway 向导。</p></div>
+</details>
+<details class="faq"><summary>API Key 会上传到任何服务器吗？</summary>
+<div class="ans"><p>不会。Key 存储在本地 config.json，也可用 <code>ANGLES_API_KEY</code> 环境变量。所有请求直接发往你配置的模型供应商，Angles 不经过任何中转或代理服务器。</p></div>
+</details>
+<details class="faq"><summary>怎么重新配置（换模型 / 换语言）？</summary>
+<div class="ans"><p>跑 <code>angles gateway</code> 重新进入五步 TUI 向导，任何字段都能改。或直接编辑 config.json。查看当前配置：<code>angles config</code>。</p></div>
+</details>
+<details class="faq"><summary>审批策略 untrusted / on-request / never 有什么区别？</summary>
+<div class="ans"><p><code>untrusted</code>（默认）：只读安全命令自动执行，破坏性操作问用户。<code>on-request</code>：agent 自行判断什么时候请示。<code>never</code>：全部自动执行——最快但最危险。<code>angles-deletefile</code>、<code>rm -rf</code>、<code>git push --force</code> 等无论哪种策略都强制确认。</p></div>
+</details>
+</div>
+
+<h2 id="models">模型 & Provider</h2>
+<div class="faq-list">
+<details class="faq"><summary>支持哪些模型供应商？</summary>
+<div class="ans"><p>OpenAI、Claude (Anthropic)、Gemini (Google)、DeepSeek、Grok (xAI)、MiniMax、OpenRouter、通义千问 Qwen、智谱 GLM、Kimi (Moonshot)、自定义。前 10 家有预置 base_url 和默认模型，自定义让你填任意端点。</p></div>
+</details>
+<details class="faq"><summary>能用本地 Ollama / vLLM / LM Studio 吗？</summary>
+<div class="ans"><p>能。这些本地推理服务都提供 OpenAI 兼容端点。Gateway 中选「自定义」：</p><ul><li>Base URL: <code>http://localhost:11434/v1</code>（Ollama）</li><li>API Key：随便填一个（本地通常不校验）</li><li>协议：chat</li><li>模型：填对应的模型名，如 <code>llama3.1</code></li></ul></div>
+</details>
+<details class="faq"><summary>Claude 和 Gemini 的协议不一样，怎么处理？</summary>
+<div class="ans"><p>Angles 在 <code>api.rs</code> 中同时适配了三种协议：<code>chat</code>（OpenAI 兼容）、<code>anthropic</code>（Messages API）、<code>gemini</code>（原生 generateContent）。选 Claude / Gemini 时 wire_api 会自动设为对应协议，无需你手动配置。</p></div>
+</details>
+<details class="faq"><summary>怎么切换模型但不动其他配置？</summary>
+<div class="ans"><p>编辑 config.json 把 <code>model</code> 字段改成新的模型 ID 即可，其它字段保留。或重新跑 <code>angles gateway</code> 只改 Step 3 模型选择那一步。</p></div>
+</details>
+</div>
+
+<h2 id="tools">工具 & 使用</h2>
+<div class="faq-list">
+<details class="faq"><summary>30 个工具都是什么？</summary>
+<div class="ans"><p>分 6 组：文件创建（4）、读取搜索（5）、修改删除（7）、目录项目（5）、终端执行（3）、网络搜索（2）、Git（5）。完整速查见 <a href="tools.html">工具速查页</a>，支持搜索和按类别筛选。</p></div>
+</details>
+<details class="faq"><summary>为什么改文件优先用 replace 不是 writefile？</summary>
+<div class="ans"><p><code>angles-replace</code> 是精准 diff 替换，意图清晰、改动最小；<code>writefile</code> 是全量覆盖，容易把无关内容也一起覆盖掉。系统提示里明确要求 agent 优先 <code>replace</code> &gt; <code>writefile</code>。</p></div>
+</details>
+<details class="faq"><summary>怎么让 agent 执行 shell 命令？</summary>
+<div class="ans"><p>agent 自主决定调用 <code>angles-run</code>，你可以直接让它「跑测试」「起服务看一下日志」之类。是否需要你确认取决于审批策略。后台任务用 <code>angles-runbg</code>，返回 PID，<code>angles-kill</code> 终止。</p></div>
+</details>
+<details class="faq"><summary>能联网搜索吗？</summary>
+<div class="ans"><p>能。Gateway 第 5 步选搜索引擎：Bing / Baidu / Google / Yahoo / 自定义 URL / 关闭。agent 在需要实时信息时调用 <code>angles-websearch</code>，Bing 通常最稳。</p></div>
+</details>
+<details class="faq"><summary>会和 Codex CLI / Claude Code 冲突吗？</summary>
+<div class="ans"><p>不会。Angles 是独立二进制 <code>angles</code>，配置和会话都在 <code>~/.angles/</code>，与其它工具互不干扰。可以同时装多个 agentic CLI 在不同终端用。</p></div>
+</details>
+</div>
+
+<h2 id="safety">安全 & 审批</h2>
+<div class="faq-list">
+<details class="faq"><summary>哪些操作一定会让我确认？</summary>
+<div class="ans"><p>无论哪种审批策略，这些始终强制确认：</p><ul><li><code>angles-deletefile</code> — 永久删除文件</li><li><code>angles-run</code> 配 <code>rm -rf</code> / <code>sudo</code> / <code>mkfs</code> / <code>dd</code> 等破坏性命令</li><li><code>angles-run git push --force</code></li><li>任何修改工作区外文件的操作</li></ul></div>
+</details>
+<details class="faq"><summary>agent 会不会乱删文件？</summary>
+<div class="ans"><p>默认 <code>untrusted</code> 策略下不会：所有写操作要经你确认。即使切到 <code>never</code>，<code>deletefile</code> 和 <code>rm -rf</code> 这类仍强制确认。系统提示还明确要求 agent 不修无关 bug、不无谓改文件结构。</p></div>
+</details>
+<details class="faq"><summary>它会在我的项目目录外乱跑吗？</summary>
+<div class="ans"><p>默认作用域是当前工作目录及其子树，修改工作区外文件需要确认。AGENTS.md 规范还会让 agent 遵守仓库内的特殊约束。</p></div>
+</details>
+</div>
+
+<h2 id="trouble">故障排查</h2>
+<div class="faq-list">
+<details class="faq"><summary>对话没响应 / 报网络错？</summary>
+<div class="ans"><p>先跑 <code>angles doctor</code> 诊断：</p><ul><li>检查 config.json 是否完整</li><li>测试到 base_url 的连通性</li><li>验证 API Key 是否有效</li><li>检查每日 token 预算是否已用尽</li></ul><p>常见根因：API Key 过期、base_url 拼错、网络代理没设、当日预算打满（等次日重置）。</p></div>
+</details>
+<details class="faq"><summary>提示 grep: unrecognized option -P？</summary>
+<div class="ans"><p>你大概率在 Alpine / BusyBox 上跑 install.sh 的检测代码。BusyBox grep 不支持 PCRE（<code>-P</code>）。这是 install.sh 内部对 Rust 版本号解析的已知兼容问题，不影响实际功能——Rust 版本检查会退化但不会卡住安装。</p></div>
+</details>
+<details class="faq"><summary>Windows 上 PowerShell 提示执行策略受限？</summary>
+<div class="ans"><p>用 <code>irm ... | iex</code> 形式（管道执行）可绕过执行策略；或在管理员 PowerShell 里跑 <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>。</p></div>
+</details>
+<details class="faq"><summary>预编译二进制下不下来？</summary>
+<div class="ans"><p>安装器会自动 fallback 到源码编译：装 Rust + <code>cargo build --release</code>。编译需要几分钟，但能保证成功。也可以 <code>ANGLES_REPO=... git clone</code> 后本地 <code>cargo build --release</code> 再手动 copy。</p></div>
+</details>
+</div>
+
+<h2 id="dev">开发 & 贡献</h2>
+<div class="faq-list">
+<details class="faq"><summary>从源码构建？</summary>
+<div class="ans"><pre><code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+git clone https://github.com/ZSJ305/angles-cli.git
+cd angles-cli
+cargo build --release
+cp target/release/angles ~/.local/bin/</code></pre><p>交叉编译用 Makefile：<code>make setup-arm64 && make arm64</code>（Linux ARM64 静态二进制）等。</p></div>
+</details>
+<details class="faq"><summary>项目结构是怎样的？</summary>
+<div class="ans"><p>9 个 Rust 模块：<code>main.rs</code> 入口、<code>cli.rs</code> Clap 定义、<code>config.rs</code> 配置、<code>provider.rs</code> 供应商注册表、<code>gateway.rs</code> TUI 向导、<code>instructions.rs</code> 系统提示模板、<code>api.rs</code> API 客户端 + 工具循环、<code>search.rs</code> 搜索 URL、<code>tools.rs</code> 30+ 工具实现。详见 <a href="docs.html">技术文档</a>。</p></div>
+</details>
+<details class="faq"><summary>怎么贡献 / 提建议？</summary>
+<div class="ans"><p>开源 MIT，<a href="https://github.com/ZSJ305/angles-cli">GitHub 仓库</a>欢迎 issue 和 PR。早期的项目，方向开放，特别欢迎：新工具想法、Provider 适配、文档改进、bug 反馈。</p></div>
+</details>
+<details class="faq"><summary>路线图怎么走？</summary>
+<div class="ans"><p>v0.1 已发布（核心 CLI + 30 工具 + 11 Provider）；v0.2 规划 <code>update</code>/<code>uninstall</code> 子命令、会话持久化；v0.3 考虑自定义工具插件与 MCP；v1.0 目标稳定 API + 完整文档站。详见主页 <a href="https://zsj305.github.io/angles-cli/#roadmap">路线图</a>。</p></div>
+</details>
+</div>
+
+</main>
+</div>
+
+<footer>
+  <div class="links">
+    <a href="https://zsj305.github.io/angles-cli/">主页</a>
+    <a href="docs.html">技术文档</a>
+    <a href="tools.html">工具速查</a>
+    <a href="https://github.com/ZSJ305/angles-cli">GitHub</a>
+    <a href="https://www.npmjs.com/package/@angleschina/angles">npm</a>
+  </div>
+  <div class="credit">MIT License · created by <span>ZSJ</span> 🇨🇳</div>
+</footer>
+
+</body>
+</html>

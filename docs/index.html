@@ -169,6 +169,49 @@ footer a:hover{color:var(--blue)}
   nav .links a:not(.btn){display:none}
   .tab{min-width:70px;font-size:.82rem;padding:8px 10px}
 }
+
+/* Stats bar */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  max-width:760px;margin:0 auto 80px;
+}
+.stat{background:var(--card);padding:24px 16px;text-align:center}
+.stat .num{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--blue-bright);line-height:1}
+.stat .lbl{color:var(--muted);font-size:.82rem;margin-top:8px;letter-spacing:.04em}
+
+/* Quickstart */
+.qs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:48px}
+.qs-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;transition:all .3s}
+.qs-card:hover{border-color:var(--blue);transform:translateY(-3px)}
+.qs-card .step{display:inline-block;width:28px;height:28px;border-radius:8px;background:var(--blue);color:var(--bg);font-weight:800;text-align:center;line-height:28px;font-size:.85rem;margin-bottom:14px}
+.qs-card h3{font-size:1.05rem;margin-bottom:8px}
+.qs-card p{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+.qs-card pre{margin:0;background:var(--bg);border:1px solid var(--border);padding:12px;border-radius:8px;font-size:.82rem;color:var(--green)}
+
+/* FAQ */
+.faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.faq{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
+.faq[open]{border-color:var(--blue)}
+.faq summary{padding:18px 22px;cursor:pointer;font-weight:600;font-size:.98rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--blue);font-size:1.3rem;font-weight:300;transition:transform .2s}
+.faq[open] summary::after{transform:rotate(45deg)}
+.faq .ans{padding:0 22px 18px;color:var(--muted);font-size:.92rem;line-height:1.7}
+.faq .ans code{background:var(--bg-2);color:var(--blue-bright);padding:1px 6px;border-radius:4px;font-size:.85em}
+
+/* Roadmap */
+.roadmap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.milestone{display:flex;gap:18px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 22px}
+.milestone.done{border-left-color:var(--green)}
+.milestone.next{border-left-color:var(--orange)}
+.milestone .phase{flex-shrink:0;width:80px;color:var(--muted);font-size:.82rem;font-weight:600;letter-spacing:.04em;margin-top:2px}
+.milestone .body h3{font-size:1rem;margin-bottom:4px}
+.milestone .body p{color:var(--muted);font-size:.88rem;margin:0}
+.milestone .tag{display:inline-block;margin-left:8px;font-size:.72rem;padding:1px 8px;border-radius:4px;background:rgba(0,229,204,.15);color:var(--green);font-weight:600}
+.milestone.next .tag{background:rgba(255,176,32,.15);color:var(--orange)}
+.milestone.later .tag{background:var(--bg-2);color:var(--muted)}
 </style>
 </head>
 <body>
@@ -178,7 +221,9 @@ footer a:hover{color:var(--blue)}
   <div class="links">
     <a href="#install">安装</a>
     <a href="#features">特性</a>
+    <a href="tools.html">工具</a>
     <a href="#providers">模型</a>
+    <a href="faq.html">FAQ</a>
     <a href="https://github.com/ZSJ305/angles-cli" class="btn btn-ghost">GitHub</a>
   </div>
 </nav>
@@ -205,6 +250,40 @@ footer a:hover{color:var(--blue)}
       <div class="o"> angles-run python3 server.py &</div>
       <div class="o2"> ✓ 服务器运行在 :8000</div>
       <div><span class="c">$</span> <span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="stats">
+    <div class="stat"><div class="num">11</div><div class="lbl">模型供应商</div></div>
+    <div class="stat"><div class="num">30+</div><div class="lbl">内置工具</div></div>
+    <div class="stat"><div class="num">6+</div><div class="lbl">平台架构</div></div>
+    <div class="stat"><div class="num">MIT</div><div class="lbl">开源许可</div></div>
+  </div>
+</section>
+
+<section class="section" id="quickstart" style="padding-top:0">
+  <h2 class="section-title">快速开始</h2>
+  <p class="section-sub">三步上手：装好 → 配模型 → 开始对话。</p>
+  <div class="qs-grid">
+    <div class="qs-card">
+      <span class="step">1</span>
+      <h3>配置向导</h3>
+      <p>五步 TUI 选择语言、模型、偏好、搜索引擎。</p>
+<pre><code>angles gateway</code></pre>
+    </div>
+    <div class="qs-card">
+      <span class="step">2</span>
+      <h3>交互对话</h3>
+      <p>直接 <code style="color:var(--blue-bright)">angles</code> 进入对话模式，agent 自主调用工具。</p>
+<pre><code>angles</code></pre>
+    </div>
+    <div class="qs-card">
+      <span class="step">3</span>
+      <h3>非交互模式</h3>
+      <p>CI / 脚本场景，执行单条指令后退出。</p>
+<pre><code>angles exec "写个 fizzbuzz"</code></pre>
     </div>
   </div>
 </section>
@@ -282,10 +361,74 @@ footer a:hover{color:var(--blue)}
   </div>
 </section>
 
+<section class="section" id="faq">
+  <h2 class="section-title">常见问题</h2>
+  <p class="section-sub">更多问题见 <a href="faq.html">FAQ 页面</a>。</p>
+  <div class="faq-list">
+    <details class="faq">
+      <summary>API Key 存在哪里？会上传吗？</summary>
+      <div class="ans">Key 存储在本地 <code>~/.angles/config.json</code>，也可用环境变量 <code>ANGLES_API_KEY</code>。请求直接发往你配置的模型供应商，不经过任何中转服务器。</div>
+    </details>
+    <details class="faq">
+      <summary>没有 Rust 能用吗？</summary>
+      <div class="ans">可以。安装器会拉取预编译二进制（<code>angles-&lt;os&gt;-&lt;arch&gt;.tar.gz</code>）；只有预编译不可用时才 fallback 到源码编译——此时才需要 Rust 工具链，安装器也会自动装好。</div>
+    </details>
+    <details class="faq">
+      <summary>支持哪些模型？能用本地 Ollama 吗？</summary>
+      <div class="ans">11 家预置（OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi / MiniMax / OpenRouter / 自定义）。任何 OpenAI 兼容端点（含本地 Ollama、vLLM、LM Studio）选「自定义」填 <code>http://localhost:11434/v1</code> 即可。</div>
+    </details>
+    <details class="faq">
+      <summary>Windows 原生支持吗？</summary>
+      <div class="ans">支持。PowerShell 一行安装：<code>irm https://zsj305.github.io/angles-cli/install.ps1 | iex</code>。也支持 WSL2 中的 bash 脚本。</div>
+    </details>
+    <details class="faq">
+      <summary>和 Codex CLI / Claude Code 有什么区别？</summary>
+      <div class="ans">Angles 是 Rust 单二进制，零运行时依赖；30 个统一的 <code>angles-*</code> 工具族覆盖文件/目录/终端/Git/网络；11 家供应商一个 CLI 切换。轻量、跨平台、无包装。</div>
+    </details>
+  </div>
+</section>
+
+<section class="section" id="roadmap">
+  <h2 class="section-title">路线图</h2>
+  <p class="section-sub">项目早期，方向开放，欢迎 <a href="https://github.com/ZSJ305/angles-cli/issues">提 issue</a>。</p>
+  <div class="roadmap">
+    <div class="milestone done">
+      <div class="phase">v0.1 ✓</div>
+      <div class="body">
+        <h3>核心 CLI + 30 工具 + 11 Provider<span class="tag">已发布</span></h3>
+        <p>交互对话、非交互 exec、Gateway TUI 向导、doctor 诊断、安装器（bash/PowerShell/npm 三方式）。</p>
+      </div>
+    </div>
+    <div class="milestone next">
+      <div class="phase">v0.2</div>
+      <div class="body">
+        <h3>update / uninstall 子命令 + 会话持久化<span class="tag">规划中</span></h3>
+        <p>自带自升级与卸载；跨会话历史与上下文压缩；预编译二进制 Release 覆盖主流平台。</p>
+      </div>
+    </div>
+    <div class="milestone later">
+      <div class="phase">v0.3</div>
+      <div class="body">
+        <h3>工具生态：自定义工具插件<span class="tag">考虑中</span></h3>
+        <p>允许用户在 <code>~/.angles/tools/</code> 注册本地脚本为 <code>angles-*</code> 工具；MCP 协议接入评估。</p>
+      </div>
+    </div>
+    <div class="milestone later">
+      <div class="phase">v1.0</div>
+      <div class="body">
+        <h3>稳定 API + 完整文档站<span class="tag">远期</span></h3>
+        <p>工具协议冻结、ABI 稳定、贡献者指南、多语言文档。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="links">
     <a href="https://github.com/ZSJ305/angles-cli">GitHub</a>
     <a href="docs.html">文档</a>
+    <a href="tools.html">工具速查</a>
+    <a href="faq.html">FAQ</a>
     <a href="https://github.com/ZSJ305/angles-cli/issues">反馈</a>
     <a href="https://www.npmjs.com/package/@angleschina/angles">npm</a>
   </div>
