@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angles Code CLI — AI 编码搭档</title>
+<meta name="description" content="终端里的 AI 编码助手。Rust 驱动，多模型支持，30 个内置工具，跨平台。">
+<style>
+:root{
+  --bg:#0a0e1a;
+  --bg-2:#0f1424;
+  --card:#131a2e;
+  --border:#1f2942;
+  --text:#e6ebf5;
+  --muted:#8a93b0;
+  --blue:#5ac8ff;
+  --blue-bright:#82dcff;
+  --green:#00e5cc;
+  --orange:#ffb020;
+  --red:#e63946;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+a{color:var(--blue);text-decoration:none}
+
+/* Nav */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 5vw;
+  background:rgba(10,14,26,.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-size:1.3rem;font-weight:800;color:var(--blue)}
+.logo span{color:var(--text)}
+nav .links{display:flex;gap:28px;align-items:center}
+nav a{color:var(--muted);font-size:.95rem;transition:color .2s}
+nav a:hover{color:var(--text)}
+.btn{
+  display:inline-block;padding:10px 22px;
+  border-radius:10px;font-weight:600;font-size:.92rem;
+  transition:all .2s;cursor:pointer;border:none;
+}
+.btn-primary{background:var(--blue);color:var(--bg)}
+.btn-primary:hover{background:var(--blue-bright);transform:translateY(-1px);box-shadow:0 8px 24px rgba(90,200,255,.3)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Hero */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:120px 5vw 60px;position:relative;
+}
+.hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(90,200,255,.15),transparent 60%);
+  pointer-events:none;
+}
+.tagline{
+  font-size:.8rem;letter-spacing:.2em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:28px;font-weight:600;
+}
+.tagline span{color:var(--blue)}
+h1{
+  font-size:clamp(2.5rem,7vw,5.5rem);font-weight:800;
+  line-height:1.05;letter-spacing:-.03em;margin-bottom:24px;
+  background:linear-gradient(135deg,var(--text) 0%,var(--blue) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.subtitle{
+  font-size:clamp(1rem,2.5vw,1.4rem);color:var(--muted);
+  max-width:640px;margin-bottom:40px;
+}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:80px}
+.terminal-mock{
+  width:100%;max-width:680px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.terminal-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;background:var(--bg-2);border-bottom:1px solid var(--border);
+}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+.terminal-bar .title{margin-left:12px;font-size:.82rem;color:var(--muted);font-family:monospace}
+.terminal-body{padding:22px;font-family:"SF Mono",Fira Code,Consolas,monospace;font-size:.88rem;text-align:left}
+.terminal-body .p{color:var(--green)}
+.terminal-body .c{color:var(--muted)}
+.terminal-body .o{color:var(--blue)}
+.terminal-body .o2{color:var(--blue-bright)}
+.cursor{display:inline-block;width:8px;height:16px;background:var(--green);animation:blink 1s steps(1) infinite;vertical-align:middle}
+@keyframes blink{50%{opacity:0}}
+
+/* Install section */
+.section{padding:100px 5vw;max-width:1100px;margin:0 auto}
+.section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;text-align:center;margin-bottom:16px}
+.section-sub{text-align:center;color:var(--muted);font-size:1.05rem;margin-bottom:56px}
+.tabs{
+  display:flex;gap:4px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:24px;background:var(--card);padding:6px;border-radius:12px;max-width:560px;margin-left:auto;margin-right:auto;border:1px solid var(--border);
+}
+.tab{
+  flex:1;min-width:90px;padding:10px 16px;border-radius:8px;
+  background:transparent;color:var(--muted);border:none;cursor:pointer;
+  font-size:.9rem;font-weight:600;transition:all .2s;white-space:nowrap;
+}
+.tab.active{background:var(--blue);color:var(--bg)}
+.tab:hover:not(.active){color:var(--text)}
+.code-block{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:24px;font-family:"SF Mono",Fira Code,Consolas,monospace;
+  font-size:.95rem;position:relative;max-width:680px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.code-block .cmd{color:var(--green);word-break:break-all;flex:1}
+.copy-btn{
+  background:var(--bg-2);color:var(--muted);border:1px solid var(--border);
+  padding:6px 14px;border-radius:6px;font-size:.8rem;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+}
+.copy-btn:hover{color:var(--blue);border-color:var(--blue)}
+.copy-btn.copied{color:var(--green);border-color:var(--green)}
+
+/* Features */
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:24px;margin-top:48px;
+}
+.feature{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:32px;transition:all .3s;
+}
+.feature:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:0 12px 32px rgba(90,200,255,.1)}
+.feature .icon{font-size:2rem;margin-bottom:16px}
+.feature h3{font-size:1.2rem;font-weight:700;margin-bottom:10px}
+.feature p{color:var(--muted);font-size:.95rem}
+
+/* Providers */
+.providers{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:40px}
+.provider-chip{
+  background:var(--card);border:1px solid var(--border);
+  padding:10px 18px;border-radius:24px;font-size:.9rem;color:var(--muted);
+  transition:all .2s;
+}
+.provider-chip:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Footer */
+footer{
+  text-align:center;padding:60px 5vw 40px;
+  border-top:1px solid var(--border);color:var(--muted);font-size:.9rem;
+}
+footer .links{display:flex;gap:24px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--blue)}
+.credit{margin-top:12px;font-size:.85rem}
+.credit span{color:var(--blue)}
+
+@media(max-width:640px){
+  nav .links a:not(.btn){display:none}
+  .tab{min-width:70px;font-size:.82rem;padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🅰 <span>Angles</span></div>
+  <div class="links">
+    <a href="#install">安装</a>
+    <a href="#features">特性</a>
+    <a href="#providers">模型</a>
+    <a href="https://github.com/ZSJ305/angles-cli" class="btn btn-ghost">GitHub</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="tagline"><span>开源</span> · <span>Rust 驱动</span> · <span>跨平台</span></div>
+  <h1>真正会写代码的<br>终端 AI 搭档</h1>
+  <p class="subtitle">30 个内置工具，11 家模型供应商，一个命令装好。让 AI 在你的终端里干脏活。</p>
+  <div class="hero-cta">
+    <a href="#install" class="btn btn-primary">开始安装</a>
+    <a href="https://github.com/ZSJ305/angles-cli#readme" class="btn btn-ghost">阅读文档</a>
+  </div>
+  <div class="terminal-mock">
+    <div class="terminal-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="title">angles — zsh</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="c">$</span> <span class="p">angles</span> "写一个 Python HTTP 服务器"</div>
+      <div class="c">→ 正在思考…</div>
+      <div class="o"> angles-createfile server.py</div>
+      <div class="o2"> ✓ 已创建 server.py (24 行)</div>
+      <div class="c">→ 运行测试…</div>
+      <div class="o"> angles-run python3 server.py &</div>
+      <div class="o2"> ✓ 服务器运行在 :8000</div>
+      <div><span class="c">$</span> <span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="install">
+  <h2 class="section-title">一键安装</h2>
+  <p class="section-sub">四种方式，装到的东西完全一样。选你顺手的。</p>
+  <div class="tabs">
+    <button class="tab active" data-tab="npm">npm</button>
+    <button class="tab" data-tab="curl">curl</button>
+    <button class="tab" data-tab="ps1">PowerShell</button>
+    <button class="tab" data-tab="wget">wget</button>
+  </div>
+  <div class="code-block" id="code-block">
+    <span class="cmd" id="cmd-text">npm i -g @angleschina/angles && angles install</span>
+    <button class="copy-btn" onclick="copyCmd()">复制</button>
+  </div>
+  <p style="text-align:center;color:var(--muted);font-size:.88rem;margin-top:20px">
+    支持 Linux · macOS · Windows · WSL2 · 树莓派 · Alpine
+  </p>
+</section>
+
+<section class="section" id="features">
+  <h2 class="section-title">为什么选 Angles</h2>
+  <p class="section-sub">不是又一个 wrapper，是真正能干活的终端 agent。</p>
+  <div class="features-grid">
+    <div class="feature">
+      <div class="icon">🔧</div>
+      <h3>30 个内置工具</h3>
+      <p>文件读写、目录操作、shell 执行、Git、网页抓取、搜索——angles-* 工具族覆盖完整开发工作流。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🤖</div>
+      <h3>11 家模型供应商</h3>
+      <p>OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi / MiniMax / OpenRouter / 自定义，一个 CLI 全搞定。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">⚡</div>
+      <h3>Rust 性能</h3>
+      <p>纯 Rust 实现，单二进制文件，无运行时依赖。启动快、内存小，树莓派也能跑。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🌍</div>
+      <h3>跨平台</h3>
+      <p>Linux (x64/arm64/armv7/riscv64) · macOS (Intel/Apple Silicon) · Windows · WSL2 · Alpine。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🎯</div>
+      <h3>交互式配置向导</h3>
+      <p><code>angles gateway</code> 五步 TUI 向导：语言 / 供应商 / 模型 / 偏好 / 搜索引擎，30 秒配好。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🔐</div>
+      <h3>开源 MIT</h3>
+      <p>代码完全开源，配置存在本地 <code>~/.angles/</code>，API Key 不上传任何服务器。你的数据你做主。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="providers">
+  <h2 class="section-title">支持的模型供应商</h2>
+  <p class="section-sub">国内外主流模型一键切换，还支持自定义接入。</p>
+  <div class="providers">
+    <span class="provider-chip">OpenAI</span>
+    <span class="provider-chip">Claude (Anthropic)</span>
+    <span class="provider-chip">Gemini (Google)</span>
+    <span class="provider-chip">DeepSeek</span>
+    <span class="provider-chip">Grok (xAI)</span>
+    <span class="provider-chip">通义千问 Qwen</span>
+    <span class="provider-chip">智谱 GLM</span>
+    <span class="provider-chip">Kimi (Moonshot)</span>
+    <span class="provider-chip">MiniMax</span>
+    <span class="provider-chip">OpenRouter</span>
+    <span class="provider-chip">+ 自定义</span>
+  </div>
+</section>
+
+<footer>
+  <div class="links">
+    <a href="https://github.com/ZSJ305/angles-cli">GitHub</a>
+    <a href="https://github.com/ZSJ305/angles-cli#readme">文档</a>
+    <a href="https://github.com/ZSJ305/angles-cli/issues">反馈</a>
+    <a href="https://www.npmjs.com/package/@angleschina/angles">npm</a>
+  </div>
+  <div class="credit">MIT License · created by <span>ZSJ</span> 🇨🇳</div>
+</footer>
+
+<script>
+const commands = {
+  npm:  'npm i -g @angleschina/angles && angles install',
+  curl: 'curl -fsSL https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash',
+  ps1:  'irm https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.ps1 | iex',
+  wget: 'wget -qO- https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash'
+};
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('cmd-text').textContent = commands[t.dataset.tab];
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '复制';
+    btn.classList.remove('copied');
+  });
+});
+function copyCmd(){
+  const text = document.getElementById('cmd-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '已复制';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
