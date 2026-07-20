@@ -27,6 +27,11 @@ DRY_RUN="${DRY_RUN:-0}"
 HELP="${HELP:-0}"
 RUST_MIN_VERSION="1.75.0"
 
+# ── Progress tracking ──
+PROGRESS_TOTAL=4
+PROGRESS_CURRENT=0
+INSTALL_START_TIME=0
+
 # ── Temp file cleanup ──
 TMPFILES=()
 cleanup_tmpfiles() { for f in "${TMPFILES[@]:-}"; do rm -rf "$f" 2>/dev/null || true; done; }
@@ -47,6 +52,44 @@ ui_section() { echo -e "\n  ${ACCENT}${BOLD}$1${NC}\n"; }
 
 is_promptable() { [[ "$NO_PROMPT" != "1" ]] && [[ -t 0 ]] && [[ -t 1 ]]; }
 has_tty()       { [[ -r /dev/tty ]] && [[ -w /dev/tty ]]; }
+
+# ═══════════════════════════════════════════════════════════════════════
+# Progress Bar
+# ═══════════════════════════════════════════════════════════════════════
+
+progress_advance() {
+    local step_name="$1"
+    PROGRESS_CURRENT=$((PROGRESS_CURRENT + 1))
+    local pct=$((PROGRESS_CURRENT * 100 / PROGRESS_TOTAL))
+    local elapsed=$(( SECONDS - INSTALL_START_TIME ))
+    local remaining=""
+
+    if [[ "$PROGRESS_CURRENT" -gt 1 && "$elapsed" -gt 0 ]]; then
+        local rate=$(( elapsed / PROGRESS_CURRENT ))
+        local left=$(( rate * (PROGRESS_TOTAL - PROGRESS_CURRENT) ))
+        if [[ "$left" -gt 60 ]]; then
+            remaining="~$(( left / 60 ))分${left % 60}秒"
+        else
+            remaining="~${left}秒"
+        fi
+    elif [[ "$elapsed" -gt 0 ]]; then
+        remaining="计算中..."
+    else
+        remaining="--"
+    fi
+
+    # Bar: 30 chars wide
+    local filled=$(( pct * 30 / 100 ))
+    local empty=$(( 30 - filled ))
+    local bar=""
+    local i
+    for ((i=0; i<filled; i++)); do bar+="█"; done
+    for ((i=0; i<empty;  i++)); do bar+="░"; done
+
+    echo ""
+    echo -e "  ${ACCENT}${bar}${NC} ${BOLD}${pct}%${NC}  ${MUTED}[${PROGRESS_CURRENT}/${PROGRESS_TOTAL}]${NC}  ${step_name}  ${MUTED}剩余 ${remaining}${NC}"
+    echo ""
+}
 
 # ── Downloader ──
 DOWNLOADER=""
@@ -80,7 +123,7 @@ print_banner() {
 }
 
 print_usage() {
-    echo "Usage: curl -fsSL https://angles.dev/install.sh | bash [options]"
+    echo "Usage: curl -fsSL https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash"
     echo ""
     echo "Options (via environment):"
     echo "  NO_PROMPT=1          Skip all interactive prompts"
@@ -180,7 +223,6 @@ check_rust() {
     local ver
     ver="$(cargo --version 2>/dev/null | grep -oP '\d+\.\d+\.\d+' | head -1)"
     if [[ -z "$ver" ]]; then return 1; fi
-    # Simple major.minor comparison
     local major minor
     IFS='.' read -r major minor _ <<< "$ver"
     if [[ "$major" -lt 1 ]] || { [[ "$major" -eq 1 ]] && [[ "$minor" -lt 75 ]]; }; then
@@ -210,7 +252,6 @@ install_rust() {
         /bin/bash "$tmp" -y --default-toolchain stable < /dev/null
     fi
 
-    # Source cargo env
     if [[ -f "$HOME/.cargo/env" ]]; then
         source "$HOME/.cargo/env"
     fi
@@ -278,7 +319,6 @@ install_angles_binary() {
 
     ui_info "检查预编译二进制 ${binary_name}..."
 
-    # Check if binary exists at URL
     if ! curl -fsSL --connect-timeout 10 --head "$url" 2>/dev/null; then
         return 1
     fi
@@ -287,7 +327,6 @@ install_angles_binary() {
     local tmp; mktempfile tmp
     download_file "$url" "$tmp"
     tar xzf "$tmp" -C "$INSTALL_DIR" angles 2>/dev/null || {
-        # Maybe the tar has a different structure
         local tmpdir; tmpdir="$(mktemp -d)"; TMPFILES+=("$tmpdir")
         tar xzf "$tmp" -C "$tmpdir"
         cp "$tmpdir/angles" "$INSTALL_DIR/angles" 2>/dev/null || \
@@ -313,7 +352,6 @@ install_angles_from_source() {
 
     cd "$tmpdir/angles-cli"
 
-    # Choose target for static linking on Linux
     local cargo_args="build --release"
     if [[ "$OS" == "linux" ]]; then
         if [[ "$ARCH" == "arm64" ]]; then
@@ -332,7 +370,6 @@ install_angles_from_source() {
     ui_info "编译中 (cargo $cargo_args)..."
     cargo $cargo_args 2>&1 | tail -5
 
-    # Find the binary
     local binary=""
     for candidate in \
         "target/aarch64-unknown-linux-musl/release/angles" \
@@ -371,7 +408,6 @@ setup_path() {
         *)      rc="$HOME/.profile" ;;
     esac
 
-    # Check if already in PATH
     if [[ ":$PATH:" == *":$INSTALL_DIR:"* ]]; then
         return 0
     fi
@@ -392,7 +428,6 @@ setup_path() {
     export PATH="$PATH:$INSTALL_DIR"
     ui_kv "PATH" "Added $INSTALL_DIR to $rc"
 
-    # Symlink to /usr/local/bin if writable
     if [[ -w /usr/local/bin ]] && [[ ! -e /usr/local/bin/angles ]]; then
         ln -sf "$INSTALL_DIR/angles" /usr/local/bin/angles 2>/dev/null && \
             ui_kv "Symlink" "/usr/local/bin/angles → $INSTALL_DIR/angles"
@@ -455,7 +490,7 @@ show_footer() {
 main() {
     if [[ "$HELP" == "1" ]]; then print_usage; return 0; fi
 
-# ── Root check ──
+    # ── Root check ──
     if [[ "$(id -u)" -ne 0 ]]; then
         echo ""
         ui_error "请以 root 用户运行此脚本"
@@ -482,8 +517,11 @@ main() {
         return 0
     fi
 
+    # ── Start timer for progress estimates ──
+    INSTALL_START_TIME=$SECONDS
+
     # ── Step 1: Environment ──
-    ui_stage "[1/4] 准备环境"
+    progress_advance "准备环境 (编译工具 / Git / Rust)"
 
     if [[ "$OS" == "linux" ]]; then
         export DEBIAN_FRONTEND="${DEBIAN_FRONTEND:-noninteractive}"
@@ -495,7 +533,7 @@ main() {
     install_rust
 
     # ── Step 2: Install Angles ──
-    ui_stage "[2/4] 安装 Angles Code CLI"
+    progress_advance "安装 Angles Code CLI (二进制 / 源码编译)"
 
     mkdir -p "$INSTALL_DIR"
     mkdir -p "$ANGLES_HOME"
@@ -506,11 +544,12 @@ main() {
     fi
 
     # ── Step 3: PATH ──
-    ui_stage "[3/4] 配置 PATH"
+    progress_advance "配置 PATH 环境变量"
+
     setup_path
 
     # ── Step 4: Verify & Gateway ──
-    ui_stage "[4/4] 验证 & 初始配置"
+    progress_advance "验证安装 & 初始配置"
 
     if ! verify_installation; then
         exit 1
