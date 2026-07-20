@@ -1,0 +1,8 @@
+/target
+/dist
+*.tar.gz
+*.ipsw
+.DS_Store
+.env
+*.swp
+*.swo

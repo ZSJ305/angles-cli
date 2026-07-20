@@ -1,5 +1,5 @@
-/// API client for Angles Code CLI.
-/// Handles chat completions (OpenAI-compatible), streaming SSE, and tool execution.
+/// Multi-protocol API client for Angles Code CLI.
+/// Supports: OpenAI Chat Completions, Anthropic Messages, Gemini Native.
 use crate::config::Config;
 use crate::instructions;
 use crate::search;
@@ -10,225 +10,67 @@ use reqwest::Client;
 use serde_json::json;
 use std::io::{self, Write};
 
-// ─── Chat Message ───
+// ─── Data types ───
 
 #[derive(Debug, Clone)]
-struct Message {
-    role: String,
-    content: String,
-    tool_calls: Option<Vec<ToolCall>>,
+pub struct Message {
+    pub role: String,
+    pub content: String,
+    pub tool_calls: Option<Vec<ToolCall>>,
 }
 
 #[derive(Debug, Clone)]
-struct ToolCall {
-    id: String,
-    name: String,
-    arguments: String,
+pub struct ToolCall {
+    pub id: String,
+    pub name: String,
+    pub arguments: String,
 }
 
-// ─── Tool definitions for the API ───
+#[derive(Debug, Clone)]
+pub struct ChatResult {
+    pub content: String,
+    pub tool_calls: Vec<ToolCall>,
+    pub usage: TokenUsage,
+}
 
-fn tool_definitions() -> Vec<serde_json::Value> {
+#[derive(Debug, Clone, Default)]
+pub struct TokenUsage {
+    pub prompt_tokens: u64,
+    pub completion_tokens: u64,
+}
+
+// ─── Tool definitions ───
+
+pub fn tool_definitions() -> Vec<serde_json::Value> {
     vec![
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-createfile",
-                "description": "Create a new file with content. Fails if file already exists.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "path": { "type": "string", "description": "File path to create" },
-                        "content": { "type": "string", "description": "File content" }
-                    },
-                    "required": ["path", "content"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-writefile",
-                "description": "Write content to a file (overwrite). Creates if not exists.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "path": { "type": "string", "description": "File path" },
-                        "content": { "type": "string", "description": "File content" }
-                    },
-                    "required": ["path", "content"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-replace",
-                "description": "Replace first occurrence of exact text in a file.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "path": { "type": "string", "description": "File path" },
-                        "old": { "type": "string", "description": "Exact text to find" },
-                        "new": { "type": "string", "description": "Replacement text" }
-                    },
-                    "required": ["path", "old", "new"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-readfile",
-                "description": "Read file contents, optionally a line range.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "path": { "type": "string", "description": "File path" },
-                        "start": { "type": "integer", "description": "Start line (1-based)" },
-                        "end": { "type": "integer", "description": "End line" }
-                    },
-                    "required": ["path"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-grep",
-                "description": "Search file contents by pattern (regex supported).",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "pattern": { "type": "string", "description": "Search pattern (regex)" },
-                        "directory": { "type": "string", "description": "Directory to search" }
-                    },
-                    "required": ["pattern"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-searchfile",
-                "description": "Search for files by name pattern (glob supported).",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "pattern": { "type": "string", "description": "File name pattern (glob)" },
-                        "directory": { "type": "string", "description": "Directory to search" }
-                    },
-                    "required": ["pattern"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-deletefile",
-                "description": "Delete a file permanently.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "path": { "type": "string", "description": "File path to delete" }
-                    },
-                    "required": ["path"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-run",
-                "description": "Execute a shell command and return output.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "command": { "type": "string", "description": "Shell command to run" }
-                    },
-                    "required": ["command"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-mkdir",
-                "description": "Create a directory (with parents).",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "path": { "type": "string", "description": "Directory path" }
-                    },
-                    "required": ["path"]
-                }
-            }
-        }),
-        json!({
-            "type": "function",
-            "function": {
-                "name": "angles-websearch",
-                "description": "Perform a web search using the configured search engine.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": { "type": "string", "description": "Search query" }
-                    },
-                    "required": ["query"]
-                }
-            }
-        }),
+        json!({"type":"function","function":{"name":"angles-createfile","description":"Create a new file with content. Fails if file already exists.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path to create"},"content":{"type":"string","description":"File content"}},"required":["path","content"]}}}),
+        json!({"type":"function","function":{"name":"angles-writefile","description":"Write content to a file (overwrite). Creates if not exists.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"content":{"type":"string","description":"File content"}},"required":["path","content"]}}}),
+        json!({"type":"function","function":{"name":"angles-replace","description":"Replace first occurrence of exact text in a file.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"old":{"type":"string","description":"Exact text to find"},"new":{"type":"string","description":"Replacement text"}},"required":["path","old","new"]}}}),
+        json!({"type":"function","function":{"name":"angles-replaceall","description":"Replace all occurrences of exact text in a file.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"old":{"type":"string","description":"Exact text to find"},"new":{"type":"string","description":"Replacement text"}},"required":["path","old","new"]}}}),
+        json!({"type":"function","function":{"name":"angles-readfile","description":"Read file contents, optionally a line range.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"start":{"type":"integer","description":"Start line (1-based)"},"end":{"type":"integer","description":"End line"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-grep","description":"Search file contents by pattern (regex supported).","parameters":{"type":"object","properties":{"pattern":{"type":"string","description":"Search pattern (regex)"},"directory":{"type":"string","description":"Directory to search"}},"required":["pattern"]}}}),
+        json!({"type":"function","function":{"name":"angles-searchfile","description":"Search for files by name pattern (glob supported).","parameters":{"type":"object","properties":{"pattern":{"type":"string","description":"File name pattern (glob)"},"directory":{"type":"string","description":"Directory to search"}},"required":["pattern"]}}}),
+        json!({"type":"function","function":{"name":"angles-deletefile","description":"Delete a file permanently.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path to delete"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-mkdir","description":"Create a directory (with parents).","parameters":{"type":"object","properties":{"path":{"type":"string","description":"Directory path"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-run","description":"Execute a shell command and return output.","parameters":{"type":"object","properties":{"command":{"type":"string","description":"Shell command to run"}},"required":["command"]}}}),
+        json!({"type":"function","function":{"name":"angles-websearch","description":"Perform a web search using the configured search engine.","parameters":{"type":"object","properties":{"query":{"type":"string","description":"Search query"}},"required":["query"]}}}),
     ]
 }
 
-// ─── Execute a tool call ───
+// ─── Tool execution ───
 
-fn execute_tool(name: &str, args: &serde_json::Value) -> String {
+pub fn execute_tool(name: &str, args: &serde_json::Value) -> String {
     match name {
-        "angles-createfile" => {
-            let path = args["path"].as_str().unwrap_or("");
-            let content = args["content"].as_str().unwrap_or("");
-            tools::angles_createfile(path, content).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-writefile" => {
-            let path = args["path"].as_str().unwrap_or("");
-            let content = args["content"].as_str().unwrap_or("");
-            tools::angles_writefile(path, content).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-replace" => {
-            let path = args["path"].as_str().unwrap_or("");
-            let old = args["old"].as_str().unwrap_or("");
-            let new = args["new"].as_str().unwrap_or("");
-            tools::angles_replace(path, old, new).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-readfile" => {
-            let path = args["path"].as_str().unwrap_or("");
-            let start = args["start"].as_u64().map(|v| v as usize);
-            let end = args["end"].as_u64().map(|v| v as usize);
-            tools::angles_readfile(path, start, end).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-grep" => {
-            let pattern = args["pattern"].as_str().unwrap_or("");
-            let directory = args["directory"].as_str().unwrap_or("");
-            tools::angles_grep(pattern, directory).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-searchfile" => {
-            let pattern = args["pattern"].as_str().unwrap_or("");
-            let directory = args["directory"].as_str().unwrap_or("");
-            tools::angles_searchfile(pattern, directory).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-deletefile" => {
-            let path = args["path"].as_str().unwrap_or("");
-            tools::angles_deletefile(path).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-run" => {
-            let cmd = args["command"].as_str().unwrap_or("");
-            tools::angles_run(cmd).unwrap_or_else(|e| format!("❌ {}", e))
-        }
-        "angles-mkdir" => {
-            let path = args["path"].as_str().unwrap_or("");
-            tools::angles_mkdir(path).unwrap_or_else(|e| format!("❌ {}", e))
-        }
+        "angles-createfile" => tools::angles_createfile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-writefile" => tools::angles_writefile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-replace" => tools::angles_replace(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-replaceall" => tools::angles_replaceall(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-readfile" => tools::angles_readfile(args["path"].as_str().unwrap_or(""), args["start"].as_u64().map(|v| v as usize), args["end"].as_u64().map(|v| v as usize)).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-grep" => tools::angles_grep(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-searchfile" => tools::angles_searchfile(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-deletefile" => tools::angles_deletefile(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-mkdir" => tools::angles_mkdir(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-run" => tools::angles_run(args["command"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-websearch" => {
             let query = args["query"].as_str().unwrap_or("");
             let url = search::search_url_from_cfg(query);
@@ -238,7 +80,321 @@ fn execute_tool(name: &str, args: &serde_json::Value) -> String {
     }
 }
 
-// ─── Start interactive chat (sync wrapper) ───
+// ════════════════════════════════════════════════════════════
+// Protocol: OpenAI Chat Completions
+// ════════════════════════════════════════════════════════════
+
+mod openai_chat {
+    use super::*;
+
+    pub fn build_request_body(system: &str, messages: &[Message], model: &str, max_tokens: u32) -> serde_json::Value {
+        let api_msgs = build_openai_messages(system, messages);
+        json!({
+            "model": model,
+            "messages": api_msgs,
+            "tools": tool_definitions(),
+            "tool_choice": "auto",
+            "max_tokens": max_tokens,
+            "stream": true,
+        })
+    }
+
+    pub fn build_non_stream_body(system: &str, messages: &[Message], model: &str, max_tokens: u32) -> serde_json::Value {
+        let api_msgs = build_openai_messages(system, messages);
+        json!({
+            "model": model,
+            "messages": api_msgs,
+            "max_tokens": max_tokens,
+            "stream": false,
+        })
+    }
+
+    pub fn build_url(base_url: &str) -> String {
+        format!("{}/chat/completions", base_url.trim_end_matches('/'))
+    }
+
+    pub fn parse_sse_chunk(data: &str) -> Option<SseEvent> {
+        let parsed: serde_json::Value = serde_json::from_str(data).ok()?;
+        let choices = parsed.get("choices")?.as_array()?;
+        if choices.is_empty() { return None; }
+        let delta = &choices[0].get("delta")?;
+
+        let mut content = String::new();
+        let mut tool_calls: Vec<ToolCall> = Vec::new();
+
+        if let Some(c) = delta.get("content").and_then(|v| v.as_str()) {
+            content = c.to_string();
+        }
+
+        if let Some(tcs) = delta.get("tool_calls").and_then(|v| v.as_array()) {
+            for tc in tcs {
+                let idx = tc.get("index").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
+                while tool_calls.len() <= idx {
+                    tool_calls.push(ToolCall { id: String::new(), name: String::new(), arguments: String::new() });
+                }
+                if let Some(id) = tc.get("id").and_then(|v| v.as_str()) {
+                    tool_calls[idx].id = id.to_string();
+                }
+                if let Some(func) = tc.get("function") {
+                    if let Some(name) = func.get("name").and_then(|v| v.as_str()) {
+                        tool_calls[idx].name = name.to_string();
+                    }
+                    if let Some(args) = func.get("arguments").and_then(|v| v.as_str()) {
+                        tool_calls[idx].arguments.push_str(args);
+                    }
+                }
+            }
+        }
+
+        let usage = TokenUsage {
+            prompt_tokens: parsed.get("usage").and_then(|u| u.get("prompt_tokens")).and_then(|v| v.as_u64()).unwrap_or(0),
+            completion_tokens: parsed.get("usage").and_then(|u| u.get("completion_tokens")).and_then(|v| v.as_u64()).unwrap_or(0),
+        };
+
+        Some(SseEvent { content, tool_calls, usage })
+    }
+
+    fn build_openai_messages(system: &str, messages: &[Message]) -> Vec<serde_json::Value> {
+        let mut out = vec![json!({"role": "system", "content": system})];
+        for msg in messages {
+            if msg.role == "tool" {
+                out.push(json!({"role": "tool", "content": msg.content}));
+            } else if msg.tool_calls.is_some() {
+                let tcs: Vec<serde_json::Value> = msg.tool_calls.as_ref().unwrap().iter().map(|tc| {
+                    json!({"id": tc.id, "type": "function", "function": {"name": tc.name, "arguments": tc.arguments}})
+                }).collect();
+                out.push(json!({
+                    "role": "assistant",
+                    "content": if msg.content.is_empty() { serde_json::Value::Null } else { json!(msg.content) },
+                    "tool_calls": tcs,
+                }));
+            } else {
+                out.push(json!({"role": msg.role, "content": msg.content}));
+            }
+        }
+        out
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// Protocol: Anthropic Messages API
+// ════════════════════════════════════════════════════════════
+
+mod anthropic_messages {
+    use super::*;
+
+    pub fn build_request_body(system: &str, messages: &[Message], model: &str, max_tokens: u32) -> serde_json::Value {
+        let (system_msg, api_msgs) = build_anthropic_messages(system, messages);
+        let mut body = json!({
+            "model": model,
+            "messages": api_msgs,
+            "max_tokens": max_tokens,
+            "stream": true,
+        });
+        if !system_msg.is_empty() {
+            body["system"] = json!(system_msg);
+        }
+        // Anthropic tool format uses same structure but different top-level key
+        let tools: Vec<serde_json::Value> = tool_definitions().iter().map(|t| {
+            json!({
+                "name": t["function"]["name"],
+                "description": t["function"]["description"],
+                "input_schema": t["function"]["parameters"],
+            })
+        }).collect();
+        if !tools.is_empty() {
+            body["tools"] = json!(tools);
+        }
+        body
+    }
+
+    pub fn build_url(base_url: &str) -> String {
+        format!("{}/v1/messages", base_url.trim_end_matches('/'))
+    }
+
+    pub fn parse_sse_chunk(data: &str) -> Option<SseEvent> {
+        let parsed: serde_json::Value = serde_json::from_str(data).ok()?;
+        let event_type = parsed.get("type").and_then(|v| v.as_str()).unwrap_or("");
+
+        match event_type {
+            "content_block_delta" => {
+                let delta = parsed.get("delta")?;
+                let delta_type = delta.get("type").and_then(|v| v.as_str()).unwrap_or("");
+                match delta_type {
+                    "text_delta" => {
+                        let text = delta.get("text").and_then(|v| v.as_str()).unwrap_or("");
+                        Some(SseEvent { content: text.to_string(), tool_calls: Vec::new(), usage: TokenUsage::default() })
+                    }
+                    "input_json_delta" => {
+                        let args = delta.get("partial_json").and_then(|v| v.as_str()).unwrap_or("");
+                        Some(SseEvent {
+                            content: String::new(),
+                            tool_calls: vec![ToolCall { id: String::new(), name: String::new(), arguments: args.to_string() }],
+                            usage: TokenUsage::default(),
+                        })
+                    }
+                    _ => None,
+                }
+            }
+            "message_start" => {
+                let usage = parsed.pointer("/message/usage")
+                    .map(|u| TokenUsage {
+                        prompt_tokens: u.get("input_tokens").and_then(|v| v.as_u64()).unwrap_or(0),
+                        completion_tokens: 0,
+                    })
+                    .unwrap_or_default();
+                Some(SseEvent { content: String::new(), tool_calls: Vec::new(), usage })
+            }
+            "message_delta" => {
+                let usage = parsed.pointer("/usage")
+                    .map(|u| TokenUsage {
+                        prompt_tokens: 0,
+                        completion_tokens: u.get("output_tokens").and_then(|v| v.as_u64()).unwrap_or(0),
+                    })
+                    .unwrap_or_default();
+                Some(SseEvent { content: String::new(), tool_calls: Vec::new(), usage })
+            }
+            "tool_use" => {
+                // When a content block of type tool_use is started
+                let id = parsed.get("id").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                let name = parsed.get("name").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                Some(SseEvent {
+                    content: String::new(),
+                    tool_calls: vec![ToolCall { id, name, arguments: String::new() }],
+                    usage: TokenUsage::default(),
+                })
+            }
+            _ => None,
+        }
+    }
+
+    /// Convert Angles messages to Anthropic format
+    /// Returns (system_prompt, messages_array)
+    fn build_anthropic_messages(system: &str, messages: &[Message]) -> (String, Vec<serde_json::Value>) {
+        let mut api_msgs = Vec::new();
+        for msg in messages {
+            if msg.role == "tool" {
+                // Tool result → Anthropic tool_result content block
+                api_msgs.push(json!({
+                    "role": "user",
+                    "content": [{"type": "tool_result", "content": msg.content}],
+                }));
+            } else if msg.tool_calls.is_some() {
+                // Assistant with tool calls → content blocks
+                let mut blocks: Vec<serde_json::Value> = Vec::new();
+                if !msg.content.is_empty() {
+                    blocks.push(json!({"type": "text", "text": msg.content}));
+                }
+                for tc in msg.tool_calls.as_ref().unwrap() {
+                    blocks.push(json!({
+                        "type": "tool_use",
+                        "id": tc.id,
+                        "name": tc.name,
+                        "input": serde_json::from_str::<serde_json::Value>(&tc.arguments).unwrap_or(json!({})),
+                    }));
+                }
+                api_msgs.push(json!({"role": "assistant", "content": blocks}));
+            } else {
+                api_msgs.push(json!({"role": msg.role, "content": msg.content}));
+            }
+        }
+        (system.to_string(), api_msgs)
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// Protocol: Gemini Native API
+// ════════════════════════════════════════════════════════════
+
+mod gemini_native {
+    use super::*;
+
+    pub fn build_request_body(system: &str, messages: &[Message], model: &str, max_tokens: u32) -> serde_json::Value {
+        let contents = build_gemini_contents(messages);
+        json!({
+            "model": model,
+            "contents": contents,
+            "systemInstruction": {"parts": [{"text": system}]},
+            "generationConfig": {
+                "maxOutputTokens": max_tokens,
+            },
+        })
+    }
+
+    pub fn build_url(base_url: &str, model: &str, api_key: &str) -> String {
+        let base = base_url.trim_end_matches('/');
+        format!("{}/models/{}:streamGenerateContent?alt=sse&key={}", base, model, api_key)
+    }
+
+    pub fn parse_sse_chunk(data: &str) -> Option<SseEvent> {
+        let parsed: serde_json::Value = serde_json::from_str(data).ok()?;
+        let candidates = parsed.get("candidates")?.as_array()?;
+        if candidates.is_empty() { return None; }
+
+        let parts = candidates[0].get("content").and_then(|c| c.get("parts")).and_then(|p| p.as_array()).cloned().unwrap_or_default();
+
+        let mut content = String::new();
+        let mut tool_calls = Vec::new();
+
+        for part in parts {
+            if let Some(text) = part.get("text").and_then(|v| v.as_str()) {
+                content.push_str(text);
+            }
+            if let Some(fc) = part.get("functionCall") {
+                tool_calls.push(ToolCall {
+                    id: format!("call_{}", tool_calls.len()),
+                    name: fc.get("name").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                    arguments: serde_json::to_string(&fc.get("args").cloned().unwrap_or(json!({}))).unwrap_or_default(),
+                });
+            }
+        }
+
+        Some(SseEvent { content, tool_calls, usage: TokenUsage::default() })
+    }
+
+    fn build_gemini_contents(messages: &[Message]) -> Vec<serde_json::Value> {
+        let mut out = Vec::new();
+        for msg in messages {
+            if msg.role == "tool" {
+                // Function response
+                out.push(json!({
+                    "role": "function",
+                    "parts": [{"functionResponse": {"name": "tool", "response": {"content": msg.content}}}],
+                }));
+            } else if msg.tool_calls.is_some() {
+                let mut parts: Vec<serde_json::Value> = Vec::new();
+                if !msg.content.is_empty() {
+                    parts.push(json!({"text": msg.content}));
+                }
+                for tc in msg.tool_calls.as_ref().unwrap() {
+                    let args: serde_json::Value = serde_json::from_str(&tc.arguments).unwrap_or(json!({}));
+                    parts.push(json!({"functionCall": {"name": tc.name, "args": args}}));
+                }
+                out.push(json!({"role": "model", "parts": parts}));
+            } else {
+                let role = match msg.role.as_str() {
+                    "assistant" => "model",
+                    "user" => "user",
+                    r => r,
+                };
+                out.push(json!({"role": role, "parts": [{"text": msg.content}]}));
+            }
+        }
+        out
+    }
+}
+
+// ─── SSE event intermediate ───
+
+struct SseEvent {
+    content: String,
+    tool_calls: Vec<ToolCall>,
+    usage: TokenUsage,
+}
+
+// ════════════════════════════════════════════════════════════
+// Unified streaming API — dispatches by wire_api
+// ════════════════════════════════════════════════════════════
 
 pub fn start_chat(cfg: Config) -> Result<(), Box<dyn std::error::Error>> {
     let rt = tokio::runtime::Runtime::new()?;
@@ -250,22 +406,16 @@ pub fn exec_once(cfg: Config, prompt: &str) -> Result<(), Box<dyn std::error::Er
     rt.block_on(exec_once_async(cfg, prompt))
 }
 
-// ─── Async chat implementation ───
-
 async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>> {
     let system_prompt = instructions::render(&cfg);
-    let api_key = if cfg.api_key.is_empty() {
-        std::env::var("ANGLES_API_KEY").unwrap_or_default()
-    } else {
-        cfg.api_key.clone()
-    };
-
+    let api_key = resolve_api_key(&cfg);
     let client = Client::new();
     let mut messages: Vec<Message> = Vec::new();
+    let mut daily_used: u64 = 0;
 
     println!();
     println!("  🅰  Angles Code CLI v0.1.0");
-    println!("  Provider: {} | Model: {}", cfg.provider, cfg.model);
+    println!("  Provider: {} | Model: {} | Protocol: {}", cfg.provider, cfg.model, cfg.wire_api);
     println!("  输入消息开始对话，/quit 退出，/help 查看命令");
     println!();
 
@@ -277,154 +427,68 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
         let input = input.trim();
 
         if input.is_empty() { continue; }
-        if input == "/quit" || input == "/exit" { break; }
-        if input == "/help" {
-            println!("  /quit, /exit  — 退出");
-            println!("  /help         — 显示帮助");
-            println!("  /config       — 显示配置");
-            println!("  /clear        — 清空对话");
-            continue;
-        }
-        if input == "/config" {
-            crate::config::display(&cfg);
-            continue;
-        }
-        if input == "/clear" {
-            messages.clear();
-            println!("  🗑️  对话已清空");
-            continue;
+        match input {
+            "/quit" | "/exit" => break,
+            "/help" => {
+                println!("  /quit, /exit  — 退出");
+                println!("  /help         — 显示帮助");
+                println!("  /config       — 显示配置");
+                println!("  /clear        — 清空对话");
+                println!("  /tokens       — 显示 token 用量");
+                continue;
+            }
+            "/config" => { crate::config::display(&cfg); continue; }
+            "/clear" => { messages.clear(); println!("  🗑️  对话已清空"); continue; }
+            "/tokens" => { println!("  今日已用: {} / {} tokens", daily_used, cfg.daily_token_budget); continue; }
+            _ => {}
         }
 
-        messages.push(Message {
-            role: "user".into(),
-            content: input.into(),
-            tool_calls: None,
-        });
+        messages.push(Message { role: "user".into(), content: input.into(), tool_calls: None });
 
-        // API call loop (handles tool calls, max 20 iterations)
+        // Tool-call loop (max 20 iterations per user turn)
         for _ in 0..20 {
-            let api_messages = build_api_messages(&system_prompt, &messages);
+            let result = stream_turn(&cfg, &system_prompt, &api_key, &client, &messages).await?;
 
-            let body = json!({
-                "model": cfg.model,
-                "messages": api_messages,
-                "tools": tool_definitions(),
-                "tool_choice": "auto",
-                "max_tokens": cfg.max_tokens,
-                "stream": true,
-            });
+            // Update token usage
+            daily_used += result.usage.completion_tokens;
 
-            let url = format!("{}/chat/completions", cfg.base_url.trim_end_matches('/'));
-            let res = client
-                .post(&url)
-                .header("Authorization", format!("Bearer {}", api_key))
-                .header("Content-Type", "application/json")
-                .json(&body)
-                .send()
-                .await?;
-
-            if !res.status().is_success() {
-                let status = res.status();
-                let text = res.text().await?;
-                eprintln!("  ❌ API 错误 {}: {}", status, &text[..text.len().min(500)]);
-                break;
+            // Show assistant content
+            if !result.content.is_empty() {
+                println!("  {}", result.content);
             }
-
-            // Parse SSE stream
-            let mut stream = res.bytes_stream();
-            let mut assistant_content = String::new();
-            let mut tool_calls: Vec<ToolCall> = Vec::new();
-
-            print!("  ");
-            while let Some(chunk) = stream.next().await {
-                let chunk = chunk.map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
-                let text = String::from_utf8_lossy(&chunk);
-                for line in text.lines() {
-                    let line = line.trim();
-                    if !line.starts_with("data: ") { continue; }
-                    let data = &line[6..];
-                    if data == "[DONE]" { continue; }
-
-                    let parsed: serde_json::Value = match serde_json::from_str(data) {
-                        Ok(v) => v,
-                        Err(_) => continue,
-                    };
-
-                    let choices = &parsed["choices"];
-                    if choices.is_null() || !choices.is_array() { continue; }
-                    let delta = &choices[0]["delta"];
-
-                    // Text content
-                    if let Some(content) = delta["content"].as_str() {
-                        assistant_content.push_str(content);
-                        print!("{}", content);
-                        io::stdout().flush().ok();
-                    }
-
-                    // Tool calls
-                    if let Some(tcs) = delta["tool_calls"].as_array() {
-                        for tc in tcs {
-                            let idx = tc["index"].as_u64().unwrap_or(0) as usize;
-                            while tool_calls.len() <= idx {
-                                tool_calls.push(ToolCall {
-                                    id: String::new(),
-                                    name: String::new(),
-                                    arguments: String::new(),
-                                });
-                            }
-                            if let Some(id) = tc["id"].as_str() {
-                                tool_calls[idx].id = id.to_string();
-                            }
-                            if let Some(func) = tc.get("function") {
-                                if let Some(name) = func["name"].as_str() {
-                                    tool_calls[idx].name = name.to_string();
-                                }
-                                if let Some(args) = func["arguments"].as_str() {
-                                    tool_calls[idx].arguments.push_str(args);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            println!();
 
             // Add assistant message to history
             messages.push(Message {
                 role: "assistant".into(),
-                content: assistant_content,
-                tool_calls: if tool_calls.is_empty() { None } else { Some(tool_calls.clone()) },
+                content: result.content.clone(),
+                tool_calls: if result.tool_calls.is_empty() { None } else { Some(result.tool_calls.clone()) },
             });
 
-            // If no tool calls, we're done with this turn
-            if tool_calls.is_empty() { break; }
+            // No tool calls → turn done
+            if result.tool_calls.is_empty() { break; }
 
-            // Execute tool calls and add results
-            for tc in &tool_calls {
-                let short_args = if tc.arguments.len() > 80 {
-                    format!("{}...", &tc.arguments[..80])
-                } else {
-                    tc.arguments.clone()
-                };
+            // Execute tool calls
+            for tc in &result.tool_calls {
+                let short_args = if tc.arguments.len() > 80 { format!("{}...", &tc.arguments[..80]) } else { tc.arguments.clone() };
                 println!("  🔧 {}({})", tc.name, short_args);
 
                 let args: serde_json::Value = serde_json::from_str(&tc.arguments).unwrap_or(json!({}));
-                let result = execute_tool(&tc.name, &args);
+                let tool_result = execute_tool(&tc.name, &args);
 
-                // Show first few lines of result
-                for line in result.lines().take(5) {
+                // Show first 5 lines
+                for (i, line) in tool_result.lines().enumerate() {
+                    if i >= 5 { println!("  ... ({}行)", tool_result.lines().count()); break; }
                     println!("  {}", line);
-                }
-                if result.lines().count() > 5 {
-                    println!("  ... ({}行)", result.lines().count());
                 }
                 println!();
 
-                messages.push(Message {
-                    role: "tool".into(),
-                    content: result,
-                    tool_calls: None,
-                });
+                messages.push(Message { role: "tool".into(), content: tool_result, tool_calls: None });
+            }
+
+            // Check daily budget
+            if daily_used >= cfg.daily_token_budget {
+                println!("  ⚠️ 每日 token 预算已用完 ({}/{})", daily_used, cfg.daily_token_budget);
+                break;
             }
         }
     }
@@ -434,79 +498,240 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
     Ok(())
 }
 
-// ─── Non-interactive exec ───
-
 async fn exec_once_async(cfg: Config, prompt: &str) -> Result<(), Box<dyn std::error::Error>> {
     let system_prompt = instructions::render(&cfg);
-    let api_key = if cfg.api_key.is_empty() {
-        std::env::var("ANGLES_API_KEY").unwrap_or_default()
-    } else {
-        cfg.api_key.clone()
-    };
-
+    let api_key = resolve_api_key(&cfg);
     let client = Client::new();
-    let api_messages = vec![
-        json!({"role": "system", "content": system_prompt}),
-        json!({"role": "user", "content": prompt}),
-    ];
+    let messages = vec![Message { role: "user".into(), content: prompt.into(), tool_calls: None }];
 
-    let body = json!({
-        "model": cfg.model,
-        "messages": api_messages,
-        "max_tokens": cfg.max_tokens,
-        "stream": false,
-    });
+    let result = stream_turn(&cfg, &system_prompt, &api_key, &client, &messages).await?;
+    println!("{}", result.content);
+    Ok(())
+}
 
-    let url = format!("{}/chat/completions", cfg.base_url.trim_end_matches('/'));
-    let res = client
-        .post(&url)
+// ─── Single streaming turn — dispatches by wire_api ───
+
+async fn stream_turn(
+    cfg: &Config,
+    system: &str,
+    api_key: &str,
+    client: &Client,
+    messages: &[Message],
+) -> Result<ChatResult, Box<dyn std::error::Error>> {
+    match cfg.wire_api.as_str() {
+        "chat" => stream_openai_chat(cfg, system, api_key, client, messages).await,
+        "anthropic" => stream_anthropic(cfg, system, api_key, client, messages).await,
+        "gemini" => stream_gemini(cfg, system, api_key, client, messages).await,
+        _ => Err(format!("未知协议: {}", cfg.wire_api).into()),
+    }
+}
+
+// ─── OpenAI Chat Completions streaming ───
+
+async fn stream_openai_chat(
+    cfg: &Config, system: &str, api_key: &str, client: &Client, messages: &[Message],
+) -> Result<ChatResult, Box<dyn std::error::Error>> {
+    let body = openai_chat::build_request_body(system, messages, &cfg.model, cfg.max_tokens);
+    let url = openai_chat::build_url(&cfg.base_url);
+
+    let res = client.post(&url)
         .header("Authorization", format!("Bearer {}", api_key))
         .header("Content-Type", "application/json")
         .json(&body)
-        .send()
-        .await?;
+        .send().await?;
 
     if !res.status().is_success() {
         let status = res.status();
         let text = res.text().await?;
-        eprintln!("❌ API 错误 {}: {}", status, &text[..text.len().min(500)]);
-        return Ok(());
+        return Err(format!("API 错误 {}: {}", status, &text[..text.len().min(500)]).into());
     }
 
-    let data: serde_json::Value = res.json().await?;
-    if let Some(content) = data["choices"][0]["message"]["content"].as_str() {
-        println!("{}", content);
+    let mut stream = res.bytes_stream();
+    let mut content = String::new();
+    let mut tool_calls: Vec<ToolCall> = Vec::new();
+    let mut usage = TokenUsage::default();
+
+    print!("  ");
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
+        let text = String::from_utf8_lossy(&chunk);
+        for line in text.lines() {
+            let line = line.trim();
+            if !line.starts_with("data: ") { continue; }
+            let data = &line[6..];
+            if data == "[DONE]" { continue; }
+            if let Some(event) = openai_chat::parse_sse_chunk(data) {
+                if !event.content.is_empty() {
+                    content.push_str(&event.content);
+                    print!("{}", event.content);
+                    io::stdout().flush().ok();
+                }
+                for tc in event.tool_calls {
+                    let idx = tool_calls.len();
+                    // Merge into existing tool_call by index tracking
+                    // Simple approach: just append (caller will accumulate)
+                    tool_calls.push(tc);
+                }
+                usage.prompt_tokens += event.usage.prompt_tokens;
+                usage.completion_tokens += event.usage.completion_tokens;
+            }
+        }
+    }
+    println!();
+
+    // Merge tool calls by tracking partial deltas
+    tool_calls = merge_tool_calls(tool_calls);
+
+    Ok(ChatResult { content, tool_calls, usage })
+}
+
+// ─── Anthropic Messages streaming ───
+
+async fn stream_anthropic(
+    cfg: &Config, system: &str, api_key: &str, client: &Client, messages: &[Message],
+) -> Result<ChatResult, Box<dyn std::error::Error>> {
+    let body = anthropic_messages::build_request_body(system, messages, &cfg.model, cfg.max_tokens);
+    let url = anthropic_messages::build_url(&cfg.base_url);
+
+    let res = client.post(&url)
+        .header("x-api-key", api_key)
+        .header("anthropic-version", "2023-06-01")
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send().await?;
+
+    if !res.status().is_success() {
+        let status = res.status();
+        let text = res.text().await?;
+        return Err(format!("Anthropic API 错误 {}: {}", status, &text[..text.len().min(500)]).into());
     }
 
-    Ok(())
+    let mut stream = res.bytes_stream();
+    let mut content = String::new();
+    let mut tool_calls: Vec<ToolCall> = Vec::new();
+    let mut usage = TokenUsage::default();
+    let mut current_tool_id = String::new();
+    let mut current_tool_name = String::new();
+    let mut current_tool_args = String::new();
+
+    print!("  ");
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
+        let text = String::from_utf8_lossy(&chunk);
+        for line in text.lines() {
+            let line = line.trim();
+            if !line.starts_with("data: ") { continue; }
+            let data = &line[6..];
+            if let Some(event) = anthropic_messages::parse_sse_chunk(data) {
+                if !event.content.is_empty() {
+                    content.push_str(&event.content);
+                    print!("{}", event.content);
+                    io::stdout().flush().ok();
+                }
+                for tc in event.tool_calls {
+                    if !tc.id.is_empty() { current_tool_id = tc.id; }
+                    if !tc.name.is_empty() { current_tool_name = tc.name; }
+                    current_tool_args.push_str(&tc.arguments);
+                }
+                usage.prompt_tokens += event.usage.prompt_tokens;
+                usage.completion_tokens += event.usage.completion_tokens;
+            }
+        }
+    }
+    println!();
+
+    // Finalize any pending tool call
+    if !current_tool_name.is_empty() {
+        tool_calls.push(ToolCall {
+            id: current_tool_id,
+            name: current_tool_name,
+            arguments: current_tool_args,
+        });
+    }
+
+    Ok(ChatResult { content, tool_calls, usage })
+}
+
+// ─── Gemini Native streaming ───
+
+async fn stream_gemini(
+    cfg: &Config, system: &str, api_key: &str, client: &Client, messages: &[Message],
+) -> Result<ChatResult, Box<dyn std::error::Error>> {
+    let body = gemini_native::build_request_body(system, messages, &cfg.model, cfg.max_tokens);
+    let url = gemini_native::build_url(&cfg.base_url, &cfg.model, api_key);
+
+    let res = client.post(&url)
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send().await?;
+
+    if !res.status().is_success() {
+        let status = res.status();
+        let text = res.text().await?;
+        return Err(format!("Gemini API 错误 {}: {}", status, &text[..text.len().min(500)]).into());
+    }
+
+    let mut stream = res.bytes_stream();
+    let mut content = String::new();
+    let mut tool_calls: Vec<ToolCall> = Vec::new();
+    let mut usage = TokenUsage::default();
+
+    print!("  ");
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
+        let text = String::from_utf8_lossy(&chunk);
+        for line in text.lines() {
+            let line = line.trim();
+            if !line.starts_with("data: ") { continue; }
+            let data = &line[6..];
+            if let Some(event) = gemini_native::parse_sse_chunk(data) {
+                if !event.content.is_empty() {
+                    content.push_str(&event.content);
+                    print!("{}", event.content);
+                    io::stdout().flush().ok();
+                }
+                tool_calls.extend(event.tool_calls);
+                usage.prompt_tokens += event.usage.prompt_tokens;
+                usage.completion_tokens += event.usage.completion_tokens;
+            }
+        }
+    }
+    println!();
+
+    Ok(ChatResult { content, tool_calls, usage })
 }
 
 // ─── Helpers ───
 
-fn build_api_messages(system: &str, messages: &[Message]) -> Vec<serde_json::Value> {
-    let mut out = vec![json!({"role": "system", "content": system})];
-    for msg in messages {
-        if msg.role == "tool" {
-            out.push(json!({"role": "tool", "content": msg.content}));
-        } else if msg.tool_calls.is_some() {
-            let tcs: Vec<serde_json::Value> = msg.tool_calls.as_ref().unwrap().iter().map(|tc| {
-                json!({
-                    "id": tc.id,
-                    "type": "function",
-                    "function": {
-                        "name": tc.name,
-                        "arguments": tc.arguments,
-                    }
-                })
-            }).collect();
-            out.push(json!({
-                "role": "assistant",
-                "content": if msg.content.is_empty() { serde_json::Value::Null } else { json!(msg.content) },
-                "tool_calls": tcs,
-            }));
+fn resolve_api_key(cfg: &Config) -> String {
+    if !cfg.api_key.is_empty() {
+        cfg.api_key.clone()
+    } else {
+        std::env::var("ANGLES_API_KEY").unwrap_or_default()
+    }
+}
+
+/// Merge partial tool call deltas into complete tool calls.
+/// OpenAI sends tool_calls across multiple SSE chunks with incrementing indices.
+fn merge_tool_calls(partial: Vec<ToolCall>) -> Vec<ToolCall> {
+    if partial.is_empty() { return partial; }
+    // Simple: if we have multiple with same empty id, merge args
+    let mut result: Vec<ToolCall> = Vec::new();
+    for tc in partial {
+        if let Some(last) = result.last_mut() {
+            // If the new tc has no id and last has no name yet, it's a continuation
+            if tc.id.is_empty() && !tc.name.is_empty() && last.name.is_empty() {
+                last.name = tc.name;
+            }
+            if tc.id.is_empty() && tc.name.is_empty() && !tc.arguments.is_empty() {
+                last.arguments.push_str(&tc.arguments);
+            }
+            if !tc.id.is_empty() {
+                result.push(tc);
+            }
         } else {
-            out.push(json!({"role": msg.role, "content": msg.content}));
+            result.push(tc);
         }
     }
-    out
+    result
 }
