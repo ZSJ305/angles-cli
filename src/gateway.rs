@@ -48,7 +48,7 @@ pub fn run_wizard() -> Result<(), Box<dyn std::error::Error>> {
             if p.base_url.is_empty() {
                 format!("  {}  {}", p.name, step_custom)
             } else {
-                let host = p.base_url.replace("https://", "").replace("http://", "").split('/').next().unwrap_or("");
+                let host = p.base_url.replace("https://", "").replace("http://", "").split('/').next().unwrap_or("").to_string();
                 format!("  {:20} {}", p.name, host)
             }
         })

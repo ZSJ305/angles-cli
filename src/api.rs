@@ -721,7 +721,7 @@ fn merge_tool_calls(partial: Vec<ToolCall>) -> Vec<ToolCall> {
         if let Some(last) = result.last_mut() {
             // If the new tc has no id and last has no name yet, it's a continuation
             if tc.id.is_empty() && !tc.name.is_empty() && last.name.is_empty() {
-                last.name = tc.name;
+                last.name = tc.name.clone();
             }
             if tc.id.is_empty() && tc.name.is_empty() && !tc.arguments.is_empty() {
                 last.arguments.push_str(&tc.arguments);
