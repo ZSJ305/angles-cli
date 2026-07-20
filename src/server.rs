@@ -16,7 +16,7 @@ use crate::config::{self, Config};
 use crate::provider;
 
 /// Start the gateway server on the given port.
-pub fn start(port: u16) -> Result<(), Box<dyn std::error::Error>> {
+pub fn start(port: u16) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let rt = tokio::runtime::Runtime::new()?;
 
     rt.block_on(async {
