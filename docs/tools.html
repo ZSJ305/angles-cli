@@ -172,11 +172,23 @@ function renderChips(){
   });
 }
 
-function cmdHtml(t){
-  return t.cmd.map(([txt,val,cls])=>{
-    if(cls==='arg') return `<span class="arg">${val}</span>`;
-    if(cls==='opt') return `<span class="opt">${val}</span>`;
-    return `<span style="color:var(--blue-bright);font-weight:600">${val}</span>`;
+function cmdHtml(parts){
+  return parts.map(p => {
+    let txt, val, cls;
+    if (p.length === 3) {
+      [txt, val, cls] = p;
+    } else {
+      // 2-element item: [text, role] where role is "arg"|"opt"|"cmd" or empty
+      const [text, role] = p;
+      if (role === 'arg' || role === 'opt' || role === 'cmd') {
+        txt = text; val = text; cls = role;
+      } else {
+        txt = text; val = text; cls = 'cmd';
+      }
+    }
+    if (cls === 'arg') return `<span class="arg">${val}</span>`;
+    if (cls === 'opt') return `<span class="opt">${val}</span>`;
+    return `<span style="color:var(--blue-bright);font-weight:600">${txt}</span>`;
   }).join('');
 }
 
@@ -189,7 +201,7 @@ function render(){
   const filtered = tools.filter(t=>{
     if(activeCat!=='all' && t.c!==activeCat) return false;
     if(!ql) return true;
-    const blob = (t.cmd.map(p=>p[1]).join(' ') + ' ' + t.desc + ' ' + t.c).toLowerCase();
+    const blob = (t.cmd.map(p=>p.join(' ')).join(' ') + ' ' + t.desc + ' ' + t.c).toLowerCase();
     return blob.includes(ql);
   });
   countEl.textContent = `显示 ${filtered.length} / ${tools.length} 个工具`;
