@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ═══════════════════════════════════════════════════════════════════════
 # Angles Code CLI — Installer
-# Usage: curl -fsSL --proto '=https' --tlsv1.2 https://angles.dev/install.sh | bash
+# Usage: curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash
 # ═══════════════════════════════════════════════════════════════════════
 
 # ── Colors ──
