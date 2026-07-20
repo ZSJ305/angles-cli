@@ -128,22 +128,22 @@ detect_os_or_die() {
 install_build_tools_linux() {
     ui_info "安装编译工具..."
     if command -v apt-get &>/dev/null; then
-        sudo apt-get update -qq
-        sudo apt-get install -y -qq build-essential pkg-config libssl-dev curl git 2>/dev/null
+        apt-get update -qq
+        apt-get install -y -qq build-essential pkg-config libssl-dev curl git 2>/dev/null
     elif command -v apk &>/dev/null; then
-        sudo apk add --no-cache build-base openssl-dev curl git
+        apk add --no-cache build-base openssl-dev curl git
     elif command -v dnf &>/dev/null; then
-        sudo dnf install -y gcc gcc-c++ make openssl-devel curl git 2>/dev/null
+        dnf install -y gcc gcc-c++ make openssl-devel curl git 2>/dev/null
     elif command -v yum &>/dev/null; then
-        sudo yum install -y gcc gcc-c++ make openssl-devel curl git 2>/dev/null
+        yum install -y gcc gcc-c++ make openssl-devel curl git 2>/dev/null
     elif command -v pacman &>/dev/null; then
-        sudo pacman -Sy --noconfirm base-devel openssl curl git 2>/dev/null
+        pacman -Sy --noconfirm base-devel openssl curl git 2>/dev/null
     elif command -v zypper &>/dev/null; then
-        sudo zypper install -y gcc gcc-c++ make libopenssl-devel curl git 2>/dev/null
+        zypper install -y gcc gcc-c++ make libopenssl-devel curl git 2>/dev/null
     elif command -v emerge &>/dev/null; then
-        sudo emerge --ask=n sys-devel/gcc dev-libs/openssl net-misc/curl dev-vcs/git 2>/dev/null
+        emerge --ask=n sys-devel/gcc dev-libs/openssl net-misc/curl dev-vcs/git 2>/dev/null
     elif command -v xbps-install &>/dev/null; then
-        sudo xbps-install -Sy base-devel openssl curl git 2>/dev/null
+        xbps-install -Sy base-devel openssl curl git 2>/dev/null
     else
         ui_warn "未识别的包管理器，请确保已安装: gcc, openssl-dev, curl, git"
         return 1
@@ -235,13 +235,13 @@ install_git() {
     ui_info "安装 Git..."
     if [[ "$OS" == "linux" ]]; then
         if command -v apt-get &>/dev/null; then
-            sudo apt-get install -y -qq git
+            apt-get install -y -qq git
         elif command -v apk &>/dev/null; then
-            sudo apk add --no-cache git
+            apk add --no-cache git
         elif command -v dnf &>/dev/null; then
-            sudo dnf install -y git
+            dnf install -y git
         elif command -v pacman &>/dev/null; then
-            sudo pacman -Sy --noconfirm git
+            pacman -Sy --noconfirm git
         fi
     fi
     if ! check_git; then
@@ -453,6 +453,16 @@ show_footer() {
 
 main() {
     if [[ "$HELP" == "1" ]]; then print_usage; return 0; fi
+
+# ── Root check ──
+    if [[ "$(id -u)" -ne 0 ]]; then
+        echo ""
+        ui_error "请以 root 用户运行此脚本"
+        echo -e "  ${MUTED}sudo curl ... | sudo bash${NC}"
+        echo -e "  ${MUTED}或: su -c 'bash install.sh'${NC}"
+        echo ""
+        exit 1
+    fi
 
     ui_info "准备安装环境..."
     detect_downloader
