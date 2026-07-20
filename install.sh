@@ -73,7 +73,8 @@ download_file() {
 print_banner() {
     echo ""
     echo -e "  ${ACCENT}${BOLD}╔═══════════════════════════════════════════╗${NC}"
-    echo -e "  ${ACCENT}${BOLD}║       🅰  Angles Code CLI Installer        ║${NC}"
+    echo -e "  ${ACCENT}${BOLD}║   🅰  Angles Code CLI Installer       ║${NC}"
+    echo -e "  ${ACCENT}${BOLD}║   created by ZSJ🇨🇳                  ║${NC}"
     echo -e "  ${ACCENT}${BOLD}╚═══════════════════════════════════════════╝${NC}"
     echo ""
 }
