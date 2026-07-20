@@ -1,0 +1,39 @@
+[package]
+name = "angles-code-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Angles Code CLI — Terminal-based agentic coding assistant"
+license = "MIT"
+
+[[bin]]
+name = "angles"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+reqwest = { version = "0.12", features = ["json", "stream", "rustls-tls"], default-features = false }
+tokio = { version = "1", features = ["full"] }
+ratatui = "0.29"
+crossterm = "0.28"
+futures = "0.3"
+handlebars = "6"
+chrono = "0.4"
+dirs = "5"
+which = "7"
+glob = "0.3"
+regex = "1"
+walkdir = "2"
+termimad = "0.31"
+minimad = "0.13"
+colored = "3"
+indicatif = "0.17"
+dialoguer = "0.11"
+console = "0.15"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

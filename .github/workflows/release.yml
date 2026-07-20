@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact: angles-linux-arm64
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact: angles-linux-x64
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            artifact: angles-macos-arm64
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact: angles-macos-x64
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Install musl tools (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+          if [ "${{ matrix.target }}" = "aarch64-unknown-linux-musl" ]; then
+            sudo apt-get install -y gcc-aarch64-linux-gnu
+            echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+          fi
+          if [ "${{ matrix.target }}" = "x86_64-unknown-linux-musl" ]; then
+            echo "CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=x86_64-linux-gnu-gcc" >> $GITHUB_ENV
+          fi
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/angles dist/${{ matrix.artifact }}
+          chmod +x dist/${{ matrix.artifact }}
+          cd dist && tar czf ${{ matrix.artifact }}.tar.gz ${{ matrix.artifact }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**/*.tar.gz
+          generate_release_notes: true

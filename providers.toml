@@ -1,0 +1,95 @@
+# Angles Code CLI — Provider Registry
+# 每个提供方的已知 API 主机地址和默认模型
+
+[[providers]]
+id = "openai"
+name = "OpenAI"
+base_url = "https://api.openai.com/v1"
+wire_api = "chat"
+default_model = "gpt-4.1"
+models = ["gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "o3", "o3-mini", "o4-mini", "gpt-5.5"]
+
+[[providers]]
+id = "claude"
+name = "Claude (Anthropic)"
+base_url = "https://api.anthropic.com"
+wire_api = "anthropic"
+default_model = "claude-sonnet-4-20250514"
+models = ["claude-sonnet-4-20250514", "claude-opus-4-20250514", "claude-haiku-3-5-20241022"]
+note = "Anthropic 使用 Messages API 协议（非 OpenAI chat/completions），需单独适配"
+
+[[providers]]
+id = "gemini"
+name = "Gemini (Google)"
+base_url = "https://generativelanguage.googleapis.com/v1beta"
+wire_api = "gemini"
+default_model = "gemini-2.5-pro"
+models = ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash"]
+note = "Gemini 使用原生 API 协议，需单独适配"
+
+[[providers]]
+id = "deepseek"
+name = "DeepSeek"
+base_url = "https://api.deepseek.com/v1"
+wire_api = "chat"
+default_model = "deepseek-chat"
+models = ["deepseek-chat", "deepseek-reasoner"]
+
+[[providers]]
+id = "grok"
+name = "Grok (xAI)"
+base_url = "https://api.x.ai/v1"
+wire_api = "chat"
+default_model = "grok-4"
+models = ["grok-4", "grok-3", "grok-3-mini"]
+
+[[providers]]
+id = "minimax"
+name = "MiniMax"
+base_url = "https://api.minimax.chat/v1"
+wire_api = "chat"
+default_model = "MiniMax-M1"
+models = ["MiniMax-M1", "abab6.5s-chat"]
+
+[[providers]]
+id = "openrouter"
+name = "OpenRouter"
+base_url = "https://openrouter.ai/api/v1"
+wire_api = "chat"
+default_model = "openrouter/auto"
+models = ["openrouter/auto", "anthropic/claude-sonnet-4", "openai/gpt-4.1", "google/gemini-2.5-pro"]
+note = "OpenRouter 可通过 model ID 访问多个提供方的模型"
+
+[[providers]]
+id = "qwen"
+name = "通义千问 (Qwen)"
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+wire_api = "chat"
+default_model = "qwen3-235b-a22b"
+models = ["qwen3-235b-a22b", "qwen3-32b", "qwen3-30b-a3b", "qwen-max", "qwen-plus"]
+
+[[providers]]
+id = "glm"
+name = "智谱 GLM"
+base_url = "https://api.siliconflow.cn/v1"
+wire_api = "chat"
+default_model = "zai-org/GLM-5.2"
+models = ["zai-org/GLM-5.2", "zai-org/GLM-4.6", "THUDM/GLM-4-32B"]
+note = "SiliconFlow 托管的 GLM 模型，也支持其他模型"
+
+[[providers]]
+id = "kimi"
+name = "Kimi (Moonshot)"
+base_url = "https://api.moonshot.cn/v1"
+wire_api = "chat"
+default_model = "moonshot-v1-auto"
+models = ["moonshot-v1-auto", "moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k", "kimi-latest"]
+
+[[providers]]
+id = "custom"
+name = "自定义 (Custom)"
+base_url = ""
+wire_api = "chat"
+default_model = ""
+models = []
+note = "自定义提供方需要手动填写 base_url 和 model"

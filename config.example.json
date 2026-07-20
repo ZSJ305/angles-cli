@@ -1,0 +1,14 @@
+{
+  "language": "zh-CN",
+  "provider": "glm",
+  "base_url": "https://api.siliconflow.cn/v1",
+  "model": "zai-org/GLM-5.2",
+  "api_key": "",
+  "max_tokens": 16384,
+  "daily_token_budget": 1000000,
+  "agent_persona": "你是一个专业、高效的编码助手。",
+  "search_engine": "bing",
+  "search_engine_url": "",
+  "approval_policy": "untrusted",
+  "wire_api": "chat"
+}
