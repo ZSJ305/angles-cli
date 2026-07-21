@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Angles Code CLI — AI 编码搭档</title>
-<meta name="description" content="终端里的 AI 编码助手。Rust 驱动，多模型支持，30 个内置工具，跨平台。">
-<link rel="canonical" href="https://zsj305.github.io/angles-cli/">
+<title>Angles Code CLI — AI Coding Agent</title>
+<meta name="description" content="Terminal AI coding agent. Rust-powered, multi-provider, 30+ built-in tools, cross-platform.">
+<link rel="canonical" href="https://zsj305.github.io/angles-cli/en-us/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Angles Code CLI — AI 编码搭档">
-<meta property="og:description" content="终端里的 AI 编码助手。Rust 驱动，11 家模型供应商，30 个内置工具，全平台。">
-<meta property="og:url" content="https://zsj305.github.io/angles-cli/">
+<meta property="og:title" content="Angles Code CLI — AI Coding Agent">
+<meta property="og:description" content="Terminal AI coding agent. Rust-powered, 11 providers, 30+ built-in tools, all platforms.">
+<meta property="og:url" content="https://zsj305.github.io/angles-cli/en-us/">
 <meta property="og:site_name" content="Angles Code CLI">
-<meta property="og:locale" content="zh_CN">
+<meta property="og:locale" content="en_US">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Angles Code CLI — AI 编码搭档">
-<meta name="twitter:description" content="终端里的 AI 编码助手。Rust 驱动，开源 MIT，全平台。">
+<meta name="twitter:title" content="Angles Code CLI — AI Coding Agent">
+<meta name="twitter:description" content="Terminal AI coding agent. Rust-powered, MIT open source, all platforms.">
 <style>
 :root{
   --bg:#0a0e1a;
@@ -227,7 +227,7 @@ footer a:hover{color:var(--blue)}
 .milestone.next .tag{background:rgba(255,176,32,.15);color:var(--orange)}
 .milestone.later .tag{background:var(--bg-2);color:var(--muted)}
 
-/* Platform showcase (招牌) */
+/* Platform showcase */
 .showcase{padding:80px 5vw 20px;max-width:1100px;margin:0 auto;text-align:center}
 .showcase .eyebrow{font-family:"SF Mono",Fira Code,Consolas,monospace;font-size:.78rem;color:var(--blue);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;font-weight:700}
 .showcase h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:14px;letter-spacing:-.02em}
@@ -254,24 +254,24 @@ footer a:hover{color:var(--blue)}
 <nav>
   <div class="logo">🅰 <span>Angles</span></div>
   <div class="links">
-    <a href="#platforms">平台</a>
-    <a href="#install">安装</a>
-    <a href="#features">特性</a>
-    <a href="tools.html">工具</a>
-    <a href="#providers">模型</a>
-    <a href="faq.html">FAQ</a>
-    <a href="en-us/">EN</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#install">Install</a>
+    <a href="#features">Features</a>
+    <a href="../tools.html">Tools</a>
+    <a href="#providers">Models</a>
+    <a href="../faq.html">FAQ</a>
+    <a href="../">中文</a>
     <a href="https://github.com/ZSJ305/angles-cli" class="btn btn-ghost">GitHub</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="tagline"><span>1.6 MB</span> · <span>5 平台预编译</span> · <span>MIT 开源</span></div>
-  <h1>1.6 MB 的<br>code agent</h1>
-  <p class="subtitle">一个 Rust 二进制，30 个内置工具，11 家模型供应商。不装 Node、不装运行时、不装编译器——一行命令装好，直接开干。</p>
+  <div class="tagline"><span>1.6 MB</span> · <span>5 platforms prebuilt</span> · <span>MIT open source</span></div>
+  <h1>A 1.6 MB<br>code agent</h1>
+  <p class="subtitle">A single Rust binary. 30+ built-in tools, 11 model providers. No Node, no runtime, no compiler — one command to install, then start coding.</p>
   <div class="hero-cta">
-    <a href="#install" class="btn btn-primary">一键安装</a>
-    <a href="docs.html" class="btn btn-ghost">阅读文档</a>
+    <a href="#install" class="btn btn-primary">One-line Install</a>
+    <a href="docs.html" class="btn btn-ghost">Read Docs</a>
   </div>
   <div class="terminal-mock">
     <div class="terminal-bar">
@@ -282,9 +282,9 @@ footer a:hover{color:var(--blue)}
       <div><span class="c">$</span> <span class="p">npm</span> i -g <span class="o">@angleschina/angles</span> && <span class="p">angles</span> install</div>
       <div class="c">  🅰  Angles Code CLI Installer</div>
       <div class="o2">  ██████████████████████████████ 100%  [4/4]</div>
-      <div class="o">  ✓ 预编译二进制 1.6 MB (musl 静态)</div>
-      <div class="o">  ✓ 配置 PATH</div>
-      <div class="o2">  ✅ 安装完成!</div>
+      <div class="o">  ✓ Prebuilt binary 1.6 MB (musl static)</div>
+      <div class="o">  ✓ PATH configured</div>
+      <div class="o2">  ✅ Install complete!</div>
       <div><span class="c">$</span> <span class="p">angles</span> <span class="cursor"></span></div>
     </div>
   </div>
@@ -292,85 +292,85 @@ footer a:hover{color:var(--blue)}
 
 <section class="section" style="padding-top:0">
   <div class="stats">
-    <div class="stat"><div class="num">1.6 MB</div><div class="lbl">单二进制</div></div>
-    <div class="stat"><div class="num">11</div><div class="lbl">模型供应商</div></div>
-    <div class="stat"><div class="num">30+</div><div class="lbl">内置工具</div></div>
-    <div class="stat"><div class="num">5</div><div class="lbl">平台预编译</div></div>
+    <div class="stat"><div class="num">1.6 MB</div><div class="lbl">single binary</div></div>
+    <div class="stat"><div class="num">11</div><div class="lbl">providers</div></div>
+    <div class="stat"><div class="num">30+</div><div class="lbl">built-in tools</div></div>
+    <div class="stat"><div class="num">5</div><div class="lbl">platforms prebuilt</div></div>
   </div>
 </section>
 
 <section class="showcase" id="platforms">
-  <div class="eyebrow">// 招牌</div>
-  <h2>全平台<span class="grad">预编译</span>，装好就能用</h2>
-  <p class="sub">5 个平台一行装好，不用 Rust、不用编译工具链、不用 root。下载一个 1.6 MB 静态二进制，几秒搞定。</p>
+  <div class="eyebrow">// Flagship</div>
+  <h2>Prebuilt for <span class="grad">every platform</span>, ready to go</h2>
+  <p class="sub">Five platforms, one command each. No Rust, no toolchain, no root. Download a 1.6 MB static binary in seconds.</p>
   <div class="plat-grid">
     <div class="plat">
-      <div class="top"><span class="icon">🐧</span><span class="badge-ok">预编译 ✓</span></div>
+      <div class="top"><span class="icon">🐧</span><span class="badge-ok">prebuilt ✓</span></div>
       <h3>Linux ARM64</h3>
       <div class="arch">aarch64-unknown-linux-musl</div>
-      <div class="size">📦 <b>1.6 MB</b> · musl 静态</div>
+      <div class="size">📦 <b>1.6 MB</b> · musl static</div>
     </div>
     <div class="plat">
-      <div class="top"><span class="icon">🐧</span><span class="badge-ok">预编译 ✓</span></div>
+      <div class="top"><span class="icon">🐧</span><span class="badge-ok">prebuilt ✓</span></div>
       <h3>Linux x64</h3>
       <div class="arch">x86_64-unknown-linux-musl</div>
-      <div class="size">📦 <b>1.8 MB</b> · musl 静态</div>
+      <div class="size">📦 <b>1.8 MB</b> · musl static</div>
     </div>
     <div class="plat">
-      <div class="top"><span class="icon">🍎</span><span class="badge-ok">预编译 ✓</span></div>
+      <div class="top"><span class="icon">🍎</span><span class="badge-ok">prebuilt ✓</span></div>
       <h3>macOS Apple Silicon</h3>
       <div class="arch">aarch64-apple-darwin</div>
-      <div class="size">📦 <b>1.6 MB</b> · 原生 ARM</div>
+      <div class="size">📦 <b>1.6 MB</b> · native ARM</div>
     </div>
     <div class="plat">
-      <div class="top"><span class="icon">🍎</span><span class="badge-ok">预编译 ✓</span></div>
+      <div class="top"><span class="icon">🍎</span><span class="badge-ok">prebuilt ✓</span></div>
       <h3>macOS Intel</h3>
       <div class="arch">x86_64-apple-darwin</div>
-      <div class="size">📦 <b>1.6 MB</b> · 原生 x86</div>
+      <div class="size">📦 <b>1.6 MB</b> · native x86</div>
     </div>
     <div class="plat">
-      <div class="top"><span class="icon">🪟</span><span class="badge-ok">预编译 ✓</span></div>
+      <div class="top"><span class="icon">🪟</span><span class="badge-ok">prebuilt ✓</span></div>
       <h3>Windows x64</h3>
       <div class="arch">x86_64-pc-windows-msvc</div>
       <div class="size">📦 <b>1.8 MB</b> · MSVC zip</div>
     </div>
   </div>
   <p class="showcase-foot">
-    实测可跑：<code>树莓派</code><span class="sep">·</span><code>iSH (iOS)</code><span class="sep">·</span><code>Alpine</code><span class="sep">·</span><code>WSL2</code><span class="sep">·</span><code>无 root 环境</code><span class="sep">·</span><code>Windows</code>
+    Tested on:<code>Raspberry Pi</code><span class="sep">·</span><code>iSH (iOS)</code><span class="sep">·</span><code>Alpine</code><span class="sep">·</span><code>WSL2</code><span class="sep">·</span><code>rootless</code><span class="sep">·</span><code>Windows</code>
   </p>
   <p class="showcase-foot" style="margin-top:12px;color:var(--muted-2);font-size:.82rem">
-    armv7 / riscv64 暂无预编译，fallback 到源码编译 — 详见 <a href="docs.html#install">技术文档</a>
+    armv7 / riscv64: no prebuilt yet, falls back to source compile — see <a href="../docs.html#install">docs</a>
   </p>
 </section>
 
 <section class="section" id="quickstart" style="padding-top:0">
-  <h2 class="section-title">快速开始</h2>
-  <p class="section-sub">三步上手：装好 → 配模型 → 开始对话。</p>
+  <h2 class="section-title">Quick Start</h2>
+  <p class="section-sub">Three steps: install → config → chat.</p>
   <div class="qs-grid">
     <div class="qs-card">
       <span class="step">1</span>
-      <h3>配置向导</h3>
-      <p>五步 TUI 选择语言、模型、偏好、搜索引擎。</p>
+      <h3>Setup wizard</h3>
+      <p>Five-step TUI: language, model, persona, search engine.</p>
 <pre><code>angles gateway</code></pre>
     </div>
     <div class="qs-card">
       <span class="step">2</span>
-      <h3>交互对话</h3>
-      <p>直接 <code style="color:var(--blue-bright)">angles</code> 进入对话模式，agent 自主调用工具。</p>
+      <h3>Interactive chat</h3>
+      <p>Just run <code style="color:var(--blue-bright)">angles</code> to enter chat mode. The agent calls tools autonomously.</p>
 <pre><code>angles</code></pre>
     </div>
     <div class="qs-card">
       <span class="step">3</span>
-      <h3>非交互模式</h3>
-      <p>CI / 脚本场景，执行单条指令后退出。</p>
-<pre><code>angles exec "写个 fizzbuzz"</code></pre>
+      <h3>Non-interactive</h3>
+      <p>For CI / scripting. Execute one prompt, then exit.</p>
+<pre><code>angles exec "write a fizzbuzz"</code></pre>
     </div>
   </div>
 </section>
 
 <section class="section" id="install">
-  <h2 class="section-title">一键安装</h2>
-  <p class="section-sub">四种方式，装到的东西完全一样。选你顺手的。</p>
+  <h2 class="section-title">One-line Install</h2>
+  <p class="section-sub">Four methods, same binary. Pick your favorite.</p>
   <div class="tabs">
     <button class="tab active" data-tab="npm">npm</button>
     <button class="tab" data-tab="curl">curl</button>
@@ -379,53 +379,53 @@ footer a:hover{color:var(--blue)}
   </div>
   <div class="code-block" id="code-block">
     <span class="cmd" id="cmd-text">npm i -g @angleschina/angles && angles install</span>
-    <button class="copy-btn" onclick="copyCmd()">复制</button>
+    <button class="copy-btn" onclick="copyCmd()">Copy</button>
   </div>
   <p style="text-align:center;color:var(--muted);font-size:.88rem;margin-top:20px">
-    支持 Linux · macOS · Windows · WSL2 · 树莓派 · Alpine
+    Works on Linux · macOS · Windows · WSL2 · Raspberry Pi · Alpine
   </p>
 </section>
 
 <section class="section" id="features">
-  <h2 class="section-title">为什么选 Angles</h2>
-  <p class="section-sub">不是又一个 wrapper，是真正能干活的终端 agent。</p>
+  <h2 class="section-title">Why Angles</h2>
+  <p class="section-sub">Not another wrapper — a terminal agent that actually gets things done.</p>
   <div class="features-grid">
     <div class="feature">
       <div class="icon">🔧</div>
-      <h3>30 个内置工具</h3>
-      <p>文件读写、目录操作、shell 执行、Git、网页抓取、搜索——angles-* 工具族覆盖完整开发工作流。</p>
+      <h3>30+ built-in tools</h3>
+      <p>File I/O, directory ops, shell, Git, web fetch, search — the angles-* toolset covers the full dev workflow.</p>
     </div>
     <div class="feature">
       <div class="icon">🤖</div>
-      <h3>11 家模型供应商</h3>
-      <p>OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi / MiniMax / OpenRouter / 自定义，一个 CLI 全搞定。</p>
+      <h3>11 model providers</h3>
+      <p>OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi / MiniMax / OpenRouter / Custom — one CLI, all switched.</p>
     </div>
     <div class="feature">
       <div class="icon">⚡</div>
-      <h3>Rust 性能</h3>
-      <p>纯 Rust 实现，单二进制文件，无运行时依赖。启动快、内存小，树莓派也能跑。</p>
+      <h3>Rust performance</h3>
+      <p>Pure Rust, single binary, zero runtime deps. Fast startup, tiny memory — runs on a Raspberry Pi.</p>
     </div>
     <div class="feature">
       <div class="icon">🌍</div>
-      <h3>跨平台</h3>
-      <p>Linux (x64/arm64/armv7/riscv64) · macOS (Intel/Apple Silicon) · Windows · WSL2 · Alpine。</p>
+      <h3>Cross-platform</h3>
+      <p>Linux (x64/arm64/armv7/riscv64) · macOS (Intel/Apple Silicon) · Windows · WSL2 · Alpine.</p>
     </div>
     <div class="feature">
       <div class="icon">🎯</div>
-      <h3>交互式配置向导</h3>
-      <p><code>angles gateway</code> 五步 TUI 向导：语言 / 供应商 / 模型 / 偏好 / 搜索引擎，30 秒配好。</p>
+      <h3>Interactive setup wizard</h3>
+      <p><code>angles gateway</code> — a five-step TUI: language / provider / model / persona / search engine. Done in 30 seconds.</p>
     </div>
     <div class="feature">
       <div class="icon">🔐</div>
-      <h3>开源 MIT</h3>
-      <p>代码完全开源，配置存在本地 <code>~/.angles/</code>，API Key 不上传任何服务器。你的数据你做主。</p>
+      <h3>MIT open source</h3>
+      <p>Fully open source. Config lives in <code>~/.angles/</code>, API keys never touch any server. Your data, your control.</p>
     </div>
   </div>
 </section>
 
 <section class="section" id="providers">
-  <h2 class="section-title">支持的模型供应商</h2>
-  <p class="section-sub">国内外主流模型一键切换，还支持自定义接入。</p>
+  <h2 class="section-title">Supported Providers</h2>
+  <p class="section-sub">Switch between major models with one command. Custom endpoints supported too.</p>
   <div class="providers">
     <span class="provider-chip">OpenAI</span>
     <span class="provider-chip">Claude (Anthropic)</span>
@@ -437,67 +437,67 @@ footer a:hover{color:var(--blue)}
     <span class="provider-chip">Kimi (Moonshot)</span>
     <span class="provider-chip">MiniMax</span>
     <span class="provider-chip">OpenRouter</span>
-    <span class="provider-chip">+ 自定义</span>
+    <span class="provider-chip">+ Custom</span>
   </div>
 </section>
 
 <section class="section" id="faq">
-  <h2 class="section-title">常见问题</h2>
-  <p class="section-sub">更多问题见 <a href="faq.html">FAQ 页面</a>。</p>
+  <h2 class="section-title">FAQ</h2>
+  <p class="section-sub">More questions? See the <a href="../faq.html">FAQ page</a>.</p>
   <div class="faq-list">
     <details class="faq">
-      <summary>API Key 存在哪里？会上传吗？</summary>
-      <div class="ans">Key 存储在本地 <code>~/.angles/config.json</code>，也可用环境变量 <code>ANGLES_API_KEY</code>。请求直接发往你配置的模型供应商，不经过任何中转服务器。</div>
+      <summary>Where is my API key stored? Is it uploaded?</summary>
+      <div class="ans">Keys are stored locally in <code>~/.angles/config.json</code>, or via the <code>ANGLES_API_KEY</code> env var. Requests go directly to your configured provider — no relay server.</div>
     </details>
     <details class="faq">
-      <summary>没有 Rust 能用吗？</summary>
-      <div class="ans">可以。安装器会拉取预编译二进制（<code>angles-&lt;os&gt;-&lt;arch&gt;.tar.gz</code>）；只有预编译不可用时才 fallback 到源码编译——此时才需要 Rust 工具链，安装器也会自动装好。</div>
+      <summary>Do I need Rust installed?</summary>
+      <div class="ans">No. The installer fetches a prebuilt binary (<code>angles-&lt;os&gt;-&lt;arch&gt;.tar.gz</code>). Only if unavailable does it fall back to compiling from source — the installer handles Rust setup automatically.</div>
     </details>
     <details class="faq">
-      <summary>支持哪些模型？能用本地 Ollama 吗？</summary>
-      <div class="ans">11 家预置（OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi / MiniMax / OpenRouter / 自定义）。任何 OpenAI 兼容端点（含本地 Ollama、vLLM、LM Studio）选「自定义」填 <code>http://localhost:11434/v1</code> 即可。</div>
+      <summary>Which models? Can I use local Ollama?</summary>
+      <div class="ans">11 presets (OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi / MiniMax / OpenRouter / Custom). Any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio) — select "Custom" and enter <code>http://localhost:11434/v1</code>.</div>
     </details>
     <details class="faq">
-      <summary>Windows 原生支持吗？</summary>
-      <div class="ans">支持。PowerShell 一行安装：<code>irm https://zsj305.github.io/angles-cli/install.ps1 | iex</code>。也支持 WSL2 中的 bash 脚本。</div>
+      <summary>Does it work natively on Windows?</summary>
+      <div class="ans">Yes. One-line PowerShell install: <code>irm https://zsj305.github.io/angles-cli/install.ps1 | iex</code>. WSL2 with bash is also supported.</div>
     </details>
     <details class="faq">
-      <summary>和 Codex CLI / Claude Code 有什么区别？</summary>
-      <div class="ans">Angles 是 Rust 单二进制，零运行时依赖；30 个统一的 <code>angles-*</code> 工具族覆盖文件/目录/终端/Git/网络；11 家供应商一个 CLI 切换。轻量、跨平台、无包装。</div>
+      <summary>How does it differ from Codex CLI / Claude Code?</summary>
+      <div class="ans">Angles is a single Rust binary with zero runtime deps. 30+ unified <code>angles-*</code> tools cover file/dir/terminal/Git/web. 11 providers, one CLI. Lightweight, cross-platform, no bloat.</div>
     </details>
   </div>
 </section>
 
 <section class="section" id="roadmap">
-  <h2 class="section-title">路线图</h2>
-  <p class="section-sub">项目早期，方向开放，欢迎 <a href="https://github.com/ZSJ305/angles-cli/issues">提 issue</a>。</p>
+  <h2 class="section-title">Roadmap</h2>
+  <p class="section-sub">Early stage, open direction. <a href="https://github.com/ZSJ305/angles-cli/issues">Open an issue</a> anytime.</p>
   <div class="roadmap">
     <div class="milestone done">
       <div class="phase">v0.1 ✓</div>
       <div class="body">
-        <h3>核心 CLI + 30 工具 + 11 Provider<span class="tag">已发布</span></h3>
-        <p>交互对话、非交互 exec、Gateway TUI 向导、doctor 诊断、安装器（bash/PowerShell/npm 三方式）。</p>
+        <h3>Core CLI + 30 tools + 11 providers<span class="tag">released</span></h3>
+        <p>Interactive chat, non-interactive exec, Gateway TUI wizard, doctor diagnostics, installer (bash/PowerShell/npm).</p>
       </div>
     </div>
     <div class="milestone next">
       <div class="phase">v0.2</div>
       <div class="body">
-        <h3>update / uninstall 子命令 + 会话持久化<span class="tag">规划中</span></h3>
-        <p>自带自升级与卸载；跨会话历史与上下文压缩；预编译二进制 Release 覆盖主流平台。</p>
+        <h3>update / uninstall subcommands + session persistence<span class="tag">planned</span></h3>
+        <p>Self-upgrade and uninstall; cross-session history and context compression; prebuilt releases for major platforms.</p>
       </div>
     </div>
     <div class="milestone later">
       <div class="phase">v0.3</div>
       <div class="body">
-        <h3>工具生态：自定义工具插件<span class="tag">考虑中</span></h3>
-        <p>允许用户在 <code>~/.angles/tools/</code> 注册本地脚本为 <code>angles-*</code> 工具；MCP 协议接入评估。</p>
+        <h3>Tool ecosystem: custom tool plugins<span class="tag">considering</span></h3>
+        <p>Register local scripts as <code>angles-*</code> tools in <code>~/.angles/tools/</code>; MCP protocol evaluation.</p>
       </div>
     </div>
     <div class="milestone later">
       <div class="phase">v1.0</div>
       <div class="body">
-        <h3>稳定 API + 完整文档站<span class="tag">远期</span></h3>
-        <p>工具协议冻结、ABI 稳定、贡献者指南、多语言文档。</p>
+        <h3>Stable API + complete docs site<span class="tag">long-term</span></h3>
+        <p>Frozen tool protocol, stable ABI, contributor guide, multilingual docs.</p>
       </div>
     </div>
   </div>
@@ -506,10 +506,10 @@ footer a:hover{color:var(--blue)}
 <footer>
   <div class="links">
     <a href="https://github.com/ZSJ305/angles-cli">GitHub</a>
-    <a href="docs.html">文档</a>
-    <a href="tools.html">工具速查</a>
-    <a href="faq.html">FAQ</a>
-    <a href="https://github.com/ZSJ305/angles-cli/issues">反馈</a>
+    <a href="../docs.html">Docs</a>
+    <a href="../tools.html">Tools</a>
+    <a href="../faq.html">FAQ</a>
+    <a href="https://github.com/ZSJ305/angles-cli/issues">Feedback</a>
     <a href="https://www.npmjs.com/package/@angleschina/angles">npm</a>
   </div>
   <div class="credit">MIT License · created by <span>ZSJ</span> 🇨🇳</div>
@@ -528,7 +528,7 @@ document.querySelectorAll('.tab').forEach(t => {
     t.classList.add('active');
     document.getElementById('cmd-text').textContent = commands[t.dataset.tab];
     const btn = document.querySelector('.copy-btn');
-    btn.textContent = '复制';
+    btn.textContent = 'Copy';
     btn.classList.remove('copied');
   });
 });
@@ -536,9 +536,9 @@ function copyCmd(){
   const text = document.getElementById('cmd-text').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.querySelector('.copy-btn');
-    btn.textContent = '已复制';
+    btn.textContent = 'Copied';
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
 </script>

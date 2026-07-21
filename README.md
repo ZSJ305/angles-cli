@@ -2,14 +2,16 @@
 
 # 🅰 Angles Code CLI
 
-### 1.6 MB 的 code agent — Rust 单二进制，不装运行时
+### A 1.6 MB code agent — single Rust binary, no runtime
 
-**30 个内置工具 · 11 家模型供应商 · 5 平台预编译 · MIT 开源**
+**30+ built-in tools · 11 model providers · 5 platforms prebuilt · MIT**
 
 <p>
-  <a href="https://zsj305.github.io/angles-cli/">🏠 官网</a> ·
-  <a href="https://zsj305.github.io/angles-cli/docs.html">📖 技术文档</a> ·
-  <a href="https://zsj305.github.io/angles-cli/tools.html">🔧 工具速查</a> ·
+  <a href="https://zsj305.github.io/angles-cli/">🌐 Website</a> ·
+  <a href="https://zsj305.github.io/angles-cli/en-us/">🇺🇸 EN</a> ·
+  <a href="https://zsj305.github.io/angles-cli/">🇨🇳 中文</a> ·
+  <a href="https://zsj305.github.io/angles-cli/docs.html">📖 Docs</a> ·
+  <a href="https://zsj305.github.io/angles-cli/tools.html">🔧 Tools</a> ·
   <a href="https://zsj305.github.io/angles-cli/faq.html">❓ FAQ</a> ·
   <a href="https://www.npmjs.com/package/@angleschina/angles">📦 npm</a> ·
   <a href="https://github.com/ZSJ305/angles-cli/releases">⬇️ Releases</a>
@@ -21,8 +23,27 @@ npm i -g @angleschina/angles && angles install
 
 | | |
 |---|---|
+| 📦 Binary size | **1.6 MB** (musl static / MSVC) |
+| 🧩 Built-in tools | **30+** (file / dir / terminal / Git / web) |
+| 🤖 Providers | **11** (OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi …) |
+| 🖥️ Prebuilt platforms | **5** (Linux ARM64/x64 · macOS ARM64/x64 · Windows x64) |
+| ⚡ Runtime deps | **0** (pure Rust; no Node / no Python / static musl) |
+| 🔓 License | **MIT** |
+
+A terminal agentic coding assistant compiled into a single static Rust binary. No Node, no runtime, no compiler — install in one command and start coding. The agent drives 30+ `angles-*` tools to operate files, directories, terminal, Git, and web directly, switching between 11 model providers at will. Config lives locally in `~/.angles/`; API keys never touch any relay server.
+
+<hr width="50%">
+
+### 1.6 MB 的 code agent — Rust 单二进制，不装运行时
+
+**30 个内置工具 · 11 家模型供应商 · 5 平台预编译 · MIT 开源**
+
+一个终端里的 agentic 编码助手。Rust 编译成单个静态二进制——不装 Node、不装运行时、不装编译器，一行命令装好就开干。agent 通过 30 个 `angles-*` 工具直接操作文件、目录、终端、Git、网络，配 11 家模型供应商任意切换。配置存在本地 `~/.angles/`，API Key 不经任何中转。
+
+| | |
+|---|---|
 | 📦 二进制大小 | **1.6 MB**（musl 静态 / MSVC） |
-| 🧩 内置工具 | **30+** （文件 / 目录 / 终端 / Git / 网络） |
+| 🧩 内置工具 | **30+**（文件 / 目录 / 终端 / Git / 网络） |
 | 🤖 模型供应商 | **11 家**（OpenAI / Claude / Gemini / DeepSeek / Grok / Qwen / GLM / Kimi …） |
 | 🖥️ 预编译平台 | **5 个**（Linux ARM64/x64 · macOS ARM64/x64 · Windows x64） |
 | ⚡ 运行时依赖 | **0**（纯 Rust，零 Node / 零 Python / 零 libc 动态链接 musl） |
@@ -31,8 +52,6 @@ npm i -g @angleschina/angles && angles install
 </div>
 
 ---
-
-一个终端里的 agentic 编码助手。Rust 编译成单个静态二进制——不装 Node、不装运行时、不装编译器，一行命令装好就开干。agent 通过 30 个 `angles-*` 工具直接操作文件、目录、终端、Git、网络，配 11 家模型供应商任意切换。配置存在本地 `~/.angles/`，API Key 不经任何中转。
 
 ## Install
 
