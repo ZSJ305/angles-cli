@@ -248,6 +248,28 @@ footer a:hover{color:var(--blue)}
 .showcase-foot code{background:var(--card);color:var(--blue-bright);padding:2px 8px;border-radius:5px;font-size:.85em;border:1px solid var(--border)}
 .showcase-foot .sep{color:var(--border-2);margin:0 8px}
 </style>
+<script>
+// Auto-redirect: Chinese browsers → / (zh)
+(function(){
+  if (sessionStorage.getItem('angles_lang_chosen')) return;
+  var lang = (navigator.language || '').toLowerCase();
+  var isZh = lang.startsWith('zh') || lang === 'zh' || lang.startsWith('zh-cn') || lang.startsWith('zh-tw') || lang.startsWith('zh-hk') || lang.startsWith('zh-sg');
+  if (isZh) {
+    sessionStorage.setItem('angles_lang_chosen', '1');
+    location.replace('../');
+  }
+})();
+// LA easter egg
+fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
+  if (d && d.city === 'Los Angeles' && d.country === 'US') {
+    var el = document.createElement('div');
+    el.style.cssText='position:fixed;bottom:20px;right:20px;background:#131a2e;border:1px solid #5ac8ff;color:#5ac8ff;padding:14px 20px;border-radius:12px;font-size:.9rem;font-weight:600;z-index:200;box-shadow:0 8px 24px rgba(90,200,255,.2);cursor:pointer;';
+    el.innerHTML='🎬 use angles in Los Angeles!';
+    el.onclick=()=>{el.remove();};
+    document.body.appendChild(el);
+  }
+}).catch(()=>{});
+</script>
 </head>
 <body>
 
@@ -518,9 +540,9 @@ footer a:hover{color:var(--blue)}
 <script>
 const commands = {
   npm:  'npm i -g @angleschina/angles && angles install',
-  curl: 'curl -fsSL https://zsj305.github.io/angles-cli/install.sh | bash',
+  curl: 'curl -fsSL https://zsj305.github.io/angles-cli/en-install.sh | bash',
   ps1:  'irm https://zsj305.github.io/angles-cli/install.ps1 | iex',
-  wget: 'wget -qO- https://zsj305.github.io/angles-cli/install.sh | bash'
+  wget: 'wget -qO- https://zsj305.github.io/angles-cli/en-install.sh | bash'
 };
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
