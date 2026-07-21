@@ -14,59 +14,71 @@
 <meta name="twitter:description" content="常见问题：安装、配置、模型、安全、贡献。">
 <style>
 :root{
-  --bg:#0a0e1a; --bg-2:#0f1424; --card:#131a2e; --card-2:#172037;
-  --border:#1f2942; --border-2:#2a3656;
-  --text:#e6ebf5; --muted:#8a93b0; --muted-2:#6a7390;
-  --blue:#5ac8ff; --blue-bright:#82dcff; --blue-dim:rgba(90,200,255,.12);
-  --green:#00e5cc; --orange:#ffb020; --red:#e63946; --purple:#b388ff;
+  --bg:#f7f7f4; --bg-2:#efeee8; --card:#ffffff; --card-2:#f3f1ea;
+  --border:#e3e1d8; --border-2:#d5d2c6;
+  --text:#1a1812; --muted:#6b6657; --muted-2:#8a8474;
+  --blue:#4a6cf7; --blue-bright:#3b5de7; --blue-dim:rgba(74,108,247,.1);
+  --green:#2a9d4f; --orange:#c97a1a; --red:#c43830; --purple:#7c4dff;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14120b; --bg-2:#1c1a12; --card:#1f1d15; --card-2:#26231a;
+    --border:#2e2a20; --border-2:#3a3528;
+    --text:#f1ede2; --muted:#8a8474; --muted-2:#6b6657;
+    --blue:#82b1ff; --blue-bright:#a3c4ff; --blue-dim:rgba(130,177,255,.12);
+    --green:#6ee08a; --orange:#ffb020; --red:#ff6b5e; --purple:#b388ff;
+  }
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:80px}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
 a{color:var(--blue);text-decoration:none}
-code{background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.85em;border:1px solid var(--border)}
+code{background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.85em;border:1px solid var(--border);font-family:"JetBrains Mono",ui-monospace,monospace}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 5vw;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.logo{font-size:1.2rem;font-weight:800;color:var(--blue)}
-.logo span{color:var(--text)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:18px 5vw;background:rgba(247,247,244,.75);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--border)}
+@media (prefers-color-scheme: dark){nav{background:rgba(20,18,11,.75)}}
+.logo{font-family:"EB Garamond",Georgia,serif;font-size:1.4rem;font-weight:600;color:var(--text);letter-spacing:-.02em;display:flex;align-items:center;gap:6px}
+.logo .mark{font-family:ui-monospace,monospace;font-weight:700}
+.logo span.slash{color:var(--muted);font-weight:400;font-size:.95rem}
+.logo span.name{color:var(--text)}
 nav .links{display:flex;gap:24px;align-items:center}
-nav a{color:var(--muted);font-size:.92rem;transition:color .2s}
+nav a{color:var(--muted);font-size:.92rem;transition:color .2s;font-weight:500}
 nav a:hover{color:var(--text)}
-.btn{display:inline-block;padding:8px 18px;border-radius:8px;font-weight:600;font-size:.88rem;border:none;cursor:pointer}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn{display:inline-block;padding:8px 18px;border-radius:999px;font-weight:600;font-size:.88rem;border:none;cursor:pointer;transition:opacity .2s}
+.btn-ghost{background:var(--text);color:var(--bg)}
+.btn-ghost:hover{opacity:.85;color:var(--bg)}
 
-.layout{display:flex;max-width:1200px;margin:0 auto;padding:90px 5vw 60px;gap:40px}
-.side{position:sticky;top:90px;align-self:flex-start;width:200px;flex-shrink:0;font-size:.86rem}
-.side h4{color:var(--muted-2);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px;font-weight:700}
+.layout{display:flex;max-width:1180px;margin:0 auto;padding:100px 5vw 60px;gap:48px}
+.side{position:sticky;top:96px;align-self:flex-start;width:200px;flex-shrink:0;font-size:.86rem}
+.side h4{color:var(--muted-2);font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px;font-weight:600}
 .side a{display:block;color:var(--muted);padding:5px 0 5px 12px;border-left:2px solid transparent;transition:all .15s;line-height:1.4}
 .side a:hover{color:var(--blue);border-left-color:var(--blue)}
 .content{flex:1;min-width:0}
 
-h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:10px;background:linear-gradient(135deg,var(--text),var(--blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.lead{color:var(--muted);font-size:1.05rem;margin-bottom:40px}
+h1{font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.4rem,5.5vw,3.6rem);font-weight:500;letter-spacing:-.025em;margin-bottom:14px;color:var(--text)}
+.lead{color:var(--muted);font-size:1.1rem;margin-bottom:44px}
 
-h2{font-size:1.4rem;font-weight:700;margin:48px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border);scroll-margin-top:80px;color:var(--blue-bright)}
+h2{font-family:"EB Garamond",Georgia,serif;font-size:1.6rem;font-weight:500;margin:56px 0 18px;padding-bottom:12px;border-bottom:1px solid var(--border);scroll-margin-top:96px;color:var(--text);letter-spacing:-.015em}
 h2:first-of-type{margin-top:0}
 
 .faq-list{display:flex;flex-direction:column;gap:10px}
-.faq{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s}
+.faq{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
 .faq[open]{border-color:var(--blue)}
-.faq summary{padding:16px 20px;cursor:pointer;font-weight:600;font-size:.96rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq summary{padding:16px 20px;cursor:pointer;font-weight:500;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:-apple-system,sans-serif}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:'+';color:var(--blue);font-size:1.3rem;font-weight:300;transition:transform .2s}
 .faq[open] summary::after{transform:rotate(45deg)}
-.faq .ans{padding:0 20px 16px;color:var(--muted);font-size:.92rem;line-height:1.7}
+.faq .ans{padding:0 20px 16px;color:var(--muted);font-size:.95rem;line-height:1.7}
 .faq .ans p{margin-bottom:10px}
 .faq .ans p:last-child{margin-bottom:0}
 .faq .ans ul{margin:6px 0 10px 20px}
 .faq .ans pre{background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:.84rem;overflow-x:auto;margin:10px 0}
 .faq .ans pre code{background:none;border:none;padding:0;color:var(--green)}
 
-footer{text-align:center;padding:50px 5vw 40px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+footer{text-align:center;padding:60px 5vw 50px;border-top:1px solid var(--border);color:var(--muted);font-size:.92rem}
 footer .links{display:flex;gap:24px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
 footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
-.credit{margin-top:12px;font-size:.85rem}.credit span{color:var(--blue)}
+.credit{margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:.78rem}.credit span{color:var(--blue)}
 
 @media(max-width:860px){.side{display:none}.content{max-width:100%}}
 @media(max-width:600px){nav .links a:not(.btn){display:none}}
@@ -75,7 +87,7 @@ footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
 <body>
 
 <nav>
-  <div class="logo">🅰 <span>Angles</span> <span style="color:var(--muted-2);font-weight:400">/ FAQ</span></div>
+  <div class="logo"><span class="mark">α</span> <span class="name">Angles</span> <span class="slash">/ FAQ</span></div>
   <div class="links">
     <a href="https://zsj305.github.io/angles-cli/">主页</a>
     <a href="docs.html">文档</a>

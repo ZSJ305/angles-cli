@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Angles Gateway — 控制台</title>
 <style>
-:root{--bg:#0a0e1a;--card:#131a2e;--card-2:#172037;--border:#1f2942;--text:#e6ebf5;--muted:#8a93b0;--blue:#5ac8ff;--blue-bright:#82dcff;--green:#00e5cc;--orange:#ffb020;--red:#e63946}
+:root{--bg:#1c1a12;--card:#1f1d15;--card-2:#26231a;--border:#2e2a20;--text:#f1ede2;--muted:#8a8474;--blue:#82b1ff;--blue-bright:#a3c4ff;--green:#6ee08a;--orange:#ffb020;--red:#ff6b5e}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
 a{color:var(--blue);text-decoration:none}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px}
 
-header{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.logo{font-size:1.15rem;font-weight:800;color:var(--blue)}.logo span{color:var(--text)}
+header{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(28,26,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo{font-family:"EB Garamond",Georgia,serif;font-size:1.3rem;font-weight:600;color:var(--text);letter-spacing:-.02em;display:flex;align-items:center;gap:6px}
+.logo .mark{font-family:ui-monospace,monospace;font-weight:700}
 .status{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
 .status .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 @keyframes pulse{50%{opacity:.4}}
@@ -32,8 +33,8 @@ header{position:sticky;top:0;z-index:50;display:flex;justify-content:space-betwe
 .form-group textarea{resize:vertical;min-height:60px;font-family:inherit}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .btn{display:inline-block;padding:9px 20px;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;border:none;transition:all .2s}
-.btn-primary{background:var(--blue);color:var(--bg)}.btn-primary:hover{background:var(--blue-bright)}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-primary{background:var(--text);color:var(--bg)}.btn-primary:hover{opacity:.85}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--text)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 
 /* KV display */
@@ -64,7 +65,7 @@ header{position:sticky;top:0;z-index:50;display:flex;justify-content:space-betwe
 <body>
 
 <header>
-  <div class="logo">🅰 <span>Angles</span> Gateway</div>
+  <div class="logo"><span class="mark">α</span> <span>Angles</span> Gateway</div>
   <div class="status"><span class="dot"></span> <span id="status-text">连接中...</span></div>
 </header>
 
