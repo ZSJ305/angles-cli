@@ -301,7 +301,7 @@ footer a:hover{color:var(--blue)}
 <section class="showcase" id="platforms">
   <div class="eyebrow">// 招牌</div>
   <h2>全平台<span class="grad">预编译</span>，装好就能用</h2>
-  <p class="sub">4 个平台一行装好，不用 Rust、不用编译工具链、不用 root。下载一个 1.6 MB 静态二进制，几秒搞定。</p>
+  <p class="sub">5 个平台一行装好，不用 Rust、不用编译工具链、不用 root。下载一个 1.6 MB 静态二进制，几秒搞定。</p>
   <div class="plat-grid">
     <div class="plat">
       <div class="top"><span class="icon">🐧</span><span class="badge-ok">预编译 ✓</span></div>
@@ -327,12 +327,18 @@ footer a:hover{color:var(--blue)}
       <div class="arch">x86_64-apple-darwin</div>
       <div class="size">📦 <b>1.6 MB</b> · 原生 x86</div>
     </div>
+    <div class="plat">
+      <div class="top"><span class="icon">🪟</span><span class="badge-ok">预编译 ✓</span></div>
+      <h3>Windows x64</h3>
+      <div class="arch">x86_64-pc-windows-msvc</div>
+      <div class="size">📦 <b>1.8 MB</b> · MSVC zip</div>
+    </div>
   </div>
   <p class="showcase-foot">
-    实测可跑：<code>树莓派</code><span class="sep">·</span><code>iSH (iOS)</code><span class="sep">·</span><code>Alpine</code><span class="sep">·</span><code>WSL2</code><span class="sep">·</span><code>无 root 环境</code>
+    实测可跑：<code>树莓派</code><span class="sep">·</span><code>iSH (iOS)</code><span class="sep">·</span><code>Alpine</code><span class="sep">·</span><code>WSL2</code><span class="sep">·</span><code>无 root 环境</code><span class="sep">·</span><code>Windows</code>
   </p>
   <p class="showcase-foot" style="margin-top:12px;color:var(--muted-2);font-size:.82rem">
-    Windows / armv7 / riscv64 暂无预编译，fallback 到源码编译 — 详见 <a href="docs.html#install">技术文档</a>
+    armv7 / riscv64 暂无预编译，fallback 到源码编译 — 详见 <a href="docs.html#install">技术文档</a>
   </p>
 </section>
 
