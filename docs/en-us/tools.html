@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools Reference — Angles Code CLI</title>
+<link rel="canonical" href="https://zsj305.github.io/angles-cli/en-us/tools.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tools Reference — Angles Code CLI">
+<meta property="og:description" content="30+ 个 angles-* 工具命令速查表，可搜索、按类别筛选。">
+<meta property="og:url" content="https://zsj305.github.io/angles-cli/en-us/tools.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tools Reference — Angles Code CLI">
+<meta name="twitter:description" content="30+ 个工具命令速查表。">
+<style>
+:root{
+  --bg:#0a0e1a; --bg-2:#0f1424; --card:#131a2e; --card-2:#172037;
+  --border:#1f2942; --border-2:#2a3656;
+  --text:#e6ebf5; --muted:#8a93b0; --muted-2:#6a7390;
+  --blue:#5ac8ff; --blue-bright:#82dcff; --blue-dim:rgba(90,200,255,.12);
+  --green:#00e5cc; --orange:#ffb020; --red:#e63946; --purple:#b388ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+a{color:var(--blue);text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg-2)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:5px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 5vw;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-size:1.2rem;font-weight:800;color:var(--blue)}
+.logo span{color:var(--text)}
+nav .links{display:flex;gap:24px;align-items:center}
+nav a{color:var(--muted);font-size:.92rem;transition:color .2s}
+nav a:hover{color:var(--text)}
+.btn{display:inline-block;padding:8px 18px;border-radius:8px;font-weight:600;font-size:.88rem;border:none;cursor:pointer}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+
+.wrap{max-width:1100px;margin:0 auto;padding:100px 5vw 60px}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:10px;background:linear-gradient(135deg,var(--text),var(--blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{color:var(--muted);font-size:1.05rem;margin-bottom:32px}
+
+/* Search + filters */
+.toolbar{position:sticky;top:70px;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);padding:16px 0;z-index:10;border-bottom:1px solid var(--border);margin-bottom:32px}
+.search{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 18px;color:var(--text);font-size:.95rem;font-family:inherit;transition:border-color .2s}
+.search:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-dim)}
+.search::placeholder{color:var(--muted-2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-weight:500}
+.chip:hover{color:var(--text);border-color:var(--border-2)}
+.chip.active{background:var(--blue);color:var(--bg);border-color:var(--blue)}
+.chip .cnt{opacity:.6;font-size:.72rem;margin-left:4px}
+
+.count{color:var(--muted-2);font-size:.85rem;margin-bottom:18px}
+
+/* Tool grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.tool{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:all .2s;border-left:3px solid var(--blue)}
+.tool:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 20px rgba(90,200,255,.08)}
+.tool .cat{font-size:.7rem;color:var(--muted-2);letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.tool .cmd{color:var(--blue-bright);font-family:"SF Mono",Fira Code,Consolas,monospace;font-size:.82rem;margin-bottom:6px;word-break:break-all;line-height:1.4}
+.tool .cmd .arg{color:var(--orange)}
+.tool .cmd .opt{color:var(--muted)}
+.tool .desc{color:var(--muted);font-size:.84rem;line-height:1.5}
+.tool .danger{border-left-color:var(--red)}
+.tool.danger{border-left-color:var(--red)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--muted-2)}
+.empty .big{font-size:2.5rem;margin-bottom:12px}
+
+footer{text-align:center;padding:50px 5vw 40px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+footer .links{display:flex;gap:24px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
+.credit{margin-top:12px;font-size:.85rem}.credit span{color:var(--blue)}
+
+@media(max-width:600px){
+  nav .links a:not(.btn){display:none}
+  .toolbar{top:60px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🅰 <span>Angles</span> <span style="color:var(--muted-2);font-weight:400">/ Tools</span></div>
+  <div class="links">
+    <a href="../">Home</a>
+    <a href="docs.html">Docs</a>
+    <a href="faq.html">FAQ</a>
+    <a href="https://github.com/ZSJ305/angles-cli" class="btn btn-ghost">GitHub</a>
+  </div>
+</nav>
+
+<div class="wrap">
+<h1>工具速查</h1>
+<p class="lead">Agent 通过 <code style="background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.9em">angles-*</code> 前缀的工具操作环境。30+ 个内置工具，搜索或按类别筛选。</p>
+
+<div class="toolbar">
+  <input class="search" id="search" type="text" placeholder="Search commands, keywords, descriptions…  例如：grep / 删除 / git" autofocus>
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="count" id="count"></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none">
+  <div class="big">🔍</div>
+  <div>No matching tools</div>
+</div>
+</div>
+
+<footer>
+  <div class="links">
+    <a href="../">Home</a>
+    <a href="docs.html">Docs</a>
+    <a href="https://github.com/ZSJ305/angles-cli">GitHub</a>
+    <a href="https://www.npmjs.com/package/@angleschina/angles">npm</a>
+  </div>
+  <div class="credit">MIT License · created by <span>ZSJ</span> 🇨🇳</div>
+</footer>
+
+<script>
+const tools = [
+  // File Creation与写入
+  {c:"File Creation",cmd:[["angles-createfile",""],[" ","<path>","arg"],[" [content]","opt"]],desc:"创建新文件并写入内容；文件已存在则报错。content 可经 stdin 或第二参数传入",danger:false},
+  {c:"File Creation",cmd:[["angles-writefile",""],[" ","<path>","arg"],[" [content]","opt"]],desc:"覆盖写入文件；不存在自动创建",danger:false},
+  {c:"File Creation",cmd:[["angles-appendfile",""],[" ","<path>","arg"],[" ","<content>","arg"]],desc:"向文件末尾追加内容；不存在则自动创建",danger:false},
+  {c:"File Creation",cmd:[["angles-insertline",""],[" ","<path>","arg"],[" ","<line>","arg"],[" ","<content>","arg"]],desc:"在指定行号前插入一行（行号从 1 Getting Started）",danger:false},
+  // 读取与搜索
+  {c:"Read & Search",cmd:[["angles-readfile",""],[" ","<path>","arg"],[" [start] [end]","opt"]],desc:"读取文件内容，可指定起止行号",danger:false},
+  {c:"Read & Search",cmd:[["angles-searchfile",""],[" ","<pattern>","arg"],[" [dir]","opt"]],desc:"按文件名 glob 通配符搜索，不指定目录则搜当前目录",danger:false},
+  {c:"Read & Search",cmd:[["angles-grep",""],[" ","<pattern>","arg"],[" [dir]","opt"]],desc:"在文件内容中正则搜索匹配行",danger:false},
+  {c:"Read & Search",cmd:[["angles-head",""],[" ","<path>","arg"],[" [n]","opt"]],desc:"显示文件前 n 行，默认 10",danger:false},
+  {c:"Read & Search",cmd:[["angles-tail",""],[" ","<path>","arg"],[" [n]","opt"]],desc:"显示文件最后 n 行，默认 10",danger:false},
+  // 修改与删除
+  {c:"Modify & Delete",cmd:[["angles-replace",""],[" ","<path>","arg"],[" ","<old>","arg"],[" ","<new>","arg"]],desc:"精确替换文件中首次出现的 old_text（须精确匹配含缩进）",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-replaceall",""],[" ","<path>","arg"],[" ","<old>","arg"],[" ","<new>","arg"]],desc:"替换文件中所有出现的 old_text",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-deleteline",""],[" ","<path>","arg"],[" ","<line>","arg"]],desc:"删除文件中指定行",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-deletefile",""],[" ","<path>","arg"]],desc:"删除文件（始终需要用户确认）",danger:true},
+  {c:"Modify & Delete",cmd:[["angles-movedir",""],[" ","<src>","arg"],[" ","<dst>","arg"]],desc:"移动或重命名文件 / 目录",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-copyfile",""],[" ","<src>","arg"],[" ","<dst>","arg"]],desc:"复制文件",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-mkdir",""],[" ","<dir>","arg"]],desc:"创建目录（含父目录）",danger:false},
+  // 目录与项目
+  {c:"Directory",cmd:[["angles-ls",""],[" [dir]","opt"]],desc:"列出目录内容",danger:false},
+  {c:"Directory",cmd:[["angles-tree",""],[" [dir]","opt"],[" [depth]","opt"]],desc:"树形结构显示目录，默认深度 3",danger:false},
+  {c:"Directory",cmd:[["angles-pwd",""]],desc:"显示当前工作目录",danger:false},
+  {c:"Directory",cmd:[["angles-cd",""],[" ","<dir>","arg"]],desc:"切换工作目录",danger:false},
+  {c:"Directory",cmd:[["angles-fileinfo",""],[" ","<path>","arg"]],desc:"显示文件详细信息（大小、权限、mtime）",danger:false},
+  // 终端与执行
+  {c:"Terminal",cmd:[["angles-run",""],[" ","<cmd>","arg"],[" [args...]","opt"]],desc:"执行终端命令并返回输出（破坏性命令始终需确认）",danger:false},
+  {c:"Terminal",cmd:[["angles-runbg",""],[" ","<cmd>","arg"],[" [args...]","opt"]],desc:"后台执行终端命令，返回进程 PID",danger:false},
+  {c:"Terminal",cmd:[["angles-kill",""],[" ","<pid>","arg"]],desc:"终止指定进程",danger:false},
+  // 网络与搜索
+  {c:"Web & Search",cmd:[["angles-fetch",""],[" ","<url>","arg"],[" [output]","opt"]],desc:"下载 URL 内容；不指定 output 则输出到 stdout",danger:false},
+  {c:"Web & Search",cmd:[["angles-websearch",""],[" ","<query>","arg"]],desc:"用Configuration的搜索引擎执行网页搜索，返回结果摘要",danger:false},
+  // Git
+  {c:"Git",cmd:[["angles-gitinit",""],[" [dir]","opt"]],desc:"初始化 git 仓库",danger:false},
+  {c:"Git",cmd:[["angles-gitcommit",""],[" ","<msg>","arg"]],desc:"暂存所有更改并提交",danger:false},
+  {c:"Git",cmd:[["angles-gitlog",""],[" [n]","opt"]],desc:"显示最近 n 条提交记录，默认 10",danger:false},
+  {c:"Git",cmd:[["angles-gitdiff",""],[" [path]","opt"]],desc:"显示文件或All未暂存的更改",danger:false},
+  {c:"Git",cmd:[["angles-gitbranch",""],[" ","<name>","arg"]],desc:"创建并切换到新分支",danger:false},
+];
+
+const cats = [...new Set(tools.map(t=>t.c))];
+const catCounts = {};
+cats.forEach(c=>catCounts[c]=tools.filter(t=>t.c===c).length);
+
+let activeCat = 'all';
+let q = '';
+
+const chipsEl = document.getElementById('chips');
+function renderChips(){
+  const all = `<div class="chip ${activeCat==='all'?'active':''}" data-cat="all">All<span class="cnt">${tools.length}</span></div>`;
+  const rest = cats.map(c=>`<div class="chip ${activeCat===c?'active':''}" data-cat="${c}">${c}<span class="cnt">${catCounts[c]}</span></div>`).join('');
+  chipsEl.innerHTML = all + rest;
+  chipsEl.querySelectorAll('.chip').forEach(ch=>{
+    ch.onclick = ()=>{ activeCat = ch.dataset.cat; renderChips(); render(); };
+  });
+}
+
+function cmdHtml(parts){
+  return parts.map(p => {
+    let txt, val, cls;
+    if (p.length === 3) {
+      [txt, val, cls] = p;
+    } else {
+      // 2-element item: [text, role] where role is "arg"|"opt"|"cmd" or empty
+      const [text, role] = p;
+      if (role === 'arg' || role === 'opt' || role === 'cmd') {
+        txt = text; val = text; cls = role;
+      } else {
+        txt = text; val = text; cls = 'cmd';
+      }
+    }
+    if (cls === 'arg') return `<span class="arg">${val}</span>`;
+    if (cls === 'opt') return `<span class="opt">${val}</span>`;
+    return `<span style="color:var(--blue-bright);font-weight:600">${txt}</span>`;
+  }).join('');
+}
+
+const gridEl = document.getElementById('grid');
+const countEl = document.getElementById('count');
+const emptyEl = document.getElementById('empty');
+
+function render(){
+  const ql = q.trim().toLowerCase();
+  const filtered = tools.filter(t=>{
+    if(activeCat!=='all' && t.c!==activeCat) return false;
+    if(!ql) return true;
+    const blob = (t.cmd.map(p=>p.join(' ')).join(' ') + ' ' + t.desc + ' ' + t.c).toLowerCase();
+    return blob.includes(ql);
+  });
+  countEl.textContent = `显示 ${filtered.length} / ${tools.length} 个工具`;
+  if(filtered.length===0){
+    gridEl.innerHTML=''; emptyEl.style.display='block'; return;
+  }
+  emptyEl.style.display='none';
+  gridEl.innerHTML = filtered.map(t=>`
+    <div class="tool ${t.danger?'danger':''}">
+      <div class="cat">${t.c}${t.danger?' · ⚠ 需确认':''}</div>
+      <div class="cmd">${cmdHtml(t.cmd)}</div>
+      <div class="desc">${t.desc}</div>
+    </div>`).join('');
+}
+
+document.getElementById('search').addEventListener('input', e=>{ q=e.target.value; render(); });
+renderChips();
+render();
+</script>
+</body>
+</html>

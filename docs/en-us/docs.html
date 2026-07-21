@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Docs — Angles Code CLI</title>
+<link rel="canonical" href="https://zsj305.github.io/angles-cli/en-us/docs.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Technical Docs — Angles Code CLI">
+<meta property="og:description" content="Angles Code CLI 完整技术Reference：Architecture、Install、构建、Configuration、Provider、协议、工具命令、安全策略。">
+<meta property="og:url" content="https://zsj305.github.io/angles-cli/en-us/docs.html">
+<meta property="og:site_name" content="Angles Code CLI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Technical Docs — Angles Code CLI">
+<meta name="twitter:description" content="完整技术Reference：Architecture、Install、构建、Configuration、Provider、工具、安全。">
+<style>
+:root{
+  --bg:#0a0e1a; --bg-2:#0f1424; --card:#131a2e; --card-2:#172037;
+  --border:#1f2942; --border-2:#2a3656;
+  --text:#e6ebf5; --muted:#8a93b0; --muted-2:#6a7390;
+  --blue:#5ac8ff; --blue-bright:#82dcff; --blue-dim:rgba(90,200,255,.12);
+  --green:#00e5cc; --orange:#ffb020; --red:#e63946; --purple:#b388ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;
+  overflow-x:hidden;
+}
+code,pre{font-family:"SF Mono",Fira Code,Consolas,monospace}
+a{color:var(--blue);text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg-2)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted-2)}
+
+/* Nav */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 5vw;background:rgba(10,14,26,.85);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+}
+.logo{font-size:1.2rem;font-weight:800;color:var(--blue)}
+.logo span{color:var(--text)}
+nav .links{display:flex;gap:24px;align-items:center}
+nav a{color:var(--muted);font-size:.92rem;transition:color .2s}
+nav a:hover{color:var(--text)}
+.btn{display:inline-block;padding:8px 18px;border-radius:8px;font-weight:600;font-size:.88rem;transition:all .2s;border:none;cursor:pointer}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-primary{background:var(--blue);color:var(--bg)}
+.btn-primary:hover{background:var(--blue-bright)}
+
+/* Layout */
+.layout{display:flex;max-width:1400px;margin:0 auto;padding:90px 5vw 60px;gap:40px}
+.toc{
+  position:sticky;top:90px;align-self:flex-start;
+  width:240px;max-height:calc(100vh - 110px);overflow-y:auto;
+  font-size:.86rem;flex-shrink:0;
+}
+.toc h4{color:var(--muted);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;margin:18px 0 8px;font-weight:700}
+.toc h4:first-child{margin-top:0}
+.toc a{display:block;color:var(--muted-2);padding:5px 0 5px 12px;border-left:2px solid transparent;transition:all .15s;line-height:1.4}
+.toc a:hover{color:var(--blue);border-left-color:var(--blue)}
+.toc a.active{color:var(--blue-bright);border-left-color:var(--blue);background:var(--blue-dim)}
+.content{flex:1;min-width:0;max-width:900px}
+
+/* Typography */
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:12px;background:linear-gradient(135deg,var(--text),var(--blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{color:var(--muted);font-size:1.1rem;margin-bottom:40px}
+h2{font-size:1.7rem;font-weight:700;margin:56px 0 20px;padding-bottom:12px;border-bottom:1px solid var(--border);scroll-margin-top:80px}
+h2:first-of-type{margin-top:0}
+h2 .anchor{color:var(--muted-2);font-size:1rem;margin-left:8px;opacity:0;transition:opacity .2s}
+h2:hover .anchor{opacity:1}
+h3{font-size:1.2rem;font-weight:600;margin:32px 0 14px;color:var(--blue-bright)}
+h4{font-size:1rem;font-weight:600;margin:24px 0 10px}
+p{margin-bottom:14px;color:#cfd5e8}
+.content ul,.content ol{margin:0 0 16px 22px}
+.content li{margin-bottom:6px;color:#cfd5e8}
+strong{color:#fff}
+.content code{background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.85em;border:1px solid var(--border)}
+pre{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:.86rem;line-height:1.6}
+pre code{background:none;color:#cfd5e8;padding:0;border:none;font-size:inherit}
+.cm{color:var(--muted-2)} .kw{color:var(--purple)} .st{color:var(--green)} .fn{color:var(--blue-bright)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem;overflow:hidden;border-radius:10px}
+th{background:var(--card-2);color:var(--blue-bright);text-align:left;padding:11px 14px;font-weight:600;border-bottom:1px solid var(--border-2);font-size:.82rem;letter-spacing:.02em}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:#cfd5e8;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{font-size:.82em}
+tbody tr:hover{background:var(--blue-dim)}
+
+/* Cards/Blocks */
+.callout{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:14px 18px;margin:16px 0}
+.callout.warn{border-left-color:var(--orange)}
+.callout.danger{border-left-color:var(--red)}
+.callout .ct{font-weight:700;color:var(--blue-bright);margin-bottom:4px;font-size:.86rem;letter-spacing:.03em}
+.callout.warn .ct{color:var(--orange)}
+.callout.danger .ct{color:var(--red)}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 9px;border-radius:4px;font-size:.74rem;font-weight:600;font-family:monospace;letter-spacing:.02em}
+.b-green{background:rgba(0,229,204,.15);color:var(--green);border:1px solid rgba(0,229,204,.3)}
+.b-blue{background:var(--blue-dim);color:var(--blue-bright);border:1px solid rgba(90,200,255,.3)}
+.b-orange{background:rgba(255,176,32,.15);color:var(--orange);border:1px solid rgba(255,176,32,.3)}
+.b-purple{background:rgba(179,136,255,.15);color:var(--purple);border:1px solid rgba(179,136,255,.3)}
+
+/* Tool grid */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:16px 0}
+.tool{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;transition:all .2s}
+.tool:hover{border-color:var(--blue);transform:translateY(-2px)}
+.tool .cmd{color:var(--blue-bright);font-family:monospace;font-size:.82rem;margin-bottom:4px;font-weight:600}
+.tool .desc{color:var(--muted);font-size:.82rem;line-height:1.4}
+
+/* Footer */
+footer{text-align:center;padding:60px 5vw 40px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+footer .links{display:flex;gap:24px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--blue)}
+.credit{margin-top:12px;font-size:.85rem}
+.credit span{color:var(--blue)}
+
+/* Back to top */
+.btt{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--blue);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;z-index:50;opacity:0;pointer-events:none;transition:all .3s}
+.btt.show{opacity:1;pointer-events:auto}
+.btt:hover{background:var(--blue);color:var(--bg);transform:translateY(-3px)}
+
+@media(max-width:960px){
+  .toc{display:none}
+  .layout{padding:80px 5vw 40px}
+  .content{max-width:100%}
+}
+@media(max-width:600px){
+  nav .links a:not(.btn){display:none}
+  .content{font-size:14px}
+  table{font-size:.78rem}
+  th,td{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🅰 <span>Angles</span> <span style="color:var(--muted-2);font-weight:400">/ Docs</span></div>
+  <div class="links">
+    <a href="../">Home</a>
+    <a href="tools.html">Tools</a>
+    <a href="faq.html">FAQ</a>
+    <a href="https://github.com/ZSJ305/angles-cli">GitHub</a>
+    <a href="https://github.com/ZSJ305/angles-cli#readme">README</a>
+    <a href="https://www.npmjs.com/package/@angleschina/angles" class="btn btn-ghost">npm</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="toc" id="toc">
+    <h4>Getting Started</h4>
+    <a href="#overview">Overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#install">Install</a>
+    <a href="#build">Build From Source</a>
+    <a href="#quickstart">快速Getting Started</a>
+    <h4>Configuration</h4>
+    <a href="#config">config.json</a>
+    <a href="#gateway">Gateway Wizard</a>
+    <a href="#providers">Provider System</a>
+    <a href="#protocols">API Protocols</a>
+    <h4>Reference</h4>
+    <a href="#cli">CLI Commands</a>
+    <a href="#tools">Agent Tools</a>
+    <a href="#system-prompt">System Prompt</a>
+    <a href="#agents-md">AGENTS.md</a>
+    <a href="#safety">Safety & Approval</a>
+    <a href="#search">Web Search</a>
+    <a href="#dependencies">Dependencies</a>
+  </aside>
+
+  <main class="content">
+
+<h1>技术文档</h1>
+<p class="lead">Angles Code CLI 的完整技术Reference：Architecture、Install、构建、Configuration、Provider、工具命令、System Prompt与安全策略。</p>
+
+<h2 id="overview">Overview <a class="anchor" href="#overview">#</a></h2>
+<p>Angles Code CLI 是一个基于终端的 agentic 编码助手，用 Rust 编写，作为单二进制分发。它把 LLM 变成一个能在你的文件系统、终端、Git 仓库里真正干活的 agent——通过一组 <code>angles-*</code> 工具命令操作环境，配合可Configuration的审批策略在自主与安全之间平衡。</p>
+<table>
+<thead><tr><th>属性</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>语言 / 运行时</td><td>Rust 2021，单二进制，无运行时依赖</td></tr>
+<tr><td>Rust 最低版本</td><td><code>1.75.0</code>（<code>install.sh</code> 会校验并自动升级 rustup）</td></tr>
+<tr><td>分发</td><td>预编译二进制 (tar.gz) / 源码编译 / npm Install器 (<code>@angleschina/angles</code>)</td></tr>
+<tr><td>平台</td><td>Linux (x64 / arm64 / armv7 / riscv64) · macOS (Intel / Apple Silicon) · Windows · WSL2 · Alpine</td></tr>
+<tr><td>Provider</td><td>11 家预设 + 自定义（OpenAI / Anthropic / Gemini / DeepSeek / Grok / MiniMax / OpenRouter / Qwen / GLM / Kimi 等）</td></tr>
+<tr><td>API Protocols</td><td><code>chat</code>（OpenAI 兼容）/ <code>anthropic</code>（Messages）/ <code>gemini</code>（原生）三选一</td></tr>
+<tr><td>工具</td><td>30+ 个 <code>angles-*</code> 内置工具，覆盖文件、目录、终端、网络、Git</td></tr>
+<tr><td>许可证</td><td>MIT</td></tr>
+</tbody>
+</table>
+
+<h2 id="architecture">Architecture <a class="anchor" href="#architecture">#</a></h2>
+<p>源码组织为 9 个 Rust 模块，职责清晰、单一：</p>
+<table>
+<thead><tr><th width="180">模块</th><th>职责</th></tr></thead>
+<tbody>
+<tr><td><code>main.rs</code></td><td>入口点与命令路由，初始化 tokio 运行时</td></tr>
+<tr><td><code>cli.rs</code></td><td>Clap CLI 定义、子命令与 <code>help</code> 文本</td></tr>
+<tr><td><code>config.rs</code></td><td><code>~/.angles/config.json</code> 的加载 / 保存 / 展示</td></tr>
+<tr><td><code>provider.rs</code></td><td>11 家 Provider 注册表（从 <code>providers.toml</code> 构建），含 base_url 与默认模型</td></tr>
+<tr><td><code>gateway.rs</code></td><td>TUI 设置向导（基于 dialoguer），五步交互式Configuration</td></tr>
+<tr><td><code>instructions.rs</code></td><td>System Prompt模板渲染，Handlebars 模板 + <code>{{variable}}</code> 注入</td></tr>
+<tr><td><code>api.rs</code></td><td>API 客户端（OpenAI / Anthropic / Gemini）+ 流式响应 + 工具调用循环</td></tr>
+<tr><td><code>search.rs</code></td><td>Web Search引擎 URL 构造器</td></tr>
+<tr><td><code>tools.rs</code></td><td>30+ 个 <code>angles-*</code> 工具实现 + <code>doctor</code> 诊断</td></tr>
+</tbody>
+</table>
+<div class="callout">
+<div class="ct">运行时数据</div>
+Configuration目录 <code>~/.angles/</code>，二进制位于 <code>~/.local/bin/angles</code>（Windows: <code>%USERPROFILE%\.local\bin\angles.exe</code>）。所有状态本地化，不上报任何服务器。
+</div>
+<p>仓库结构：</p>
+<pre><code><span class="cm">angles-cli/
+├── src/
+│   ├── main.rs          # 入口 & 命令路由
+│   ├── cli.rs           # Clap CLI 定义
+│   ├── config.rs        # Configuration load/save/display
+│   ├── provider.rs      # 11 provider 注册表
+│   ├── gateway.rs       # TUI 向导 (dialoguer)
+│   ├── instructions.rs  # System Prompt模板 (handlebars)
+│   ├── api.rs           # API client + 流式 + 工具循环
+│   ├── search.rs        # 搜索 URL 构造
+│   └── tools.rs         # 30+ 工具 + doctor
+├── instructions.txt     # 13K System Prompt模板
+├── providers.toml       # Provider 数据源
+├── gateway-flow.md      # TUI 向导流程规范
+├── AGENTS.md            # Agent ToolsReference
+├── Cargo.toml / Makefile / Cross.toml
+└── install.sh / install.ps1</span></code></pre>
+
+<h2 id="install">Install <a class="anchor" href="#install">#</a></h2>
+<p>四种官方Install方式，装到的二进制完全相同：</p>
+<h3>1. npm（全平台推荐）</h3>
+<pre><code>npm i -g <span class="st">@angleschina/angles</span> && angles install</code></pre>
+<p>npm 包内含 <code>bin/angles.js</code> 启动器与 <code>install.sh</code> / <code>install.ps1</code>。<code>angles install</code> 子命令根据平台调用对应脚本Install Rust 二进制；其它子命令转发给已Install的二进制。<code>postinstall</code> 钩子只打印提示，不强制编译，不会破坏 <code>npm install</code> 体验。</p>
+<h3>2. curl 单行（Linux / macOS / WSL2）</h3>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash</code></pre>
+<h3>3. wget 单行</h3>
+<pre><code>wget -qO- https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.sh | bash</code></pre>
+<h3>4. PowerShell 单行（原生 Windows）</h3>
+<pre><code>irm https://raw.githubusercontent.com/ZSJ305/angles-cli/main/install.ps1 | iex</code></pre>
+<div class="callout warn">
+<div class="ct">root 要求（install.sh）</div>
+<code>install.sh</code> 当前要求 root 运行（<code>sudo ... | sudo bash</code>），因为它需要调用包管理器Install编译工具链。Windows 用户被自动引导到 <code>install.ps1</code>。
+</div>
+<h3>Install器内部流程</h3>
+<p><code>install.sh</code> / <code>install.ps1</code> 共享同一套四步流程，带进度条与剩余时间估算：</p>
+<ol>
+<li><strong>准备环境</strong> — 先探测预编译二进制 URL 是否可用：<ul><li>✅ 可用 → 跳过编译工具 / Git / Rust Install，直接进 Step 2 下二进制</li><li>❌ 不可用 → 装 apt / apk / dnf / yum / pacman / zypper / emerge / xbps / homebrew / winget / VS Build Tools + Git + Rust (≤ 1.75 则升级)</li></ul></li>
+<li><strong>Install Angles</strong> — 优先拉取预编译 tar.gz（<code>angles-&lt;os&gt;-&lt;arch&gt;.tar.gz</code>），失败则 clone 仓库从源码 <code>cargo build --release</code></li>
+<li><strong>Configuration PATH</strong> — 写入 <code>~/.bashrc</code> / <code>.zshrc</code> / <code>.fish</code> / <code>.nu</code>，可选 symlink 到 <code>/usr/local/bin</code></li>
+<li><strong>验证 & 初始Configuration</strong> — 执行 <code>angles --version</code> 确认，首次Install（无 <code>config.json</code>）触发 <code>angles gateway</code> 向导</li>
+</ol>
+<p>支持的环境变量：<code>NO_PROMPT=1</code>（跳过交互）、<code>NO_GATEWAY=1</code>（跳过向导）、<code>DRY_RUN=1</code>（只演示不改）、<code>ANGLES_REPO</code>（自定义仓库）、<code>ANGLES_INSTALL_DIR</code>（自定义Install目录）。</p>
+
+<h3>预编译支持矩阵</h3>
+<p>不是所有平台都有预编译二进制——没有的会 fallback 到源码编译（需要 Rust 工具链）。下表列出 Release v0.1.0 当前覆盖的情况：</p>
+<table>
+<thead><tr><th>平台</th><th>预编译二进制</th><th>Install方式</th></tr></thead>
+<tbody>
+<tr><td>Linux arm64 (musl 静态)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 root / Rust</td></tr>
+<tr><td>Linux x64 (musl 静态)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 root / Rust</td></tr>
+<tr><td>macOS arm64 (Apple Silicon)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 Xcode CLT / Rust</td></tr>
+<tr><td>macOS x64 (Intel)</td><td><span class="badge b-green">有</span></td><td>只下载，无需 Xcode CLT / Rust</td></tr>
+<tr><td>Windows x64</td><td><span class="badge b-orange">无（规划中）</span></td><td>fallback 编译：需 VS Build Tools + Rust</td></tr>
+<tr><td>Linux armv7</td><td><span class="badge b-orange">无</span></td><td>fallback 编译：需 Rust 交叉编译</td></tr>
+<tr><td>Linux riscv64</td><td><span class="badge b-orange">无</span></td><td>fallback 编译：需 Rust 交叉编译</td></tr>
+</tbody>
+</table>
+<div class="callout">
+<div class="ct">为什么分两种路径</div>
+有预编译的平台（Linux/macOS 4 个 target）整个Install只需几秒下载一个 ~1.6 MB tar.gz，iSH / 树莓派 / Alpine / 无 root 环境都能直接装。没预编译的平台（Windows / armv7 / riscv64）必须装重型工具链源码编译。Windows 预编译是 v0.2 的重点。
+</div>
+
+<h2 id="build">Build From Source <a class="anchor" href="#build">#</a></h2>
+<h3>本地构建</h3>
+<pre><code><span class="cm"># 装 Rust</span>
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+<span class="cm"># clone & build</span>
+git clone https://github.com/ZSJ305/angles-cli.git
+cd angles-cli
+cargo build --release
+
+<span class="cm"># Install到 PATH</span>
+cp target/release/angles ~/.local/bin/</code></pre>
+<h3>交叉编译（via Makefile）</h3>
+<table>
+<thead><tr><th>make 目标</th><th>目标三元组</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>make setup-arm64 && make arm64</code></td><td><code>aarch64-unknown-linux-musl</code></td><td>Linux ARM64 静态二进制</td></tr>
+<tr><td><code>make setup-x64 && make x64</code></td><td><code>x86_64-unknown-linux-musl</code></td><td>Linux x86_64 静态二进制</td></tr>
+<tr><td><code>make macos-arm64</code></td><td><code>aarch64-apple-darwin</code></td><td>macOS Apple Silicon（仅 macOS 上可构建）</td></tr>
+</tbody>
+</table>
+<h3>Release profile</h3>
+<p><code>Cargo.toml</code> 的 release profile 已优化体积：<code>opt-level = "s"</code>、<code>lto = true</code>、<code>strip = true</code>。</p>
+
+<h2 id="quickstart">快速Getting Started <a class="anchor" href="#quickstart">#</a></h2>
+<pre><code><span class="cm"># 首次Configuration（交互式向导）</span>
+<span class="fn">angles</span> gateway
+
+<span class="cm"># 默认进入对话</span>
+<span class="fn">angles</span>
+
+<span class="cm"># 非交互模式，执行单条指令后退出</span>
+<span class="fn">angles</span> exec <span class="st">"写一个 Python HTTP 服务器"</span>
+
+<span class="cm"># 查看当前Configuration</span>
+<span class="fn">angles</span> config
+
+<span class="cm"># 查看所有命令</span>
+<span class="fn">angles</span> help
+
+<span class="cm"># 诊断Install / Configuration / 网络</span>
+<span class="fn">angles</span> doctor</code></pre>
+
+<h2 id="config">config.json 字段Reference <a class="anchor" href="#config">#</a></h2>
+<p>Configuration存储在 <code>~/.angles/config.json</code>。完整 schema：</p>
+<pre><code>{
+  <span class="st">"language"</span>: <span class="st">"zh-CN"</span>,              <span class="cm">// 全局默认响应语言</span>
+  <span class="st">"provider"</span>: <span class="st">"glm"</span>,              <span class="cm">// provider id，见 providers.toml</span>
+  <span class="st">"base_url"</span>: <span class="st">"https://api.siliconflow.cn/v1"</span>,
+  <span class="st">"wire_api"</span>: <span class="st">"chat"</span>,             <span class="cm">// chat | anthropic | gemini</span>
+  <span class="st">"model"</span>: <span class="st">"zai-org/GLM-5.2"</span>,
+  <span class="st">"api_key"</span>: <span class="st">""</span>,                  <span class="cm">// 空时读 ANGLES_API_KEY 环境变量</span>
+  <span class="st">"max_tokens"</span>: <span class="kw">16384</span>,            <span class="cm">// 单次回复 token 上限</span>
+  <span class="st">"daily_token_budget"</span>: <span class="kw">1000000</span>, <span class="cm">// 每日 token 预算</span>
+  <span class="st">"agent_persona"</span>: <span class="st">"你是一个专业、高效的编码助手。"</span>,
+  <span class="st">"search_engine"</span>: <span class="st">"bing"</span>,        <span class="cm">// bing | baidu | google | yahoo | custom | disabled</span>
+  <span class="st">"search_engine_url"</span>: <span class="st">""</span>,         <span class="cm">// custom 时使用，{q} 会被替换</span>
+  <span class="st">"approval_policy"</span>: <span class="st">"untrusted"</span>,  <span class="cm">// never | untrusted | on-request</span>
+  <span class="st">"daily_tokens_used"</span>: <span class="kw">0</span>,        <span class="cm">// 当日已消耗 token（运行时维护）</span>
+  <span class="st">"daily_reset_date"</span>: <span class="st">"2026-07-20"</span> <span class="cm">// 每日预算重置日期</span>
+}</code></pre>
+
+<table>
+<thead><tr><th width="160">字段</th><th>类型</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>language</code></td><td>enum</td><td><code>zh-CN</code> / <code>en-US</code> / <code>ja-JP</code>，决定 agent 默认响应语言</td></tr>
+<tr><td><code>provider</code></td><td>string</td><td>Provider id，对应 <code>providers.toml</code> 中 <code>[[providers]] id</code></td></tr>
+<tr><td><code>base_url</code></td><td>string</td><td>API 主机地址（含版本路径，如 <code>/v1</code>）</td></tr>
+<tr><td><code>wire_api</code></td><td>enum</td><td><span class="badge b-green">chat</span> OpenAI 兼容 · <span class="badge b-purple">anthropic</span> Messages API · <span class="badge b-orange">gemini</span> 原生 API</td></tr>
+<tr><td><code>model</code></td><td>string</td><td>模型 ID（如 <code>gpt-4.1</code>、<code>claude-sonnet-4-20250514</code>）</td></tr>
+<tr><td><code>api_key</code></td><td>string</td><td>留空时从环境变量 <code>ANGLES_API_KEY</code> 读取</td></tr>
+<tr><td><code>max_tokens</code></td><td>int</td><td>单次回复 token 上限，默认 16384</td></tr>
+<tr><td><code>daily_token_budget</code></td><td>int</td><td>每日总预算，默认 1000000；接近时 agent 会警告</td></tr>
+<tr><td><code>agent_persona</code></td><td>text</td><td>2-3 句话描述期望行为，注入System Prompt <code>{{agent_persona}}</code></td></tr>
+<tr><td><code>search_engine</code></td><td>enum</td><td>Web Search引擎</td></tr>
+<tr><td><code>search_engine_url</code></td><td>string</td><td><code>custom</code> 时使用，<code>{q}</code> 占位符替换为查询词</td></tr>
+<tr><td><code>approval_policy</code></td><td>enum</td><td>工具调用审批策略</td></tr>
+<tr><td><code>daily_tokens_used</code></td><td>int</td><td>运行时维护，每日重置</td></tr>
+<tr><td><code>daily_reset_date</code></td><td>date</td><td>字符串日期，跨日时自动清零已用</td></tr>
+</tbody>
+</table>
+
+<h2 id="gateway">Gateway 设置向导 <a class="anchor" href="#gateway">#</a></h2>
+<p><code>angles gateway</code> 启动五步 TUI 向导（基于 <code>dialoguer</code>），任何Configuration字段都可在向导中修改：</p>
+<ol>
+<li><strong>语言</strong> — 中文 / English / 日本語，切换后续界面与 agent 默认语言</li>
+<li><strong>模型提供方</strong> — 11 家预设 + 自定义；选预设自动填 base_url 进入 Key 输入，选自定义先填 URL/Key/Model/协议</li>
+<li><strong>模型选择</strong> — 从 <code>providers.toml</code> 读取每个 provider 的预设列表，最后一项允许手动输入任意 model ID</li>
+<li><strong>偏好</strong> — max_tokens、daily_token_budget、agent_persona 文本、approval_policy</li>
+<li><strong>Web Search</strong> — bing / baidu / google / yahoo / 自定义 URL / 关闭；自定义时填 <code>https://.../?q={q}</code> 模板</li>
+</ol>
+<p>完成后向导写入 <code>~/.angles/config.json</code>，显示Configuration摘要，并提示运行 <code>angles chat</code>。</p>
+
+<h2 id="providers">Provider System <a class="anchor" href="#providers">#</a></h2>
+<p>11 家预置 + 自定义，All从 <code>providers.toml</code> 加载到 <code>provider.rs</code> 注册表：</p>
+<table>
+<thead><tr><th>id</th><th>名称</th><th>API Host</th><th>协议</th><th>默认模型</th></tr></thead>
+<tbody>
+<tr><td><code>openai</code></td><td>OpenAI</td><td><code>api.openai.com/v1</code></td><td><span class="badge b-green">chat</span></td><td>gpt-4.1</td></tr>
+<tr><td><code>claude</code></td><td>Claude (Anthropic)</td><td><code>api.anthropic.com</code></td><td><span class="badge b-purple">anthropic</span></td><td>claude-sonnet-4-20250514</td></tr>
+<tr><td><code>gemini</code></td><td>Gemini (Google)</td><td><code>generativelanguage.googleapis.com/v1beta</code></td><td><span class="badge b-orange">gemini</span></td><td>gemini-2.5-pro</td></tr>
+<tr><td><code>deepseek</code></td><td>DeepSeek</td><td><code>api.deepseek.com/v1</code></td><td><span class="badge b-green">chat</span></td><td>deepseek-chat</td></tr>
+<tr><td><code>grok</code></td><td>Grok (xAI)</td><td><code>api.x.ai/v1</code></td><td><span class="badge b-green">chat</span></td><td>grok-4</td></tr>
+<tr><td><code>minimax</code></td><td>MiniMax</td><td><code>api.minimax.chat/v1</code></td><td><span class="badge b-green">chat</span></td><td>MiniMax-M1</td></tr>
+<tr><td><code>openrouter</code></td><td>OpenRouter</td><td><code>openrouter.ai/api/v1</code></td><td><span class="badge b-green">chat</span></td><td>openrouter/auto</td></tr>
+<tr><td><code>qwen</code></td><td>通义千问 Qwen</td><td><code>dashscope.aliyuncs.com/compatible-mode/v1</code></td><td><span class="badge b-green">chat</span></td><td>qwen3-235b-a22b</td></tr>
+<tr><td><code>glm</code></td><td>智谱 GLM</td><td><code>api.siliconflow.cn/v1</code></td><td><span class="badge b-green">chat</span></td><td>zai-org/GLM-5.2</td></tr>
+<tr><td><code>kimi</code></td><td>Kimi (Moonshot)</td><td><code>api.moonshot.cn/v1</code></td><td><span class="badge b-green">chat</span></td><td>moonshot-v1-auto</td></tr>
+<tr><td><code>custom</code></td><td>自定义</td><td>（手动）</td><td>由用户填</td><td>（手动）</td></tr>
+</tbody>
+</table>
+<div class="callout">
+<div class="ct">自定义 Provider</div>
+Gateway Wizard中选「自定义」可填任意 <code>base_url</code> / <code>api_key</code> / <code>model</code> / <code>wire_api</code>。OpenAI 兼容端点（DeepSeek / Qwen / 百川 / Mistral 等大多数）直接选 <code>chat</code> 协议即可接入，无需改代码。
+</div>
+
+<h2 id="protocols">API Protocols适配 <a class="anchor" href="#protocols">#</a></h2>
+<p><code>api.rs</code> 同时支持三种协议：</p>
+<table>
+<thead><tr><th width="120">wire_api</th><th>请求形态</th><th>适用</th></tr></thead>
+<tbody>
+<tr><td><span class="badge b-green">chat</span></td><td>POST <code>/chat/completions</code>，OpenAI 格式</td><td>OpenAI 及所有兼容端点（DeepSeek、Qwen、GLM、Kimi、Grok、MiniMax、OpenRouter，含兼容模式通义）</td></tr>
+<tr><td><span class="badge b-purple">anthropic</span></td><td>POST <code>/v1/messages</code>，Anthropic Messages 格式</td><td>Claude（Anthropic 原生协议）</td></tr>
+<tr><td><span class="badge b-orange">gemini</span></td><td>POST <code>/v1beta/models/&lt;model&gt;:generateContent</code></td><td>Gemini（Google 原生协议）</td></tr>
+</tbody>
+</table>
+<p>所有协议都支持流式响应（SSE）。工具调用的循环逻辑统一在 <code>api.rs</code> 内处理：模型发出 <code>angles-*</code> 调用请求 → CLI 解析、根据审批策略决定是否询问 → 执行工具 → 把结果回灌给模型 → 直到模型不再发起新调用。</p>
+
+<h2 id="cli">CLI CommandsReference <a class="anchor" href="#cli">#</a></h2>
+<p>用户可在终端直接调用的子命令：</p>
+<table>
+<thead><tr><th width="180">命令</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>angles help</code></td><td>列出所有命令及含义</td></tr>
+<tr><td><code>angles config</code></td><td>显示当前Configuration（provider / 模型 / 偏好等）</td></tr>
+<tr><td><code>angles gateway</code></td><td>启动 TUI 设置向导</td></tr>
+<tr><td><code>angles chat</code></td><td>Getting Started交互对话（默认模式）</td></tr>
+<tr><td><code>angles exec &lt;prompt&gt;</code></td><td>非交互模式，执行单条指令后退出</td></tr>
+<tr><td><code>angles history</code></td><td>查看历史会话列表</td></tr>
+<tr><td><code>angles resume &lt;id&gt;</code></td><td>恢复指定历史会话</td></tr>
+<tr><td><code>angles plan</code></td><td>显示 / 管理当前任务计划</td></tr>
+<tr><td><code>angles update</code></td><td>检查并更新 Angles CLI</td></tr>
+<tr><td><code>angles doctor</code></td><td>诊断Install、Configuration、网络连通性</td></tr>
+</tbody>
+</table>
+
+<h2 id="tools">Agent Tools命令 <a class="anchor" href="#tools">#</a></h2>
+<p>Agent 通过 <code>angles-*</code> 前缀的工具调用操作环境。All 30+ 内置工具分组：</p>
+
+<h3>File Creation与写入 <span class="badge b-blue">4</span></h3>
+<div class="tools-grid">
+<div class="tool"><div class="cmd">angles-createfile &lt;path&gt; [content]</div><div class="desc">创建新文件写入；已存在报错。content 可经 stdin 传入</div></div>
+<div class="tool"><div class="cmd">angles-writefile &lt;path&gt; [content]</div><div class="desc">覆盖写入；不存在自动创建</div></div>
+<div class="tool"><div class="cmd">angles-appendfile &lt;path&gt; &lt;content&gt;</div><div class="desc">追加到文件末尾</div></div>
+<div class="tool"><div class="cmd">angles-insertline &lt;path&gt; &lt;line&gt; &lt;content&gt;</div><div class="desc">在指定行号前插入一行</div></div>
+</div>
+
+<h3>文件读取与搜索 <span class="badge b-blue">5</span></h3>
+<div class="tools-grid">
+<div class="tool"><div class="cmd">angles-readfile &lt;path&gt; [start] [end]</div><div class="desc">读取文件，可指定行范围</div></div>
+<div class="tool"><div class="cmd">angles-searchfile &lt;pattern&gt; [dir]</div><div class="desc">按文件名 glob 搜索</div></div>
+<div class="tool"><div class="cmd">angles-grep &lt;pattern&gt; [dir]</div><div class="desc">正则搜索文件内容</div></div>
+<div class="tool"><div class="cmd">angles-head &lt;path&gt; [n]</div><div class="desc">前 n 行，默认 10</div></div>
+<div class="tool"><div class="cmd">angles-tail &lt;path&gt; [n]</div><div class="desc">最后 n 行，默认 10</div></div>
+</div>
+
+<h3>文件修改与删除 <span class="badge b-blue">7</span></h3>
+<div class="tools-grid">
+<div class="tool"><div class="cmd">angles-replace &lt;path&gt; &lt;old&gt; &lt;new&gt;</div><div class="desc">精确替换首次出现的 old_text</div></div>
+<div class="tool"><div class="cmd">angles-replaceall &lt;path&gt; &lt;old&gt; &lt;new&gt;</div><div class="desc">替换所有出现</div></div>
+<div class="tool"><div class="cmd">angles-deleteline &lt;path&gt; &lt;line&gt;</div><div class="desc">删除指定行</div></div>
+<div class="tool"><div class="cmd">angles-deletefile &lt;path&gt;</div><div class="desc">删除文件（始终需确认）</div></div>
+<div class="tool"><div class="cmd">angles-movedir &lt;src&gt; &lt;dst&gt;</div><div class="desc">移动/重命名文件或目录</div></div>
+<div class="tool"><div class="cmd">angles-copyfile &lt;src&gt; &lt;dst&gt;</div><div class="desc">复制文件</div></div>
+<div class="tool"><div class="cmd">angles-mkdir &lt;dir&gt;</div><div class="desc">创建目录（含父目录）</div></div>
+</div>
+
+<h3>目录与项目 <span class="badge b-blue">5</span></h3>
+<div class="tools-grid">
+<div class="tool"><div class="cmd">angles-ls [dir]</div><div class="desc">列出目录内容</div></div>
+<div class="tool"><div class="cmd">angles-tree [dir] [depth]</div><div class="desc">树形结构，默认深度 3</div></div>
+<div class="tool"><div class="cmd">angles-pwd</div><div class="desc">当前工作目录</div></div>
+<div class="tool"><div class="cmd">angles-cd &lt;dir&gt;</div><div class="desc">切换工作目录</div></div>
+<div class="tool"><div class="cmd">angles-fileinfo &lt;path&gt;</div><div class="desc">文件元信息（大小、权限、mtime）</div></div>
+</div>
+
+<h3>终端与执行 <span class="badge b-blue">3</span></h3>
+<div class="tools-grid">
+<div class="tool"><div class="cmd">angles-run &lt;cmd&gt; [args...]</div><div class="desc">执行命令并返回输出</div></div>
+<div class="tool"><div class="cmd">angles-runbg &lt;cmd&gt; [args...]</div><div class="desc">后台执行，返回 PID</div></div>
+<div class="tool"><div class="cmd">angles-kill &lt;pid&gt;</div><div class="desc">终止指定进程</div></div>
+</div>
+
+<h3>网络与搜索 <span class="badge b-blue">2</span></h3>
+<div class="tools-grid">
+<div class="tool"><div class="cmd">angles-fetch &lt;url&gt; [output]</div><div class="desc">下载 URL；不指定 output 则输出到 stdout</div></div>
+<div class="tool"><div class="cmd">angles-websearch &lt;query&gt;</div><div class="desc">用Configuration的搜索引擎查询，返回结果摘要</div></div>
+</div>
+
+<h3>Git <span class="badge b-blue">5</span></h3>
+<div class="tools-grid">
+<div class="tool"><div class="cmd">angles-gitinit [dir]</div><div class="desc">初始化 git 仓库</div></div>
+<div class="tool"><div class="cmd">angles-gitcommit &lt;msg&gt;</div><div class="desc">暂存所有更改并提交</div></div>
+<div class="tool"><div class="cmd">angles-gitlog [n]</div><div class="desc">最近 n 条提交，默认 10</div></div>
+<div class="tool"><div class="cmd">angles-gitdiff [path]</div><div class="desc">显示未暂存更改</div></div>
+<div class="tool"><div class="cmd">angles-gitbranch &lt;name&gt;</div><div class="desc">创建并切换到新分支</div></div>
+</div>
+
+<div class="callout">
+<div class="ct">工具选择偏好</div>
+创建新文件用 <code>angles-createfile</code>；改文件优先用 <code>angles-replace</code>（精确替换）而非全量 <code>writefile</code>；搜索代码用 <code>angles-grep</code>，搜索文件名用 <code>angles-searchfile</code>；优先用专属 <code>angles-*</code> 命令而非 <code>angles-run</code> 调系统命令。
+</div>
+
+<h2 id="system-prompt">System Prompt & 模板 <a class="anchor" href="#system-prompt">#</a></h2>
+<p>System prompt 模板存储在 <code>instructions.txt</code>（约 13KB），由 <code>instructions.rs</code> 用 Handlebars 渲染。模板中的 <code>{{variable}}</code> 占位符在运行时从 config 注入：</p>
+<table>
+<thead><tr><th>占位符</th><th>来源</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td><code>{{arch}}</code> / <code>{{os}}</code></td><td>运行时检测</td><td>注入系统Architecture信息</td></tr>
+<tr><td><code>{{language}}</code></td><td>config</td><td>agent 默认响应语言</td></tr>
+<tr><td><code>{{provider}}</code> / <code>{{base_url}}</code> / <code>{{model}}</code></td><td>config</td><td>当前模型与端点</td></tr>
+<tr><td><code>{{max_tokens}}</code> / <code>{{daily_token_budget}}</code></td><td>config</td><td>预算约束</td></tr>
+<tr><td><code>{{agent_persona}}</code></td><td>config</td><td>自由文本人设描述</td></tr>
+<tr><td><code>{{search_engine}}</code> / <code>{{approval_policy}}</code></td><td>config</td><td>运行时Configuration上下文</td></tr>
+</tbody>
+</table>
+<p>模板内置丰富指令：编码准则（修根因、避免复杂度、保持代码风格）、Preamble 消息原则、Planning（5-7 字步骤）、错误处理（重试 2 次、3 次后问用户）、Token 预算意识、危险操作的强制确认。</p>
+
+<h2 id="agents-md">AGENTS.md 规范 <a class="anchor" href="#agents-md">#</a></h2>
+<p>仓库任何位置可放 <code>AGENTS.md</code>，为 agent 提供工作指令：</p>
+<ul>
+<li><strong>作用域</strong> — 从包含该文件的目录起到整棵子树</li>
+<li><strong>对该子树内触碰的每个文件</strong>，必须遵从作用域覆盖它的 <code>AGENTS.md</code> 指令</li>
+<li><strong>冲突优先级</strong> — 更深层嵌套的 <code>AGENTS.md</code> 胜出</li>
+<li><strong>最高优先级</strong> — 直接的 system / developer / user 指令压过 <code>AGENTS.md</code></li>
+<li><strong>自动加载</strong> — 根目录与从 CWD 到根路径上的 <code>AGENTS.md</code> 已随 developer message 注入，无需重复读取；在子目录或 CWD 外工作时需主动检查</li>
+</ul>
+<p>典型用法：编码规范、代码组织约定、运行 / 测试说明。</p>
+
+<h2 id="safety">Safety & Approval策略 <a class="anchor" href="#safety">#</a></h2>
+<p>三档审批策略，Configuration在 <code>approval_policy</code>：</p>
+<table>
+<thead><tr><th width="120">策略</th><th>行为</th></tr></thead>
+<tbody>
+<tr><td><span class="badge b-green">never</span></td><td>所有工具调用自动执行，最快但风险最高</td></tr>
+<tr><td><span class="badge b-orange">untrusted</span></td><td>只自动执行只读、安全命令；任何破坏性操作都问用户（默认值）</td></tr>
+<tr><td><span class="badge b-purple">on-request</span></td><td>agent 自行判断何时请示，靠 agent 的好判断力</td></tr>
+</tbody>
+</table>
+<div class="callout danger">
+<div class="ct">始终需确认（无视策略）</div>
+<ul style="margin:6px 0 0">
+<li><code>angles-deletefile</code> — 永久删除</li>
+<li><code>angles-run</code> 配合 <code>rm -rf</code> / <code>sudo</code> / <code>mkfs</code> / <code>dd</code> 等破坏性命令</li>
+<li><code>angles-run git push --force</code></li>
+<li>任何修改工作区外文件的操作</li>
+</ul>
+</div>
+
+<h2 id="search">Web Search引擎 <a class="anchor" href="#search">#</a></h2>
+<p><code>angles-websearch</code> 调用 <code>search.rs</code> 构造查询 URL 并返回摘要。</p>
+<table>
+<thead><tr><th width="120">引擎</th><th>特点</th></tr></thead>
+<tbody>
+<tr><td><code>bing</code></td><td>通用 + AI 摘要，稳定（推荐）</td></tr>
+<tr><td><code>baidu</code></td><td>中文内容丰富</td></tr>
+<tr><td><code>google</code></td><td>覆盖最广，可能需验证码处理</td></tr>
+<tr><td><code>yahoo</code></td><td>备用，覆盖中等</td></tr>
+<tr><td><code>custom</code></td><td>填 <code>search_engine_url</code>，<code>{q}</code> 替换为查询词</td></tr>
+<tr><td><code>disabled</code></td><td>禁用Web Search</td></tr>
+</tbody>
+</table>
+<p>原则：准确性重要时优先搜索而非猜测；查询词要具体；搜索失败先简化查询再放弃。</p>
+
+<h2 id="dependencies">Rust Dependencies <a class="anchor" href="#dependencies">#</a></h2>
+<p>来自 <code>Cargo.toml</code>：</p>
+<table>
+<thead><tr><th width="160">crate</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>clap</code> v4 (derive)</td><td>CLI 定义与解析</td></tr>
+<tr><td><code>serde</code> / <code>serde_json</code></td><td>Configuration与 API JSON 序列化</td></tr>
+<tr><td><code>toml</code> v0.8</td><td>解析 <code>providers.toml</code></td></tr>
+<tr><td><code>reqwest</code> v0.12 (rustls)</td><td>HTTP 客户端 + 流式响应（纯 Rust TLS，无 OpenSSL 依赖）</td></tr>
+<tr><td><code>tokio</code> v1 (full)</td><td>异步运行时</td></tr>
+<tr><td><code>ratatui</code> v0.29 + <code>crossterm</code></td><td>TUI 渲染（<code>gateway</code> 向导）</td></tr>
+<tr><td><code>dialoguer</code> + <code>console</code></td><td>交互式提示与终端控制</td></tr>
+<tr><td><code>futures</code> v0.3</td><td>异步流处理</td></tr>
+<tr><td><code>handlebars</code> v6</td><td>System Prompt模板渲染（<code>{{var}}</code> 注入）</td></tr>
+<tr><td><code>chrono</code></td><td>日期处理（预算重置）</td></tr>
+<tr><td><code>dirs</code> / <code>which</code></td><td>家目录定位 / 命令查找</td></tr>
+<tr><td><code>glob</code> / <code>regex</code> / <code>walkdir</code></td><td>文件搜索与内容匹配</td></tr>
+<tr><td><code>termimad</code> + <code>minimad</code></td><td>终端 Markdown 渲染</td></tr>
+<tr><td><code>colored</code> / <code>indicatif</code></td><td>彩色输出 / 进度条</td></tr>
+</tbody>
+</table>
+<div class="callout">
+<div class="ct">无 OpenSSL 依赖</div>
+<code>reqwest</code> 使用 <code>rustls-tls</code> 特性而非原生 TLS——这意味着编译只需 Rust 工具链，不需要系统 OpenSSL 开发包，交叉编译尤其友好。释放默认特性以避免引入 reqwest 的默认 OpenSSL backend。
+</div>
+
+<h2>许可与贡献</h2>
+<p>MIT 许可。源码、问题反馈、PR 欢迎：<a href="https://github.com/ZSJ305/angles-cli">github.com/ZSJ305/angles-cli</a>。</p>
+
+  </main>
+</div>
+
+<button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<footer>
+  <div class="links">
+    <a href="../">Home</a>
+    <a href="https://github.com/ZSJ305/angles-cli">GitHub</a>
+    <a href="https://www.npmjs.com/package/@angleschina/angles">npm</a>
+    <a href="https://github.com/ZSJ305/angles-cli/issues">Issues</a>
+  </div>
+  <div class="credit">MIT License · created by <span>ZSJ</span> 🇨🇳</div>
+</footer>
+
+<script>
+// TOC active on scroll
+const headings = document.querySelectorAll('h2[id]');
+const tocLinks = document.querySelectorAll('#toc a');
+const btt = document.getElementById('btt');
+function updateActive() {
+  let cur = '';
+  headings.forEach(h => {
+    if (window.scrollY + 100 >= h.offsetTop) cur = h.id;
+  });
+  tocLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+  btt.classList.toggle('show', window.scrollY > 600);
+}
+window.addEventListener('scroll', updateActive, {passive:true});
+updateActive();
+</script>
+</body>
+</html>
