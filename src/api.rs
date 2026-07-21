@@ -45,15 +45,35 @@ pub fn tool_definitions() -> Vec<serde_json::Value> {
     vec![
         json!({"type":"function","function":{"name":"angles-createfile","description":"Create a new file with content. Fails if file already exists.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path to create"},"content":{"type":"string","description":"File content"}},"required":["path","content"]}}}),
         json!({"type":"function","function":{"name":"angles-writefile","description":"Write content to a file (overwrite). Creates if not exists.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"content":{"type":"string","description":"File content"}},"required":["path","content"]}}}),
+        json!({"type":"function","function":{"name":"angles-appendfile","description":"Append content to end of file. Creates if not exists.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"content":{"type":"string","description":"Content to append"}},"required":["path","content"]}}}),
+        json!({"type":"function","function":{"name":"angles-insertline","description":"Insert a line before the specified line number.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"line":{"type":"integer","description":"Line number (1-based)"},"content":{"type":"string","description":"Line content"}},"required":["path","line","content"]}}}),
+        json!({"type":"function","function":{"name":"angles-readfile","description":"Read file contents, optionally a line range.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"start":{"type":"integer","description":"Start line (1-based)"},"end":{"type":"integer","description":"End line"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-head","description":"Show first n lines of a file.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"n":{"type":"integer","description":"Number of lines (default 10)"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-tail","description":"Show last n lines of a file.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"n":{"type":"integer","description":"Number of lines (default 10)"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-searchfile","description":"Search for files by name pattern (glob).","parameters":{"type":"object","properties":{"pattern":{"type":"string","description":"File name pattern (glob)"},"directory":{"type":"string","description":"Directory to search"}},"required":["pattern"]}}}),
+        json!({"type":"function","function":{"name":"angles-grep","description":"Search file contents by pattern (regex supported).","parameters":{"type":"object","properties":{"pattern":{"type":"string","description":"Search pattern (regex)"},"directory":{"type":"string","description":"Directory to search"}},"required":["pattern"]}}}),
         json!({"type":"function","function":{"name":"angles-replace","description":"Replace first occurrence of exact text in a file.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"old":{"type":"string","description":"Exact text to find"},"new":{"type":"string","description":"Replacement text"}},"required":["path","old","new"]}}}),
         json!({"type":"function","function":{"name":"angles-replaceall","description":"Replace all occurrences of exact text in a file.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"old":{"type":"string","description":"Exact text to find"},"new":{"type":"string","description":"Replacement text"}},"required":["path","old","new"]}}}),
-        json!({"type":"function","function":{"name":"angles-readfile","description":"Read file contents, optionally a line range.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"start":{"type":"integer","description":"Start line (1-based)"},"end":{"type":"integer","description":"End line"}},"required":["path"]}}}),
-        json!({"type":"function","function":{"name":"angles-grep","description":"Search file contents by pattern (regex supported).","parameters":{"type":"object","properties":{"pattern":{"type":"string","description":"Search pattern (regex)"},"directory":{"type":"string","description":"Directory to search"}},"required":["pattern"]}}}),
-        json!({"type":"function","function":{"name":"angles-searchfile","description":"Search for files by name pattern (glob supported).","parameters":{"type":"object","properties":{"pattern":{"type":"string","description":"File name pattern (glob)"},"directory":{"type":"string","description":"Directory to search"}},"required":["pattern"]}}}),
+        json!({"type":"function","function":{"name":"angles-deleteline","description":"Delete a specific line by line number.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"},"line":{"type":"integer","description":"Line number to delete (1-based)"}},"required":["path","line"]}}}),
         json!({"type":"function","function":{"name":"angles-deletefile","description":"Delete a file permanently.","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path to delete"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-copyfile","description":"Copy a file.","parameters":{"type":"object","properties":{"src":{"type":"string","description":"Source path"},"dst":{"type":"string","description":"Destination path"}},"required":["src","dst"]}}}),
+        json!({"type":"function","function":{"name":"angles-movedir","description":"Move or rename a file or directory.","parameters":{"type":"object","properties":{"src":{"type":"string","description":"Source path"},"dst":{"type":"string","description":"Destination path"}},"required":["src","dst"]}}}),
         json!({"type":"function","function":{"name":"angles-mkdir","description":"Create a directory (with parents).","parameters":{"type":"object","properties":{"path":{"type":"string","description":"Directory path"}},"required":["path"]}}}),
+        json!({"type":"function","function":{"name":"angles-ls","description":"List directory contents.","parameters":{"type":"object","properties":{"dir":{"type":"string","description":"Directory path (default: current)"}}}}}),
+        json!({"type":"function","function":{"name":"angles-tree","description":"Show directory tree.","parameters":{"type":"object","properties":{"dir":{"type":"string","description":"Directory path"},"depth":{"type":"integer","description":"Max depth (default 3)"}}}}}),
+        json!({"type":"function","function":{"name":"angles-pwd","description":"Show current working directory.","parameters":{"type":"object","properties":{}}}}),
+        json!({"type":"function","function":{"name":"angles-cd","description":"Change working directory.","parameters":{"type":"object","properties":{"dir":{"type":"string","description":"Directory path"}},"required":["dir"]}}}),
+        json!({"type":"function","function":{"name":"angles-fileinfo","description":"Get file metadata (size, permissions, mtime).","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path"}},"required":["path"]}}}),
         json!({"type":"function","function":{"name":"angles-run","description":"Execute a shell command and return output.","parameters":{"type":"object","properties":{"command":{"type":"string","description":"Shell command to run"}},"required":["command"]}}}),
+        json!({"type":"function","function":{"name":"angles-runbg","description":"Execute a command in background, returns PID.","parameters":{"type":"object","properties":{"command":{"type":"string","description":"Shell command to run"}},"required":["command"]}}}),
+        json!({"type":"function","function":{"name":"angles-kill","description":"Kill a process by PID.","parameters":{"type":"object","properties":{"pid":{"type":"integer","description":"Process ID"}},"required":["pid"]}}}),
+        json!({"type":"function","function":{"name":"angles-fetch","description":"Download a URL to a file.","parameters":{"type":"object","properties":{"url":{"type":"string","description":"URL to download"},"output":{"type":"string","description":"Output file path"}},"required":["url","output"]}}}),
         json!({"type":"function","function":{"name":"angles-websearch","description":"Perform a web search using the configured search engine.","parameters":{"type":"object","properties":{"query":{"type":"string","description":"Search query"}},"required":["query"]}}}),
+        json!({"type":"function","function":{"name":"angles-gitinit","description":"Initialize a git repository.","parameters":{"type":"object","properties":{"dir":{"type":"string","description":"Directory path (default: current)"}}}}}),
+        json!({"type":"function","function":{"name":"angles-gitcommit","description":"Stage all changes and commit.","parameters":{"type":"object","properties":{"msg":{"type":"string","description":"Commit message"}},"required":["msg"]}}}),
+        json!({"type":"function","function":{"name":"angles-gitlog","description":"Show recent git commits.","parameters":{"type":"object","properties":{"n":{"type":"integer","description":"Number of commits (default 10)"}}}}}),
+        json!({"type":"function","function":{"name":"angles-gitdiff","description":"Show git diff (unstaged changes).","parameters":{"type":"object","properties":{"path":{"type":"string","description":"File path (optional)"}}}}}),
+        json!({"type":"function","function":{"name":"angles-gitbranch","description":"Create and switch to a new branch.","parameters":{"type":"object","properties":{"name":{"type":"string","description":"Branch name"}},"required":["name"]}}}),
     ]
 }
 
@@ -63,19 +83,39 @@ pub fn execute_tool(name: &str, args: &serde_json::Value) -> String {
     match name {
         "angles-createfile" => tools::angles_createfile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-writefile" => tools::angles_writefile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-appendfile" => tools::angles_appendfile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-insertline" => tools::angles_insertline(args["path"].as_str().unwrap_or(""), args["line"].as_u64().unwrap_or(1) as usize, args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-readfile" => tools::angles_readfile(args["path"].as_str().unwrap_or(""), args["start"].as_u64().map(|v| v as usize), args["end"].as_u64().map(|v| v as usize)).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-head" => tools::angles_head(args["path"].as_str().unwrap_or(""), args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-tail" => tools::angles_tail(args["path"].as_str().unwrap_or(""), args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-searchfile" => tools::angles_searchfile(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-grep" => tools::angles_grep(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-replace" => tools::angles_replace(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-replaceall" => tools::angles_replaceall(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-readfile" => tools::angles_readfile(args["path"].as_str().unwrap_or(""), args["start"].as_u64().map(|v| v as usize), args["end"].as_u64().map(|v| v as usize)).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-grep" => tools::angles_grep(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-searchfile" => tools::angles_searchfile(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-deleteline" => tools::angles_deleteline(args["path"].as_str().unwrap_or(""), args["line"].as_u64().unwrap_or(1) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-deletefile" => tools::angles_deletefile(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-copyfile" => tools::angles_copyfile(args["src"].as_str().unwrap_or(""), args["dst"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-movedir" => tools::angles_movedir(args["src"].as_str().unwrap_or(""), args["dst"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-mkdir" => tools::angles_mkdir(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-ls" => tools::angles_ls(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-tree" => tools::angles_tree(args["dir"].as_str().unwrap_or(""), args["depth"].as_u64().unwrap_or(3) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-pwd" => tools::angles_pwd().unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-cd" => tools::angles_cd(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-fileinfo" => tools::angles_fileinfo(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-run" => tools::angles_run(args["command"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-runbg" => tools::angles_runbg(args["command"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-kill" => tools::angles_kill(args["pid"].as_u64().unwrap_or(0) as u32).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-fetch" => tools::angles_fetch(args["url"].as_str().unwrap_or(""), args["output"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         "angles-websearch" => {
             let query = args["query"].as_str().unwrap_or("");
             let url = search::search_url_from_cfg(query);
             format!("🔍 搜索: {}", url)
         }
+        "angles-gitinit" => tools::angles_gitinit(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-gitcommit" => tools::angles_gitcommit(args["msg"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-gitlog" => tools::angles_gitlog(args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-gitdiff" => tools::angles_gitdiff(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-gitbranch" => tools::angles_gitbranch(args["name"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
         _ => format!("❌ 未知工具: {}", name),
     }
 }
@@ -401,7 +441,7 @@ pub fn start_chat(cfg: Config) -> Result<(), Box<dyn std::error::Error>> {
     rt.block_on(start_chat_async(cfg))
 }
 
-pub fn exec_once(cfg: Config, prompt: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn exec_once(cfg: Config, prompt: &str) -> Result<String, Box<dyn std::error::Error>> {
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(exec_once_async(cfg, prompt))
 }
@@ -498,15 +538,14 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
     Ok(())
 }
 
-async fn exec_once_async(cfg: Config, prompt: &str) -> Result<(), Box<dyn std::error::Error>> {
+async fn exec_once_async(cfg: Config, prompt: &str) -> Result<String, Box<dyn std::error::Error>> {
     let system_prompt = instructions::render(&cfg);
     let api_key = resolve_api_key(&cfg);
     let client = Client::new();
     let messages = vec![Message { role: "user".into(), content: prompt.into(), tool_calls: None }];
 
     let result = stream_turn(&cfg, &system_prompt, &api_key, &client, &messages).await?;
-    println!("{}", result.content);
-    Ok(())
+    Ok(result.content)
 }
 
 // ─── Single streaming turn — dispatches by wire_api ───
