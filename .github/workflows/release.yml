@@ -25,6 +25,10 @@ jobs:
           - target: x86_64-apple-darwin
             os: macos-latest
             artifact: angles-macos-x64
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact: angles-windows-x64
+            binary_ext: .exe
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -50,11 +54,21 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Package
+        shell: bash
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/angles dist/${{ matrix.artifact }}
-          chmod +x dist/${{ matrix.artifact }}
-          cd dist && tar czf ${{ matrix.artifact }}.tar.gz ${{ matrix.artifact }}
+          BIN="target/${{ matrix.target }}/release/angles${{ matrix.binary_ext }}"
+          if [ ! -f "$BIN" ]; then
+            BIN="target/${{ matrix.target }}/release/angles"
+          fi
+          cp "$BIN" "dist/${{ matrix.artifact }}${{ matrix.binary_ext }}"
+          chmod +x "dist/${{ matrix.artifact }}${{ matrix.binary_ext }}" 2>/dev/null || true
+          cd dist
+          if [[ "${{ matrix.target }}" == *"windows"* ]]; then
+            7z a "${{ matrix.artifact }}.zip" "${{ matrix.artifact }}${{ matrix.binary_ext }}"
+          else
+            tar czf "${{ matrix.artifact }}.tar.gz" "${{ matrix.artifact }}${{ matrix.binary_ext }}"
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
@@ -72,5 +86,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/**/*.tar.gz
+          files: |
+            dist/**/*.tar.gz
+            dist/**/*.zip
           generate_release_notes: true

@@ -302,7 +302,7 @@ function check_existing_angles {
 
 function install_angles_binary {
     $binaryName = "angles-$($script:OS)-$($script:ARCH)"
-    $url = "$($script:ANGLES_REPO)/releases/latest/download/$binaryName.tar.gz"
+    $url = "$($script:ANGLES_REPO)/releases/latest/download/$binaryName.zip"
     ui_info "检查预编译二进制 $binaryName..."
     if (-not (test_url $url)) { return $false }
 
@@ -311,14 +311,13 @@ function install_angles_binary {
     download_file $url $tmp
 
     $tmpdir = New-TmpDir
-    # Use built-in tar (Win10+)
-    & tar xzf $tmp -C $tmpdir 2>$null
-    $candidate = Join-Path $tmpdir "angles.exe"
+    # Windows 包是 zip 格式
+    Expand-Archive -Path $tmp -DestinationPath $tmpdir -Force
+    $candidate = Join-Path $tmpdir "$binaryName.exe"
     if (-not (Test-Path $candidate)) {
-        $candidate = Join-Path $tmpdir "$binaryName.exe"
+        $candidate = Join-Path $tmpdir "angles.exe"
     }
     if (-not (Test-Path $candidate)) {
-        # maybe .exe without name or angles-exe
         $found = Get-ChildItem $tmpdir -Filter "*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
         if ($found) { $candidate = $found.FullName }
     }
