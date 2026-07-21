@@ -54,7 +54,7 @@ async fn health() -> impl IntoResponse {
     let key_set = !cfg.api_key.is_empty() || std::env::var("ANGLES_API_KEY").is_ok();
     Json(serde_json::json!({
         "status": "ok",
-        "version": "0.1.0",
+        "version": env!("CARGO_PKG_VERSION"),
         "provider": cfg.provider,
         "model": cfg.model,
         "api_key_configured": key_set,
