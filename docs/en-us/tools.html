@@ -7,11 +7,11 @@
 <link rel="canonical" href="https://zsj305.github.io/angles-cli/en-us/tools.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tools Reference — Angles Code CLI">
-<meta property="og:description" content="30+ 个 angles-* 工具命令速查表，可搜索、按类别筛选。">
+<meta property="og:description" content="30+ angles-* tool command reference — searchable, filterable by category.">
 <meta property="og:url" content="https://zsj305.github.io/angles-cli/en-us/tools.html">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Tools Reference — Angles Code CLI">
-<meta name="twitter:description" content="30+ 个工具命令速查表。">
+<meta name="twitter:description" content="30+ tools command reference.">
 <style>
 :root{
   --bg:#0a0e1a; --bg-2:#0f1424; --card:#131a2e; --card-2:#172037;
@@ -94,11 +94,11 @@ footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
 </nav>
 
 <div class="wrap">
-<h1>工具速查</h1>
-<p class="lead">Agent 通过 <code style="background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.9em">angles-*</code> 前缀的工具操作环境。30+ 个内置工具，搜索或按类别筛选。</p>
+<h1>Tools Reference</h1>
+<p class="lead">The agent uses <code style="background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.9em">angles-*</code> prefixed tools to operate the environment. 30+ built-in tools — search or filter by category.</p>
 
 <div class="toolbar">
-  <input class="search" id="search" type="text" placeholder="Search commands, keywords, descriptions…  例如：grep / 删除 / git" autofocus>
+  <input class="search" id="search" type="text" placeholder="Search commands, keywords, descriptions…  e.g. grep / delete / git" autofocus>
   <div class="chips" id="chips"></div>
 </div>
 
@@ -122,44 +122,44 @@ footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
 
 <script>
 const tools = [
-  // File Creation与写入
-  {c:"File Creation",cmd:[["angles-createfile",""],[" ","<path>","arg"],[" [content]","opt"]],desc:"创建新文件并写入内容；文件已存在则报错。content 可经 stdin 或第二参数传入",danger:false},
-  {c:"File Creation",cmd:[["angles-writefile",""],[" ","<path>","arg"],[" [content]","opt"]],desc:"覆盖写入文件；不存在自动创建",danger:false},
-  {c:"File Creation",cmd:[["angles-appendfile",""],[" ","<path>","arg"],[" ","<content>","arg"]],desc:"向文件末尾追加内容；不存在则自动创建",danger:false},
-  {c:"File Creation",cmd:[["angles-insertline",""],[" ","<path>","arg"],[" ","<line>","arg"],[" ","<content>","arg"]],desc:"在指定行号前插入一行（行号从 1 Getting Started）",danger:false},
-  // 读取与搜索
-  {c:"Read & Search",cmd:[["angles-readfile",""],[" ","<path>","arg"],[" [start] [end]","opt"]],desc:"读取文件内容，可指定起止行号",danger:false},
-  {c:"Read & Search",cmd:[["angles-searchfile",""],[" ","<pattern>","arg"],[" [dir]","opt"]],desc:"按文件名 glob 通配符搜索，不指定目录则搜当前目录",danger:false},
-  {c:"Read & Search",cmd:[["angles-grep",""],[" ","<pattern>","arg"],[" [dir]","opt"]],desc:"在文件内容中正则搜索匹配行",danger:false},
-  {c:"Read & Search",cmd:[["angles-head",""],[" ","<path>","arg"],[" [n]","opt"]],desc:"显示文件前 n 行，默认 10",danger:false},
-  {c:"Read & Search",cmd:[["angles-tail",""],[" ","<path>","arg"],[" [n]","opt"]],desc:"显示文件最后 n 行，默认 10",danger:false},
-  // 修改与删除
-  {c:"Modify & Delete",cmd:[["angles-replace",""],[" ","<path>","arg"],[" ","<old>","arg"],[" ","<new>","arg"]],desc:"精确替换文件中首次出现的 old_text（须精确匹配含缩进）",danger:false},
-  {c:"Modify & Delete",cmd:[["angles-replaceall",""],[" ","<path>","arg"],[" ","<old>","arg"],[" ","<new>","arg"]],desc:"替换文件中所有出现的 old_text",danger:false},
-  {c:"Modify & Delete",cmd:[["angles-deleteline",""],[" ","<path>","arg"],[" ","<line>","arg"]],desc:"删除文件中指定行",danger:false},
-  {c:"Modify & Delete",cmd:[["angles-deletefile",""],[" ","<path>","arg"]],desc:"删除文件（始终需要用户确认）",danger:true},
-  {c:"Modify & Delete",cmd:[["angles-movedir",""],[" ","<src>","arg"],[" ","<dst>","arg"]],desc:"移动或重命名文件 / 目录",danger:false},
-  {c:"Modify & Delete",cmd:[["angles-copyfile",""],[" ","<src>","arg"],[" ","<dst>","arg"]],desc:"复制文件",danger:false},
-  {c:"Modify & Delete",cmd:[["angles-mkdir",""],[" ","<dir>","arg"]],desc:"创建目录（含父目录）",danger:false},
-  // 目录与项目
-  {c:"Directory",cmd:[["angles-ls",""],[" [dir]","opt"]],desc:"列出目录内容",danger:false},
-  {c:"Directory",cmd:[["angles-tree",""],[" [dir]","opt"],[" [depth]","opt"]],desc:"树形结构显示目录，默认深度 3",danger:false},
-  {c:"Directory",cmd:[["angles-pwd",""]],desc:"显示当前工作目录",danger:false},
-  {c:"Directory",cmd:[["angles-cd",""],[" ","<dir>","arg"]],desc:"切换工作目录",danger:false},
-  {c:"Directory",cmd:[["angles-fileinfo",""],[" ","<path>","arg"]],desc:"显示文件详细信息（大小、权限、mtime）",danger:false},
-  // 终端与执行
-  {c:"Terminal",cmd:[["angles-run",""],[" ","<cmd>","arg"],[" [args...]","opt"]],desc:"执行终端命令并返回输出（破坏性命令始终需确认）",danger:false},
-  {c:"Terminal",cmd:[["angles-runbg",""],[" ","<cmd>","arg"],[" [args...]","opt"]],desc:"后台执行终端命令，返回进程 PID",danger:false},
-  {c:"Terminal",cmd:[["angles-kill",""],[" ","<pid>","arg"]],desc:"终止指定进程",danger:false},
-  // 网络与搜索
-  {c:"Web & Search",cmd:[["angles-fetch",""],[" ","<url>","arg"],[" [output]","opt"]],desc:"下载 URL 内容；不指定 output 则输出到 stdout",danger:false},
-  {c:"Web & Search",cmd:[["angles-websearch",""],[" ","<query>","arg"]],desc:"用Configuration的搜索引擎执行网页搜索，返回结果摘要",danger:false},
+  // File Creation
+  {c:"File Creation",cmd:[["angles-createfile",""],[" ","<path>","arg"],[" [content]","opt"]],desc:"Create a new file with content. Fails if file already exists. Content via stdin or second arg.",danger:false},
+  {c:"File Creation",cmd:[["angles-writefile",""],[" ","<path>","arg"],[" [content]","opt"]],desc:"Write content to file (overwrite). Creates if not exists.",danger:false},
+  {c:"File Creation",cmd:[["angles-appendfile",""],[" ","<path>","arg"],[" ","<content>","arg"]],desc:"Append to end of file. Creates if not exists.",danger:false},
+  {c:"File Creation",cmd:[["angles-insertline",""],[" ","<path>","arg"],[" ","<line>","arg"],[" ","<content>","arg"]],desc:"Insert a line before the specified line number (1-based).",danger:false},
+  // Read & Search
+  {c:"Read & Search",cmd:[["angles-readfile",""],[" ","<path>","arg"],[" [start] [end]","opt"]],desc:"Read file contents, optionally a line range.",danger:false},
+  {c:"Read & Search",cmd:[["angles-searchfile",""],[" ","<pattern>","arg"],[" [dir]","opt"]],desc:"Search files by glob pattern. Defaults to current directory.",danger:false},
+  {c:"Read & Search",cmd:[["angles-grep",""],[" ","<pattern>","arg"],[" [dir]","opt"]],desc:"Search file contents by regex pattern.",danger:false},
+  {c:"Read & Search",cmd:[["angles-head",""],[" ","<path>","arg"],[" [n]","opt"]],desc:"Show first n lines of a file (default 10).",danger:false},
+  {c:"Read & Search",cmd:[["angles-tail",""],[" ","<path>","arg"],[" [n]","opt"]],desc:"Show last n lines of a file (default 10).",danger:false},
+  // Modify & Delete
+  {c:"Modify & Delete",cmd:[["angles-replace",""],[" ","<path>","arg"],[" ","<old>","arg"],[" ","<new>","arg"]],desc:"Replace first occurrence of exact text (must match including whitespace).",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-replaceall",""],[" ","<path>","arg"],[" ","<old>","arg"],[" ","<new>","arg"]],desc:"Replace all occurrences of exact text in a file.",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-deleteline",""],[" ","<path>","arg"],[" ","<line>","arg"]],desc:"Delete a specific line by line number.",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-deletefile",""],[" ","<path>","arg"]],desc:"Delete a file permanently (always requires confirmation).",danger:true},
+  {c:"Modify & Delete",cmd:[["angles-movedir",""],[" ","<src>","arg"],[" ","<dst>","arg"]],desc:"Move or rename a file or directory.",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-copyfile",""],[" ","<src>","arg"],[" ","<dst>","arg"]],desc:"Copy a file.",danger:false},
+  {c:"Modify & Delete",cmd:[["angles-mkdir",""],[" ","<dir>","arg"]],desc:"Create a directory (with parents).",danger:false},
+  // Directory
+  {c:"Directory",cmd:[["angles-ls",""],[" [dir]","opt"]],desc:"List directory contents.",danger:false},
+  {c:"Directory",cmd:[["angles-tree",""],[" [dir]","opt"],[" [depth]","opt"]],desc:"Show directory tree, default depth 3.",danger:false},
+  {c:"Directory",cmd:[["angles-pwd",""]],desc:"Show current working directory.",danger:false},
+  {c:"Directory",cmd:[["angles-cd",""],[" ","<dir>","arg"]],desc:"Change working directory.",danger:false},
+  {c:"Directory",cmd:[["angles-fileinfo",""],[" ","<path>","arg"]],desc:"Show file metadata (size, permissions, mtime).",danger:false},
+  // Terminal
+  {c:"Terminal",cmd:[["angles-run",""],[" ","<cmd>","arg"],[" [args...]","opt"]],desc:"Execute a shell command and return output (destructive commands always need confirmation).",danger:false},
+  {c:"Terminal",cmd:[["angles-runbg",""],[" ","<cmd>","arg"],[" [args...]","opt"]],desc:"Execute a command in background, returns PID.",danger:false},
+  {c:"Terminal",cmd:[["angles-kill",""],[" ","<pid>","arg"]],desc:"Kill a process by PID.",danger:false},
+  // Web & Search
+  {c:"Web & Search",cmd:[["angles-fetch",""],[" ","<url>","arg"],[" [output]","opt"]],desc:"Download a URL. Without output path, prints to stdout.",danger:false},
+  {c:"Web & Search",cmd:[["angles-websearch",""],[" ","<query>","arg"]],desc:"Perform a web search using the configured search engine.",danger:false},
   // Git
-  {c:"Git",cmd:[["angles-gitinit",""],[" [dir]","opt"]],desc:"初始化 git 仓库",danger:false},
-  {c:"Git",cmd:[["angles-gitcommit",""],[" ","<msg>","arg"]],desc:"暂存所有更改并提交",danger:false},
-  {c:"Git",cmd:[["angles-gitlog",""],[" [n]","opt"]],desc:"显示最近 n 条提交记录，默认 10",danger:false},
-  {c:"Git",cmd:[["angles-gitdiff",""],[" [path]","opt"]],desc:"显示文件或All未暂存的更改",danger:false},
-  {c:"Git",cmd:[["angles-gitbranch",""],[" ","<name>","arg"]],desc:"创建并切换到新分支",danger:false},
+  {c:"Git",cmd:[["angles-gitinit",""],[" [dir]","opt"]],desc:"Initialize a git repository.",danger:false},
+  {c:"Git",cmd:[["angles-gitcommit",""],[" ","<msg>","arg"]],desc:"Stage all changes and commit.",danger:false},
+  {c:"Git",cmd:[["angles-gitlog",""],[" [n]","opt"]],desc:"Show recent n commits (default 10).",danger:false},
+  {c:"Git",cmd:[["angles-gitdiff",""],[" [path]","opt"]],desc:"Show unstaged changes (optionally for one file).",danger:false},
+  {c:"Git",cmd:[["angles-gitbranch",""],[" ","<name>","arg"]],desc:"Create and switch to a new branch.",danger:false},
 ];
 
 const cats = [...new Set(tools.map(t=>t.c))];
@@ -211,14 +211,14 @@ function render(){
     const blob = (t.cmd.map(p=>p.join(' ')).join(' ') + ' ' + t.desc + ' ' + t.c).toLowerCase();
     return blob.includes(ql);
   });
-  countEl.textContent = `显示 ${filtered.length} / ${tools.length} 个工具`;
+  countEl.textContent = `Showing ${filtered.length} / ${tools.length} tools`;
   if(filtered.length===0){
     gridEl.innerHTML=''; emptyEl.style.display='block'; return;
   }
   emptyEl.style.display='none';
   gridEl.innerHTML = filtered.map(t=>`
     <div class="tool ${t.danger?'danger':''}">
-      <div class="cat">${t.c}${t.danger?' · ⚠ 需确认':''}</div>
+      <div class="cat">${t.c}${t.danger?' · ⚠ needs confirmation':''}</div>
       <div class="cmd">${cmdHtml(t.cmd)}</div>
       <div class="desc">${t.desc}</div>
     </div>`).join('');
