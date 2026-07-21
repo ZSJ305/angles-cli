@@ -235,17 +235,6 @@ pub fn angles_websearch(query: &str, engine_url: &str) -> Result<String, String>
 
 // ─── Additional tools (补齐到 30+) ───
 
-pub fn angles_appendfile(path: &str, content: &str) -> Result<String, String> {
-    use std::io::Write;
-    let mut f = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(path)
-        .map_err(|e| format!("打开失败: {}", e))?;
-    f.write_all(content.as_bytes()).map_err(|e| format!("追加失败: {}", e))?;
-    Ok(format!("✅ 已追加到: {}", path))
-}
-
 pub fn angles_insertline(path: &str, line_num: usize, content: &str) -> Result<String, String> {
     let text = fs::read_to_string(path).map_err(|e| format!("读取失败: {}", e))?;
     let mut lines: Vec<String> = text.lines().map(|l| l.to_string()).collect();
@@ -364,15 +353,15 @@ pub fn angles_kill(pid: u32) -> Result<String, String> {
     Ok(format!("✅ 已发送终止信号: PID={}", pid))
 }
 
-pub fn angles_fetch(url: &str, output: &str) -> Result<String, String> {
-    let output = Command::new("curl")
-        .args(["-fsSL", "-o", output, url])
+pub fn angles_fetch(url: &str, output_path: &str) -> Result<String, String> {
+    let result = Command::new("curl")
+        .args(["-fsSL", "-o", output_path, url])
         .output()
         .map_err(|e| format!("下载失败: {}", e))?;
-    if output.status.success() {
-        Ok(format!("✅ 已下载: {} → {}", url, output))
+    if result.status.success() {
+        Ok(format!("✅ 已下载: {} → {}", url, output_path))
     } else {
-        Err(format!("下载失败: {}", String::from_utf8_lossy(&output.stderr)))
+        Err(format!("下载失败: {}", String::from_utf8_lossy(&result.stderr)))
     }
 }
 
