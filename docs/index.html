@@ -501,18 +501,25 @@ fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
         <p>交互对话、非交互 exec、Gateway TUI 向导、doctor 诊断、安装器（bash/PowerShell/npm 三方式）。</p>
       </div>
     </div>
+    <div class="milestone done">
+      <div class="phase">v0.2 ✓</div>
+      <div class="body">
+        <h3>本地 HTTP 网关 + Windows 预编译 + 5 平台 Release<span class="tag">已发布</span></h3>
+        <p><code>angles serve</code> 启动本地 Web 控制台 + REST API；Windows x64 预编译 (MSVC zip)；英文安装脚本；GitHub Actions 全自动发版。</p>
+      </div>
+    </div>
     <div class="milestone next">
-      <div class="phase">v0.2</div>
+      <div class="phase">v0.3</div>
       <div class="body">
         <h3>update / uninstall 子命令 + 会话持久化<span class="tag">规划中</span></h3>
-        <p>自带自升级与卸载；跨会话历史与上下文压缩；预编译二进制 Release 覆盖主流平台。</p>
+        <p>自带自升级与卸载；跨会话历史与上下文压缩；MCP 协议接入评估。</p>
       </div>
     </div>
     <div class="milestone later">
-      <div class="phase">v0.3</div>
+      <div class="phase">v0.4</div>
       <div class="body">
         <h3>工具生态：自定义工具插件<span class="tag">考虑中</span></h3>
-        <p>允许用户在 <code>~/.angles/tools/</code> 注册本地脚本为 <code>angles-*</code> 工具；MCP 协议接入评估。</p>
+        <p>允许用户在 <code>~/.angles/tools/</code> 注册本地脚本为 <code>angles-*</code> 工具。</p>
       </div>
     </div>
     <div class="milestone later">
