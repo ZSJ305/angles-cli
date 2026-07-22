@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angles — 终端里的 AI 编程智能体</title>
+<meta name="description" content="专为在终端中构建雄心勃勃的软件而打造，Angles 是开源 AI 编程智能体。1.6MB Rust 二进制，30 工具，11 模型，5 平台。">
+<link rel="canonical" href="https://zsj305.github.io/angles-cli/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Angles — 终端里的 AI 编程智能体">
+<meta property="og:description" content="开源 AI 编程智能体。1.6MB，30 工具，11 模型，5 平台。">
+<meta property="og:url" content="https://zsj305.github.io/angles-cli/">
+<meta property="og:site_name" content="Angles Code CLI">
+<meta property="og:locale" content="zh_CN">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Angles — 终端里的 AI 编程智能体">
+<meta name="twitter:description" content="开源 AI 编程智能体。1.6MB，30 工具，11 模型，5 平台。">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --light-bg:#f7f7f4;
+  --light-bg-2:#efeee8;
+  --light-card:#ffffff;
+  --light-border:#e3e1d8;
+  --light-text:#1a1812;
+  --light-muted:#6b6657;
+  --light-accent:#2d2a22;
+  --dark-bg:#14120b;
+  --dark-bg-2:#1c1a12;
+  --dark-card:#1f1d15;
+  --dark-border:#2e2a20;
+  --dark-text:#f1ede2;
+  --dark-muted:#8a8474;
+  --dark-accent:#e8e2d0;
+  --accent:#4a6cf7;
+}
+/* Light mode default */
+:root{
+  --bg:#f7f7f4;
+  --bg-2:#efeee8;
+  --card:#ffffff;
+  --border:#e3e1d8;
+  --text:#1a1812;
+  --muted:#6b6657;
+  --accent:#2d2a22;
+  --code-bg:#1c1a12;
+  --code-text:#f1ede2;
+  --code-prompt:#8a8474;
+  --code-output:#a8e0a0;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14120b;
+    --bg-2:#1c1a12;
+    --card:#1f1d15;
+    --border:#2e2a20;
+    --text:#f1ede2;
+    --muted:#8a8474;
+    --accent:#e8e2d0;
+    --code-bg:#0a0906;
+    --code-text:#f1ede2;
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  font-size:17px;
+}
+.serif{font-family:"EB Garamond","Noto Serif SC",Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.01em}
+.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+a{color:inherit;text-decoration:none}
+
+/* Nav */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 5vw;
+  background:rgba(247,247,244,.7);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--border);
+}
+@media (prefers-color-scheme: dark){
+  nav{background:rgba(20,18,11,.7)}
+}
+nav .brand{
+  font-family:"EB Garamond",Georgia,serif;
+  font-size:1.5rem;font-weight:600;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:8px;
+}
+nav .brand .mark{font-family:ui-monospace,monospace;font-weight:700;color:var(--text)}
+nav .links{display:flex;gap:28px;align-items:center}
+nav a{color:var(--muted);font-size:.92rem;font-weight:500;transition:color .2s}
+nav a:hover{color:var(--text)}
+.nav-cta{
+  padding:8px 18px;border-radius:999px;background:var(--text);color:var(--bg);
+  font-size:.88rem;font-weight:600;transition:opacity .2s;
+}
+.nav-cta:hover{opacity:.85;color:var(--bg)}
+.nav-cta::after{content:" ↗";font-weight:400;opacity:.7}
+
+/* Hero */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:140px 6vw 80px;position:relative;
+}
+.hero .eyebrow{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.78rem;letter-spacing:.18em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:32px;font-weight:500;
+}
+.hero h1{
+  font-family:"EB Garamond","Noto Serif SC",Georgia,serif;
+  font-size:clamp(2.8rem,8vw,6.8rem);font-weight:500;
+  line-height:1.04;letter-spacing:-.035em;margin-bottom:32px;
+  color:var(--text);max-width:14ch;
+}
+.hero h1 em{font-style:italic;font-weight:400;color:var(--muted)}
+.hero .subtitle{
+  font-size:clamp(1.05rem,2vw,1.35rem);color:var(--muted);
+  max-width:580px;margin-bottom:48px;line-height:1.55;
+}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:96px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;border-radius:999px;
+  font-weight:600;font-size:.95rem;transition:all .2s;cursor:pointer;border:none;
+}
+.btn-primary{background:var(--text);color:var(--bg)}
+.btn-primary:hover{opacity:.85;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--text)}
+
+/* Terminal mock — Cursor-style product demo */
+.demo-wrap{width:100%;max-width:880px;margin:0 auto}
+.demo{
+  background:var(--code-bg);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(20,18,11,.18),0 4px 16px rgba(20,18,11,.08);
+  border:1px solid rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  .demo{box-shadow:0 30px 80px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3)}
+}
+.demo-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.demo-bar .dot{width:11px;height:11px;border-radius:50%}
+.demo-bar .dot.r{background:#ff5f56}.demo-bar .dot.y{background:#ffbd2e}.demo-bar .dot.g{background:#27c93f}
+.demo-bar .ttl{margin-left:10px;font-family:"JetBrains Mono",monospace;font-size:.76rem;color:#8a8474;letter-spacing:.02em}
+.demo-body{
+  padding:24px 28px;font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.88rem;line-height:1.8;text-align:left;color:var(--code-text);
+}
+.demo-body .p{color:#c9c3b0}    /* prompt */
+.demo-body .c{color:#6b6657}    /* comment */
+.demo-body .o{color:#a8e0a0}    /* output ok */
+.demo-body .b{color:#82b1ff}    /* blue accent */
+.demo-body .g{color:#ffd479}    /* gold */
+.demo-body .m{color:#d6a8ff}    /* magenta */
+.cursor{display:inline-block;width:8px;height:18px;background:#a8e0a0;animation:blink 1.1s steps(1) infinite;vertical-align:-3px;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+
+/* Editorial section */
+.section{padding:120px 6vw;max-width:1180px;margin:0 auto}
+.section.bleed{max-width:none}
+.section-eyebrow{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.76rem;letter-spacing:.18em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:24px;font-weight:500;
+}
+.section h2{
+  font-family:"EB Garamond","Noto Serif SC",Georgia,serif;
+  font-size:clamp(2.2rem,5.5vw,4.4rem);font-weight:500;
+  line-height:1.08;letter-spacing:-.025em;
+  max-width:18ch;margin-bottom:28px;color:var(--text);
+}
+.section h2 em{font-style:italic;font-weight:400;color:var(--muted)}
+.section .lead{
+  font-size:clamp(1.05rem,1.8vw,1.3rem);color:var(--muted);
+  max-width:560px;margin-bottom:64px;line-height:1.6;
+}
+
+/* Manifesto block (the "Software creation is changing" style) */
+.manifesto{
+  text-align:center;padding:140px 6vw;max-width:1100px;margin:0 auto;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.manifesto p{
+  font-family:"EB Garamond","Noto Serif SC",Georgia,serif;
+  font-size:clamp(1.6rem,3.8vw,2.8rem);line-height:1.3;
+  font-weight:400;letter-spacing:-.015em;color:var(--text);
+  max-width:24ch;margin:0 auto;
+}
+.manifesto p em{font-style:italic;color:var(--muted)}
+.manifesto .sig{
+  margin-top:40px;font-family:"JetBrains Mono",monospace;
+  font-size:.78rem;color:var(--muted);letter-spacing:.04em;
+}
+
+/* Feature blocks — each = title + lead + product mockup, alternating layout */
+.feature-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+  padding:100px 0;border-bottom:1px solid var(--border);
+}
+.feature-row:last-child{border-bottom:none}
+.feature-row.flip .text{order:2}
+.feature-row.flip .mock{order:1}
+.feature-row .text{max-width:440px}
+.feature-row .text h2{font-size:clamp(1.9rem,4vw,3.2rem);margin-bottom:20px;line-height:1.1}
+.feature-row .text .lead{font-size:1.1rem;margin-bottom:24px;max-width:none}
+.feature-row .text .meta{
+  font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.feature-row .text .cta{margin-top:28px;display:inline-flex;align-items:center;gap:6px;color:var(--text);font-weight:600;border-bottom:1px solid var(--text);padding-bottom:2px}
+.feature-row .text .cta:hover{opacity:.7}
+
+/* Mock card (Cursor-style UI screenshot placeholder) */
+.mock{
+  background:var(--code-bg);border-radius:14px;overflow:hidden;
+  box-shadow:0 20px 50px rgba(20,18,11,.15);
+  border:1px solid rgba(0,0,0,.05);font-family:"JetBrains Mono",monospace;
+  font-size:.82rem;color:var(--code-text);
+}
+@media (prefers-color-scheme: dark){
+  .mock{box-shadow:0 20px 50px rgba(0,0,0,.4)}
+}
+.mock .mock-bar{
+  display:flex;align-items:center;gap:7px;padding:11px 14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.mock .mock-bar .dot{width:9px;height:9px;border-radius:50%}
+.mock .mock-bar .r{background:#ff5f56}.mock .mock-bar .y{background:#ffbd2e}.mock .mock-bar .g{background:#27c93f}
+.mock .mock-bar .ttl{margin-left:8px;font-size:.72rem;color:#8a8474}
+.mock .mock-body{padding:18px 22px;line-height:1.85;text-align:left}
+.mock .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;background:rgba(130,177,255,.15);color:#82b1ff;margin-right:6px}
+.mock .ok{color:#a8e0a0}.mock .mt{color:#8a8474}.mock .bl{color:#82b1ff}.mock .gd{color:#ffd479}.mock .mg{color:#d6a8ff}
+
+/* Stats strip */
+.stats-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.stat-item{background:var(--bg);padding:48px 24px;text-align:center}
+.stat-item .num{
+  font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.5rem,5vw,4rem);
+  font-weight:500;letter-spacing:-.02em;color:var(--text);line-height:1;
+}
+.stat-item .lbl{
+  font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--muted);
+  letter-spacing:.1em;text-transform:uppercase;margin-top:12px;
+}
+
+/* Install section */
+.install-block{max-width:760px;margin:0 auto}
+.tabs{
+  display:flex;gap:4px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:24px;background:var(--bg-2);padding:6px;border-radius:12px;border:1px solid var(--border);
+}
+.tab{
+  flex:1;min-width:90px;padding:11px 18px;border-radius:8px;
+  background:transparent;color:var(--muted);border:none;cursor:pointer;
+  font-size:.88rem;font-weight:600;transition:all .2s;white-space:nowrap;
+  font-family:-apple-system,sans-serif;
+}
+.tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tab:hover:not(.active){color:var(--text)}
+.code-block{
+  background:var(--code-bg);border:1px solid var(--border);border-radius:12px;
+  padding:22px 26px;font-family:"JetBrains Mono",monospace;
+  font-size:.92rem;position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.code-block .cmd{color:var(--code-text);word-break:break-all;flex:1}
+.code-block .cmd .pr{color:#8a8474}
+.code-block .cmd .ok{color:#a8e0a0}
+.copy-btn{
+  background:rgba(255,255,255,.06);color:#c9c3b0;border:1px solid rgba(255,255,255,.08);
+  padding:6px 14px;border-radius:6px;font-size:.76rem;cursor:pointer;font-family:inherit;
+  transition:all .2s;white-space:nowrap;
+}
+.copy-btn:hover{color:#a8e0a0;border-color:rgba(168,224,160,.3)}
+.copy-btn.copied{color:#a8e0a0;border-color:rgba(168,224,160,.5)}
+
+/* Providers chips */
+.providers{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
+.provider-chip{
+  background:var(--card);border:1px solid var(--border);
+  padding:8px 16px;border-radius:999px;font-size:.85rem;color:var(--muted);
+  font-family:"JetBrains Mono",monospace;transition:all .2s;
+}
+.provider-chip:hover{border-color:var(--text);color:var(--text)}
+
+/* Footer */
+footer{
+  padding:90px 6vw 50px;border-top:1px solid var(--border);
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;
+}
+footer .brand-block .brand{font-family:"EB Garamond",Georgia,serif;font-size:1.5rem;font-weight:600;margin-bottom:12px}
+footer .brand-block p{color:var(--muted);font-size:.9rem;max-width:320px}
+footer h4{font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:500}
+footer ul{list-style:none}
+footer li{margin-bottom:10px}
+footer li a{color:var(--text);font-size:.92rem;opacity:.85;transition:opacity .2s}
+footer li a:hover{opacity:1}
+footer .credit{
+  grid-column:1/-1;padding-top:48px;margin-top:32px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);
+}
+
+/* Lang switch */
+.lang-switch{position:fixed;bottom:24px;right:24px;z-index:90;
+  background:var(--card);border:1px solid var(--border);
+  padding:8px 14px;border-radius:999px;font-size:.82rem;font-weight:600;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);transition:all .2s;}
+.lang-switch:hover{transform:translateY(-1px);border-color:var(--text)}
+
+@media (max-width:840px){
+  .feature-row{grid-template-columns:1fr;gap:40px;padding:60px 0}
+  .feature-row.flip .text{order:0}
+  .feature-row.flip .mock{order:0}
+  .stats-strip{grid-template-columns:repeat(2,1fr)}
+  footer{grid-template-columns:1fr 1fr;gap:32px}
+  nav .links a:not(.nav-cta){display:none}
+}
+@media (max-width:520px){
+  .stats-strip{grid-template-columns:1fr 1fr}
+  footer{grid-template-columns:1fr}
+  .hero{padding:120px 6vw 60px}
+  .section{padding:80px 6vw}
+}
+
+/* Subtle entrance animation */
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.rise.d1{animation-delay:.1s}
+.rise.d2{animation-delay:.25s}
+.rise.d3{animation-delay:.4s}
+.rise.d4{animation-delay:.55s}
+@media (prefers-reduced-motion: reduce){
+  .rise{animation:none}
+}
+</style>
+<script>
+// Auto-redirect: non-Chinese browsers → /en-us/
+(function(){
+  if (sessionStorage.getItem('angles_lang_chosen')) return;
+  var lang = (navigator.language || '').toLowerCase();
+  if (!lang.startsWith('zh')) {
+    sessionStorage.setItem('angles_lang_chosen', '1');
+    location.replace('en-us/');
+  }
+})();
+</script>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="brand">
+    <span class="mark">α</span>
+    <span>Angles</span>
+  </a>
+  <div class="links">
+    <a href="#agent">智能体</a>
+    <a href="#tools">工具</a>
+    <a href="#models">模型</a>
+    <a href="#install">安装</a>
+    <a href="docs.html">文档</a>
+    <a href="faq.html">FAQ</a>
+    <a href="en-us/">EN</a>
+    <a href="https://github.com/ZSJ305/angles-cli" class="nav-cta">GitHub</a>
+  </div>
+</nav>
+
+<!-- ───── HERO ───── -->
+<section class="hero">
+  <div class="eyebrow rise">Open Source · MIT · 1.6 MB Rust Binary</div>
+  <h1 class="rise d1">终端里的<br><em>AI 编程智能体</em></h1>
+  <p class="subtitle rise d2">一个 Rust 二进制，30 个内置工具，11 家模型供应商。不装 Node、不装运行时——5 秒装好，直接开干。</p>
+  <div class="hero-cta rise d3">
+    <a href="#install" class="btn btn-primary">安装 Angles →</a>
+    <a href="docs.html" class="btn btn-ghost">阅读文档</a>
+  </div>
+
+  <!-- Cursor-style interactive demo mockup -->
+  <div class="demo-wrap rise d4">
+    <div class="demo">
+      <div class="demo-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="ttl">angles — zsh — 120×40</span>
+      </div>
+      <div class="demo-body">
+<div><span class="p">~/my-app</span> <span class="c">$</span> angles</div>
+<div class="c">  α  Angles Code CLI v0.2.1 · 11 models · 30 tools</div>
+<div class="c">  ─────────────────────────────────────────────</div>
+<div>&nbsp;</div>
+<div><span class="b">You</span> &nbsp; 给这个 Express 项目加 JWT 鉴权，写测试</div>
+<div>&nbsp;</div>
+<div><span class="g">α</span> &nbsp; <span class="c">正在规划...</span></div>
+<div class="c">  ▸ 读取 package.json 和 src/ 结构</div>
+<div class="c">  ▸ 安装 jsonwebtoken + bcryptjs</div>
+<div class="c">  ▸ 创建 src/middleware/auth.ts</div>
+<div class="c">  ▸ 创建 tests/auth.test.ts</div>
+<div>&nbsp;</div>
+<div><span class="g">α</span> &nbsp; <span class="o">✓ 完成 · 4 文件已修改 · 1 文件已创建</span></div>
+<div>&nbsp;</div>
+<div><span class="g">α</span> &nbsp; <span class="c">运行测试...</span></div>
+<div>&nbsp;&nbsp;<span class="o">✓ auth.test.ts</span> <span class="c">(8 passed)</span></div>
+<div>&nbsp;</div>
+<div><span class="p">~/my-app</span> <span class="c">$</span> <span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── MANIFESTO ───── -->
+<section class="manifesto">
+  <p>软件的造法正在变化。<br><em>我们让 AI 住在终端里——</em>没有 IDE 的重量，只有一行命令的距离。</p>
+  <div class="sig">— ANGLES · 2026</div>
+</section>
+
+<!-- ───── FEATURE 1: AGENT ───── -->
+<section class="section" id="agent">
+  <div class="feature-row">
+    <div class="text">
+      <div class="meta">智能体驱动开发</div>
+      <h2 style="margin-top:18px">让智能体把<br><em>创意变成代码</em></h2>
+      <p class="lead">把任务交给 Angles，加快开发速度——它会读你的代码库、规划步骤、改文件、跑测试、查日志。你只负责决策。</p>
+      <p class="lead">30 个内置工具覆盖文件系统、shell、搜索、git、HTTP——智能体需要什么就能用什么。</p>
+      <a href="tools.html" class="cta">查看全部 30 个工具 →</a>
+    </div>
+    <div class="mock">
+      <div class="mock-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="ttl">angles · plan</span>
+      </div>
+      <div class="mock-body">
+<div><span class="mt"># Plan: 添加 OAuth 登录流程</span></div>
+<div>&nbsp;</div>
+<div><span class="bl">[1]</span> 读取 <span class="ok">src/routes/auth.ts</span></div>
+<div><span class="bl">[2]</span> 搜索现有 session 实现 <span class="mt">(grep -ri session)</span></div>
+<div><span class="bl">[3]</span> 写 <span class="ok">src/oauth/google.ts</span></div>
+<div><span class="bl">[4]</span> 改写 <span class="ok">src/routes/auth.ts</span> 加路由</div>
+<div><span class="bl">[5]</span> 运行 <span class="gd">npm test</span></div>
+<div><span class="bl">[6]</span> git commit <span class="mt">-m "feat: OAuth"</span></div>
+<div>&nbsp;</div>
+<div><span class="mt">─── tools used ───</span></div>
+<div><span class="tag">read_file</span><span class="tag">grep</span><span class="tag">write_file</span></div>
+<div><span class="tag">run_shell</span><span class="tag">git_commit</span></div>
+<div>&nbsp;</div>
+<div><span class="ok">✓ 全部完成 · 耗时 47s · 6 工具调用</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── FEATURE 2: MODELS — flipped ───── -->
+<section class="section" id="models">
+  <div class="feature-row flip">
+    <div class="text">
+      <div class="meta">多模型路由</div>
+      <h2 style="margin-top:18px">11 家模型供应商<br><em>一个 CLI 全打通</em></h2>
+      <p class="lead">从 Claude 到 GPT，从 DeepSeek 到 Qwen——Angles 在本地网关里按任务智能路由，把请求分发到最合适的模型。</p>
+      <p class="lead">不出终端，切换模型只要一行命令。不想锁定任何一家厂商。</p>
+      <a href="gateway.html" class="cta">了解本地网关 →</a>
+    </div>
+    <div class="mock">
+      <div class="mock-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="ttl">angles · gateway</span>
+      </div>
+      <div class="mock-body">
+<div><span class="mt"># active routes</span></div>
+<div>&nbsp;</div>
+<div><span class="bl">coding</span>      → <span class="ok">claude-sonnet-4</span></div>
+<div><span class="bl">planning</span>    → <span class="ok">gpt-5</span></div>
+<div><span class="bl">review</span>      → <span class="ok">deepseek-v3</span></div>
+<div><span class="bl">chat</span>        → <span class="ok">qwen-max</span></div>
+<div>&nbsp;</div>
+<div><span class="mt"># providers</span></div>
+<div><span class="tag">OpenAI</span><span class="tag">Anthropic</span></div>
+<div><span class="tag">DeepSeek</span><span class="tag">Qwen</span></div>
+<div><span class="tag">Gemini</span><span class="tag">Mistral</span></div>
+<div><span class="tag">Groq</span><span class="tag">GLM</span><span class="tag">···</span></div>
+<div>&nbsp;</div>
+<div><span class="ok">● gateway</span> <span class="mt">:8787  · 4 providers online</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── FEATURE 3: PLATFORMS ───── -->
+<section class="section" id="platforms">
+  <div class="feature-row">
+    <div class="text">
+      <div class="meta">跨平台 · 预编译</div>
+      <h2 style="margin-top:18px">五个平台<br><em>一个二进制</em></h2>
+      <p class="lead">macOS、Linux、Windows、ARM、甚至 iPad 上的 iSH——Angles 都能跑。每个平台都有预编译二进制，安装过程 5 秒结束。</p>
+      <p class="lead">1.6 MB。musl 静态链接。系统里没有任何依赖要求。</p>
+      <a href="#install" class="cta">查看安装命令 →</a>
+    </div>
+    <div class="mock">
+      <div class="mock-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="ttl">angles install</span>
+      </div>
+      <div class="mock-body">
+<div><span class="mt">$</span> angles install</div>
+<div>&nbsp;</div>
+<div><span class="ok">▸</span> 检测平台 <span class="mt">...</span> <span class="ok">aarch64-apple-darwin</span></div>
+<div><span class="ok">▸</span> 下载预编译 <span class="ok">1.6 MB</span></div>
+<div><span class="ok">▸</span> 校验 SHA256 <span class="mt">a3f9...c8e1</span></div>
+<div><span class="ok">▸</span> 安装到 <span class="ok">/usr/local/bin/angles</span></div>
+<div>&nbsp;</div>
+<div><span class="ok">████████████████████</span> <span class="mt">100%</span> <span class="ok">[4/4]</span></div>
+<div>&nbsp;</div>
+<div><span class="ok">✓</span> Done in <span class="gd">4.8s</span></div>
+<div>&nbsp;</div>
+<div><span class="mt">$</span> angles --version</div>
+<div>angles 0.2.1 <span class="mt">(aarch64-apple-darwin)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── STATS STRIP ───── -->
+<section class="stats-strip">
+  <div class="stat-item">
+    <div class="num">1.6<span style="font-size:.55em;color:var(--muted)">MB</span></div>
+    <div class="lbl">Rust Binary</div>
+  </div>
+  <div class="stat-item">
+    <div class="num">30+</div>
+    <div class="lbl">Built-in Tools</div>
+  </div>
+  <div class="stat-item">
+    <div class="num">11</div>
+    <div class="lbl">Model Providers</div>
+  </div>
+  <div class="stat-item">
+    <div class="num">5</div>
+    <div class="lbl">Platforms</div>
+  </div>
+</section>
+
+<!-- ───── INSTALL ───── -->
+<section class="section" id="install">
+  <div class="install-block">
+    <div class="section-eyebrow" style="text-align:center">Quickstart</div>
+    <h2 style="text-align:center">五秒装好。</h2>
+    <p class="lead" style="text-align:center;margin-left:auto;margin-right:auto">选你的平台，复制一行命令，结束。</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="npm">npm</button>
+      <button class="tab" data-tab="curl">curl</button>
+      <button class="tab" data-tab="brew">brew</button>
+      <button class="tab" data-tab="win">Windows</button>
+    </div>
+
+    <div class="code-block" id="code-npm">
+      <div class="cmd"><span class="pr">$</span> npm i -g <span class="ok">@angleschina/angles</span> && angles install</div>
+      <button class="copy-btn">复制</button>
+    </div>
+    <div class="code-block" id="code-curl" style="display:none">
+      <div class="cmd"><span class="pr">$</span> curl -fsSL https://zsj305.github.io/angles-cli/install.sh | bash</div>
+      <button class="copy-btn">复制</button>
+    </div>
+    <div class="code-block" id="code-brew" style="display:none">
+      <div class="cmd"><span class="pr">$</span> brew install angleschina/tap/angles</div>
+      <button class="copy-btn">复制</button>
+    </div>
+    <div class="code-block" id="code-win" style="display:none">
+      <div class="cmd"><span class="pr">PS&gt;</span> irm https://zsj305.github.io/angles-cli/install.ps1 | iex</div>
+      <button class="copy-btn">复制</button>
+    </div>
+
+    <div style="text-align:center;margin-top:48px;color:var(--muted);font-size:.92rem">
+      装好后运行 <code class="mono" style="background:var(--bg-2);padding:2px 8px;border-radius:5px;border:1px solid var(--border);font-size:.85em">angles</code> 开始第一次对话。
+    </div>
+  </div>
+</section>
+
+<!-- ───── TOOLS SECTION ───── -->
+<section class="section" id="tools">
+  <div class="section-eyebrow">Tools</div>
+  <h2>30 个内置工具，<br><em>覆盖编码全流程</em></h2>
+  <p class="lead">从读文件到跑 shell，从 grep 搜索到 git 提交，从 HTTP 请求到 web 搜索——智能体需要的工具，全部内置且经过沙盒权限控制。</p>
+  <div class="providers">
+    <span class="provider-chip">read_file</span>
+    <span class="provider-chip">write_file</span>
+    <span class="provider-chip">edit_file</span>
+    <span class="provider-chip">grep</span>
+    <span class="provider-chip">glob</span>
+    <span class="provider-chip">run_shell</span>
+    <span class="provider-chip">git_status</span>
+    <span class="provider-chip">git_diff</span>
+    <span class="provider-chip">git_commit</span>
+    <span class="provider-chip">http_fetch</span>
+    <span class="provider-chip">web_search</span>
+    <span class="provider-chip">list_dir</span>
+    <span class="provider-chip">··· +18 more</span>
+  </div>
+  <div style="margin-top:36px">
+    <a href="tools.html" class="btn btn-ghost">查看完整工具列表 →</a>
+  </div>
+</section>
+
+<!-- ───── FOOTER ───── -->
+<footer>
+  <div class="brand-block">
+    <div class="brand">α Angles</div>
+    <p>开源 AI 编程智能体。Rust 驱动，MIT 协议，跨平台。在终端里把创意变成代码。</p>
+  </div>
+  <div>
+    <h4>Product</h4>
+    <ul>
+      <li><a href="#agent">智能体</a></li>
+      <li><a href="#tools">工具</a></li>
+      <li><a href="#models">模型</a></li>
+      <li><a href="gateway.html">本地网关</a></li>
+    </ul>
+  </div>
+  <div>
+    <h4>Resources</h4>
+    <ul>
+      <li><a href="docs.html">文档</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="tools.html">工具参考</a></li>
+      <li><a href="https://github.com/ZSJ305/angles-cli">GitHub</a></li>
+    </ul>
+  </div>
+  <div>
+    <h4>Community</h4>
+    <ul>
+      <li><a href="https://www.npmjs.com/package/@angleschina/angles">npm</a></li>
+      <li><a href="https://github.com/ZSJ305/angles-cli/issues">Issues</a></li>
+      <li><a href="en-us/">English</a></li>
+    </ul>
+  </div>
+  <div class="credit">
+    <span>© 2026 Angles · MIT License</span>
+    <span>Built with Rust · Hosted on GitHub Pages</span>
+  </div>
+</footer>
+
+<a href="en-us/" class="lang-switch">EN ↗</a>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.code-block').forEach(c => c.style.display = 'none');
+    document.getElementById('code-' + tab.dataset.tab).style.display = 'flex';
+  });
+});
+
+// Copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const code = btn.parentElement.querySelector('.cmd').textContent.trim().replace(/^\$\s*/, '').replace(/^PS>\s*/, '');
+    navigator.clipboard.writeText(code).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '已复制 ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+    });
+  });
+});
+
+// Reveal on scroll
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'none';
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.feature-row, .manifesto, .stat-item, .section').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1)';
+  io.observe(el);
+});
+</script>
+
+</body>
+</html>

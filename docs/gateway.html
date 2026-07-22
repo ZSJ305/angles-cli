@@ -6,20 +6,20 @@
 <title>Angles Gateway — 控制台</title>
 <style>
 :root{
-  --bg:#f7f7f4; --bg-2:#efeee8; --card:#ffffff; --card-2:#f3f1ea;
-  --border:#e3e1d8; --border-2:#d5d2c6;
-  --text:#1a1812; --muted:#6b6657; --muted-2:#8a8474;
-  --blue:#4a6cf7; --blue-bright:#3b5de7; --blue-dim:rgba(74,108,247,.1);
-  --green:#2a9d4f; --orange:#c97a1a; --red:#c43830; --purple:#7c4dff;
+  --bg:#000000; --bg-2:#0a0a0a; --card:#111111; --card-2:#1a1a1a;
+  --border:#222222; --border-2:#333333;
+  --text:#e0e0e0; --muted:#888888; --muted-2:#555555;
+  --red:#ff3333; --red-bright:#ff5555; --red-dim:rgba(255,51,51,.12);
+  --green:#33ff33; --orange:#ffaa33; --red:#ff3333; --purple:#9966ff;
   --sidebar:#efeee8;
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --bg:#14120b; --bg-2:#1c1a12; --card:#1f1d15; --card-2:#26231a;
-    --border:#2e2a20; --border-2:#3a3528;
-    --text:#f1ede2; --muted:#8a8474; --muted-2:#6b6657;
-    --blue:#82b1ff; --blue-bright:#a3c4ff; --blue-dim:rgba(130,177,255,.12);
-    --green:#6ee08a; --orange:#ffb020; --red:#ff6b5e; --purple:#b388ff;
+    --bg:#000000; --bg-2:#0a0a0a; --card:#111111; --card-2:#26231a;
+    --border:#222222; --border-2:#3a3528;
+    --text:#e0e0e0; --muted:#8a8474; --muted-2:#6b6657;
+    --red:#ff3333; --red-bright:#ff5555; --red-dim:rgba(255,51,51,.12);
+    --green:#33ff33; --orange:#ffaa33; --red:#ff3333; --purple:#9966ff;
     --sidebar:#1c1a12;
   }
 }
@@ -34,7 +34,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
 .app{display:grid;grid-template-columns:248px 1fr;grid-template-rows:56px 1fr;height:100vh;width:100vw}
 
 .topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--border);z-index:20}
-.topbar .brand{font-family:"EB Garamond",Georgia,serif;font-size:1.25rem;font-weight:600;display:flex;align-items:center;gap:8px}
+.topbar .brand{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:1.25rem;font-weight:600;display:flex;align-items:center;gap:8px}
 .topbar .brand .mark{font-family:ui-monospace,monospace;font-weight:700}
 .topbar .brand .slash{color:var(--muted);font-weight:400;font-size:.85rem}
 .topbar .right{display:flex;align-items:center;gap:14px;font-size:.82rem;color:var(--muted)}
@@ -62,7 +62,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
 
 .view-head{padding:28px 36px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5}
 .view-head .eyebrow{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:6px;font-weight:600}
-.view-head h1{font-family:"EB Garamond",Georgia,serif;font-size:1.9rem;font-weight:600;letter-spacing:-.02em}
+.view-head h1{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:1.9rem;font-weight:600;letter-spacing:-.02em}
 .view-head .sub{color:var(--muted);font-size:.92rem;margin-top:4px}
 .view-body{padding:28px 36px 60px}
 
@@ -92,18 +92,18 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
 .chat-log{max-height:480px;overflow-y:auto;padding:6px 0;min-height:120px}
 .chat-msg{padding:11px 14px;margin-bottom:8px;border-radius:10px;font-size:.86rem;line-height:1.6}
 .chat-msg.user{background:var(--card-2);border:1px solid var(--border)}
-.chat-msg.bot{background:var(--blue-dim);border:1px solid rgba(74,108,247,.18)}
+.chat-msg.bot{background:var(--red-dim);border:1px solid rgba(74,108,247,.18)}
 .chat-msg .who{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);margin-bottom:4px;font-weight:600}
-.chat-msg.bot .who{color:var(--blue)}
+.chat-msg.bot .who{color:var(--red)}
 .chat-input{display:flex;gap:10px;margin-top:8px}
 .chat-input input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:.88rem}
 .chat-input input:focus{outline:none;border-color:var(--text)}
 .chat-input input:disabled{opacity:.5}
 
 .item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
-.item-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s;border-left:3px solid var(--blue)}
+.item-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s;border-left:3px solid var(--red)}
 .item-card:hover{border-color:var(--text)}
-.item-card .name{font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--blue-bright);font-weight:600;margin-bottom:4px;word-break:break-all}
+.item-card .name{font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--red-bright);font-weight:600;margin-bottom:4px;word-break:break-all}
 .item-card .desc{font-size:.8rem;color:var(--muted);line-height:1.4}
 .item-card .cat{font-family:"JetBrains Mono",monospace;font-size:.66rem;color:var(--muted-2);margin-top:8px;letter-spacing:.04em}
 
@@ -123,7 +123,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
 .empty-state{text-align:center;padding:48px 20px;color:var(--muted-2)}
 .empty-state .big{font-size:2rem;margin-bottom:12px;opacity:.5}
 .empty-state .msg{font-size:.92rem;margin-bottom:8px}
-.empty-state code{background:var(--card-2);color:var(--blue-bright);padding:2px 8px;border-radius:5px;border:1px solid var(--border);font-size:.85em}
+.empty-state code{background:var(--card-2);color:var(--red-bright);padding:2px 8px;border-radius:5px;border:1px solid var(--border);font-size:.85em}
 
 .mobile-ham{display:none}
 @media (max-width:760px){
@@ -199,7 +199,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
       <div class="view-head">
         <div class="eyebrow">Sessions</div>
         <h1>会话历史</h1>
-        <div class="sub">持久化在 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px">~/.angles/sessions/</code></div>
+        <div class="sub">持久化在 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px">~/.angles/sessions/</code></div>
       </div>
       <div class="view-body" id="sessions-body"></div>
     </section>
@@ -209,7 +209,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
       <div class="view-head">
         <div class="eyebrow">Tools</div>
         <h1>工具</h1>
-        <div class="sub">从 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px">/api/tools</code> 实时获取。</div>
+        <div class="sub">从 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px">/api/tools</code> 实时获取。</div>
       </div>
       <div class="view-body" id="tools-body"></div>
     </section>
@@ -219,7 +219,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
       <div class="view-head">
         <div class="eyebrow">Configuration</div>
         <h1>配置</h1>
-        <div class="sub">修改后点保存，通过 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px">PUT /api/config</code> 写入 config.json。</div>
+        <div class="sub">修改后点保存，通过 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px">PUT /api/config</code> 写入 config.json。</div>
       </div>
       <div class="view-body">
         <div class="card">
@@ -243,7 +243,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
             <div class="field"><label>审批策略</label><select id="cfg-approval"><option value="untrusted">untrusted</option><option value="on-request">on-request</option><option value="never">never</option></select></div>
           </div>
           <button class="btn btn-primary" onclick="saveConfig()">保存配置</button>
-          <span style="margin-left:8px;color:var(--muted-2);font-size:.82rem">或终端运行 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">angles gateway</code></span>
+          <span style="margin-left:8px;color:var(--muted-2);font-size:.82rem">或终端运行 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">angles gateway</code></span>
         </div>
       </div>
     </section>
@@ -253,7 +253,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
       <div class="view-head">
         <div class="eyebrow">Budget</div>
         <h1>Token</h1>
-        <div class="sub">从 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px">/api/budget</code> 实时获取。</div>
+        <div class="sub">从 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px">/api/budget</code> 实时获取。</div>
       </div>
       <div class="view-body" id="tokens-body"></div>
     </section>
@@ -294,7 +294,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,mo
       <div class="view-head">
         <div class="eyebrow">Health</div>
         <h1>诊断</h1>
-        <div class="sub">从 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px">/api/diagnostics</code> 实时获取。</div>
+        <div class="sub">从 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px">/api/diagnostics</code> 实时获取。</div>
       </div>
       <div class="view-body" id="diag-body"></div>
     </section>
@@ -475,7 +475,7 @@ async function loadBudget(){
       '</div>'+
       '<div class="token-bar"><div class="token-fill" style="width:'+b.percent_used+'%"></div></div>'+
       '<div style="font-size:.82rem;color:var(--muted-2);margin-top:6px">剩余 '+b.remaining.toLocaleString()+' · 重置日期 '+esc(b.reset_date)+'</div></div>'+
-      '<div class="card"><div class="card-title">说明</div><p style="color:var(--muted);font-size:.86rem;line-height:1.6">每日 token 预算在 config.json 的 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">daily_token_budget</code> 字段中设置。超出后自动暂停对话，次日 00:00 重置。</p></div>';
+      '<div class="card"><div class="card-title">说明</div><p style="color:var(--muted);font-size:.86rem;line-height:1.6">每日 token 预算在 config.json 的 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">daily_token_budget</code> 字段中设置。超出后自动暂停对话，次日 00:00 重置。</p></div>';
   }catch(e){
     el.innerHTML='<div class="empty-state"><div class="big">🎟️</div><div class="msg">网关未连接。<br>预算在 config.json 的 <code>daily_token_budget</code> 中设置。</div></div>';
   }
@@ -499,7 +499,7 @@ async function loadDiag(){
       '<div class="kv"><span class="k">Git</span><span class="v">'+yn(d.git_ok)+'</span></div>'+
       '<div class="kv"><span class="k">ripgrep</span><span class="v">'+yn(d.ripgrep_ok)+'</span></div>'+
       '</div>'+
-      '<div class="card"><div class="card-title">操作</div><p style="color:var(--muted);font-size:.86rem">终端运行 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">angles doctor</code> 获取完整诊断报告。</p></div>';
+      '<div class="card"><div class="card-title">操作</div><p style="color:var(--muted);font-size:.86rem">终端运行 <code class="mono" style="background:var(--card-2);color:var(--red-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">angles doctor</code> 获取完整诊断报告。</p></div>';
   }catch(e){
     el.innerHTML='<div class="empty-state"><div class="big">🩺</div><div class="msg">网关未连接。<br>终端运行 <code>angles doctor</code> 诊断。</div></div>';
   }

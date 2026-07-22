@@ -14,32 +14,32 @@
 <meta name="twitter:description" content="30+ 个工具命令速查表。">
 <style>
 :root{
-  --bg:#f7f7f4; --bg-2:#efeee8; --card:#ffffff; --card-2:#f3f1ea;
-  --border:#e3e1d8; --border-2:#d5d2c6;
-  --text:#1a1812; --muted:#6b6657; --muted-2:#8a8474;
-  --blue:#4a6cf7; --blue-bright:#3b5de7; --blue-dim:rgba(74,108,247,.1);
-  --green:#2a9d4f; --orange:#c97a1a; --red:#c43830; --purple:#7c4dff;
+  --bg:#000000; --bg-2:#0a0a0a; --card:#111111; --card-2:#1a1a1a;
+  --border:#222222; --border-2:#333333;
+  --text:#e0e0e0; --muted:#888888; --muted-2:#555555;
+  --red:#ff3333; --red-bright:#ff5555; --red-dim:rgba(255,51,51,.12);
+  --green:#33ff33; --orange:#ffaa33; --red:#ff3333; --purple:#9966ff;
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --bg:#14120b; --bg-2:#1c1a12; --card:#1f1d15; --card-2:#26231a;
-    --border:#2e2a20; --border-2:#3a3528;
-    --text:#f1ede2; --muted:#8a8474; --muted-2:#6b6657;
-    --blue:#82b1ff; --blue-bright:#a3c4ff; --blue-dim:rgba(130,177,255,.12);
-    --green:#6ee08a; --orange:#ffb020; --red:#ff6b5e; --purple:#b388ff;
+    --bg:#000000; --bg-2:#0a0a0a; --card:#111111; --card-2:#26231a;
+    --border:#222222; --border-2:#3a3528;
+    --text:#e0e0e0; --muted:#8a8474; --muted-2:#6b6657;
+    --red:#ff3333; --red-bright:#ff5555; --red-dim:rgba(255,51,51,.12);
+    --green:#33ff33; --orange:#ffaa33; --red:#ff3333; --purple:#9966ff;
   }
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
-a{color:var(--blue);text-decoration:none}
+a{color:var(--red);text-decoration:none}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-track{background:var(--bg-2)}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:5px}
 
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:18px 5vw;background:rgba(247,247,244,.75);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--border)}
 @media (prefers-color-scheme: dark){nav{background:rgba(20,18,11,.75)}}
-.logo{font-family:"EB Garamond",Georgia,serif;font-size:1.4rem;font-weight:600;color:var(--text);letter-spacing:-.02em;display:flex;align-items:center;gap:6px}
+.logo{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:1.4rem;font-weight:600;color:var(--text);letter-spacing:-.02em;display:flex;align-items:center;gap:6px}
 .logo .mark{font-family:ui-monospace,monospace;font-weight:700}
 .logo span.slash{color:var(--muted);font-weight:400;font-size:.95rem}
 .logo span.name{color:var(--text)}
@@ -51,14 +51,14 @@ nav a:hover{color:var(--text)}
 .btn-ghost:hover{opacity:.85;color:var(--bg)}
 
 .wrap{max-width:1100px;margin:0 auto;padding:110px 5vw 60px}
-h1{font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.4rem,5.5vw,3.6rem);font-weight:500;letter-spacing:-.025em;margin-bottom:14px;color:var(--text)}
+h1{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:clamp(2.4rem,5.5vw,3.6rem);font-weight:500;letter-spacing:-.025em;margin-bottom:14px;color:var(--text)}
 .lead{color:var(--muted);font-size:1.1rem;margin-bottom:36px}
 
 /* Search + filters */
 .toolbar{position:sticky;top:76px;background:rgba(247,247,244,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:16px 0;z-index:10;border-bottom:1px solid var(--border);margin-bottom:32px}
 @media (prefers-color-scheme: dark){.toolbar{background:rgba(20,18,11,.92)}}
 .search{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 18px;color:var(--text);font-size:.95rem;font-family:inherit;transition:border-color .2s}
-.search:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-dim)}
+.search:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-dim)}
 .search::placeholder{color:var(--muted-2)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .chip{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:999px;font-size:.82rem;cursor:pointer;transition:all .15s;font-weight:500}
@@ -70,10 +70,10 @@ h1{font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.4rem,5.5vw,3.6rem);
 
 /* Tool grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
-.tool{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;transition:all .2s;border-left:3px solid var(--blue)}
-.tool:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 20px rgba(74,108,247,.08)}
+.tool{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;transition:all .2s;border-left:3px solid var(--red)}
+.tool:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 6px 20px rgba(74,108,247,.08)}
 .tool .cat{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted-2);letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
-.tool .cmd{color:var(--blue-bright);font-family:"SF Mono",Fira Code,Consolas,monospace;font-size:.82rem;margin-bottom:6px;word-break:break-all;line-height:1.4}
+.tool .cmd{color:var(--red-bright);font-family:"SF Mono",Fira Code,Consolas,monospace;font-size:.82rem;margin-bottom:6px;word-break:break-all;line-height:1.4}
 .tool .cmd .arg{color:var(--orange)}
 .tool .cmd .opt{color:var(--muted)}
 .tool .desc{color:var(--muted);font-size:.84rem;line-height:1.5}
@@ -85,8 +85,8 @@ h1{font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.4rem,5.5vw,3.6rem);
 
 footer{text-align:center;padding:60px 5vw 50px;border-top:1px solid var(--border);color:var(--muted);font-size:.92rem}
 footer .links{display:flex;gap:24px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
-footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
-.credit{margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:.78rem}.credit span{color:var(--blue)}
+footer a{color:var(--muted)}footer a:hover{color:var(--red)}
+.credit{margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:.78rem}.credit span{color:var(--red)}
 
 @media(max-width:600px){
   nav .links a:not(.btn){display:none}
@@ -108,7 +108,7 @@ footer a{color:var(--muted)}footer a:hover{color:var(--blue)}
 
 <div class="wrap">
 <h1>工具速查</h1>
-<p class="lead">Agent 通过 <code style="background:var(--card-2);color:var(--blue-bright);padding:2px 7px;border-radius:5px;font-size:.9em">angles-*</code> 前缀的工具操作环境。30+ 个内置工具，搜索或按类别筛选。</p>
+<p class="lead">Agent 通过 <code style="background:var(--card-2);color:var(--red-bright);padding:2px 7px;border-radius:5px;font-size:.9em">angles-*</code> 前缀的工具操作环境。30+ 个内置工具，搜索或按类别筛选。</p>
 
 <div class="toolbar">
   <input class="search" id="search" type="text" placeholder="搜索命令、关键词、描述…  例如：grep / 删除 / git" autofocus>
@@ -208,7 +208,7 @@ function cmdHtml(parts){
     }
     if (cls === 'arg') return `<span class="arg">${val}</span>`;
     if (cls === 'opt') return `<span class="opt">${val}</span>`;
-    return `<span style="color:var(--blue-bright);font-weight:600">${txt}</span>`;
+    return `<span style="color:var(--red-bright);font-weight:600">${txt}</span>`;
   }).join('');
 }
 

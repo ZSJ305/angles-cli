@@ -20,13 +20,13 @@
 
 <style>
 :root{
-  --bg:#f7f7f4;
-  --bg-2:#efeee8;
-  --card:#ffffff;
-  --border:#e3e1d8;
-  --text:#1a1812;
-  --muted:#6b6657;
-  --accent:#2d2a22;
+  --bg:#000000;
+  --bg-2:#0a0a0a;
+  --card:#111111;
+  --border:#222222;
+  --text:#e0e0e0;
+  --muted:#888888;
+  --accent:#ff3333;
   --code-bg:#1c1a12;
   --code-text:#f1ede2;
   --code-prompt:#8a8474;
@@ -34,11 +34,11 @@
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --bg:#14120b;
-    --bg-2:#1c1a12;
-    --card:#1f1d15;
-    --border:#2e2a20;
-    --text:#f1ede2;
+    --bg:#000000;
+    --bg-2:#0a0a0a;
+    --card:#111111;
+    --border:#222222;
+    --text:#e0e0e0;
     --muted:#8a8474;
     --accent:#e8e2d0;
     --code-bg:#0a0906;
@@ -48,13 +48,13 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:17px}
-.serif{font-family:"EB Garamond",Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.01em}
+.serif{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-weight:500;letter-spacing:-.01em}
 .mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
 a{color:inherit;text-decoration:none}
 
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 5vw;background:rgba(247,247,244,.7);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--border)}
 @media (prefers-color-scheme: dark){nav{background:rgba(20,18,11,.7)}}
-nav .brand{font-family:"EB Garamond",Georgia,serif;font-size:1.5rem;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+nav .brand{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:1.5rem;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
 nav .brand .mark{font-family:ui-monospace,monospace;font-weight:700;color:var(--text)}
 nav .links{display:flex;gap:28px;align-items:center}
 nav a{color:var(--muted);font-size:.92rem;font-weight:500;transition:color .2s}
@@ -65,7 +65,7 @@ nav a:hover{color:var(--text)}
 
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:140px 6vw 80px;position:relative}
 .hero .eyebrow{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.78rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:32px;font-weight:500}
-.hero h1{font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.8rem,8vw,6.8rem);font-weight:500;line-height:1.04;letter-spacing:-.035em;margin-bottom:32px;color:var(--text);max-width:14ch}
+.hero h1{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:clamp(2.8rem,8vw,6.8rem);font-weight:500;line-height:1.04;letter-spacing:-.035em;margin-bottom:32px;color:var(--text);max-width:14ch}
 .hero h1 em{font-style:italic;font-weight:400;color:var(--muted)}
 .hero .subtitle{font-size:clamp(1.05rem,2vw,1.35rem);color:var(--muted);max-width:580px;margin-bottom:48px;line-height:1.55}
 .hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:96px}
@@ -94,12 +94,12 @@ nav a:hover{color:var(--text)}
 
 .section{padding:120px 6vw;max-width:1180px;margin:0 auto}
 .section-eyebrow{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.76rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:24px;font-weight:500}
-.section h2{font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.2rem,5.5vw,4.4rem);font-weight:500;line-height:1.08;letter-spacing:-.025em;max-width:18ch;margin-bottom:28px;color:var(--text)}
+.section h2{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:clamp(2.2rem,5.5vw,4.4rem);font-weight:500;line-height:1.08;letter-spacing:-.025em;max-width:18ch;margin-bottom:28px;color:var(--text)}
 .section h2 em{font-style:italic;font-weight:400;color:var(--muted)}
 .section .lead{font-size:clamp(1.05rem,1.8vw,1.3rem);color:var(--muted);max-width:560px;margin-bottom:64px;line-height:1.6}
 
 .manifesto{text-align:center;padding:140px 6vw;max-width:1100px;margin:0 auto;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.manifesto p{font-family:"EB Garamond",Georgia,serif;font-size:clamp(1.6rem,3.8vw,2.8rem);line-height:1.3;font-weight:400;letter-spacing:-.015em;color:var(--text);max-width:24ch;margin:0 auto}
+.manifesto p{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:clamp(1.6rem,3.8vw,2.8rem);line-height:1.3;font-weight:400;letter-spacing:-.015em;color:var(--text);max-width:24ch;margin:0 auto}
 .manifesto p em{font-style:italic;color:var(--muted)}
 .manifesto .sig{margin-top:40px;font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);letter-spacing:.04em}
 
@@ -126,7 +126,7 @@ nav a:hover{color:var(--text)}
 
 .stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .stat-item{background:var(--bg);padding:48px 24px;text-align:center}
-.stat-item .num{font-family:"EB Garamond",Georgia,serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:500;letter-spacing:-.02em;color:var(--text);line-height:1}
+.stat-item .num{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:500;letter-spacing:-.02em;color:var(--text);line-height:1}
 .stat-item .lbl{font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:12px}
 
 .install-block{max-width:760px;margin:0 auto}
@@ -147,7 +147,7 @@ nav a:hover{color:var(--text)}
 .provider-chip:hover{border-color:var(--text);color:var(--text)}
 
 footer{padding:90px 6vw 50px;border-top:1px solid var(--border);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
-footer .brand-block .brand{font-family:"EB Garamond",Georgia,serif;font-size:1.5rem;font-weight:600;margin-bottom:12px}
+footer .brand-block .brand{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:1.5rem;font-weight:600;margin-bottom:12px}
 footer .brand-block p{color:var(--muted);font-size:.9rem;max-width:320px}
 footer h4{font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:500}
 footer ul{list-style:none}
