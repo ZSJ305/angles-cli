@@ -60,35 +60,7 @@ has_tty()       { [[ -r /dev/tty ]] && [[ -w /dev/tty ]]; }
 progress_advance() {
     local step_name="$1"
     PROGRESS_CURRENT=$((PROGRESS_CURRENT + 1))
-    local pct=$((PROGRESS_CURRENT * 100 / PROGRESS_TOTAL))
-    local elapsed=$(( SECONDS - INSTALL_START_TIME ))
-    local remaining=""
-
-    if [[ "$PROGRESS_CURRENT" -gt 1 && "$elapsed" -gt 0 ]]; then
-        local rate=$(( elapsed / PROGRESS_CURRENT ))
-        local left=$(( rate * (PROGRESS_TOTAL - PROGRESS_CURRENT) ))
-        if [[ "$left" -gt 60 ]]; then
-            remaining="~$(( left / 60 ))分${left % 60}秒"
-        else
-            remaining="~${left}秒"
-        fi
-    elif [[ "$elapsed" -gt 0 ]]; then
-        remaining="计算中..."
-    else
-        remaining="--"
-    fi
-
-    # Bar: 30 chars wide
-    local filled=$(( pct * 30 / 100 ))
-    local empty=$(( 30 - filled ))
-    local bar=""
-    local i
-    for ((i=0; i<filled; i++)); do bar+="█"; done
-    for ((i=0; i<empty;  i++)); do bar+="░"; done
-
-    echo ""
-    echo -e "  ${ACCENT}${bar}${NC} ${BOLD}${pct}%${NC}  ${MUTED}[${PROGRESS_CURRENT}/${PROGRESS_TOTAL}]${NC}  ${step_name}  ${MUTED}剩余 ${remaining}${NC}"
-    echo ""
+    echo -e "  ${ACCENT}${BOLD}[${PROGRESS_CURRENT}/${PROGRESS_TOTAL}]${NC} ${step_name}"
 }
 
 # ── Downloader ──
@@ -162,9 +134,6 @@ detect_os_or_die() {
         riscv64)        ARCH="riscv64"; ARCH_LABEL="riscv64" ;;
         *)              ui_error "不支持的架构: $raw_arch"; exit 1 ;;
     esac
-
-    ui_kv "OS" "$OS"
-    ui_kv "架构" "$ARCH_LABEL ($ARCH)"
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -190,7 +159,6 @@ windows_redirect_and_exit() {
 }
 
 install_build_tools_linux() {
-    ui_info "安装编译工具..."
     if command -v apt-get &>/dev/null; then
         apt-get update -qq
         apt-get install -y -qq build-essential pkg-config libssl-dev curl git 2>/dev/null
@@ -216,12 +184,9 @@ install_build_tools_linux() {
 
 install_build_tools_macos() {
     if ! xcode-select -p &>/dev/null; then
-        ui_info "安装 Xcode Command Line Tools..."
         xcode-select --install 2>/dev/null || true
-        ui_info "等待安装完成..."
         while ! xcode-select -p &>/dev/null; do sleep 5; done
     fi
-    ui_success "Xcode CLT 已就绪"
 }
 
 install_build_tools() {
@@ -256,11 +221,9 @@ check_rust() {
 
 install_rust() {
     if check_rust; then
-        ui_success "Rust $(cargo --version | head -1 | grep -oP '\d+\.\d+\.\d+')"
         return 0
     fi
 
-    ui_info "安装 Rust..."
     local tmp; mktempfile tmp
     download_file "https://sh.rustup.rs" "$tmp"
 
@@ -282,8 +245,6 @@ install_rust() {
         ui_error "Rust 安装失败"
         exit 1
     fi
-
-    ui_success "Rust $(cargo --version | head -1)"
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -296,7 +257,6 @@ check_git() {
 
 install_git() {
     if check_git; then return 0; fi
-    ui_info "安装 Git..."
     if [[ "$OS" == "linux" ]]; then
         if command -v apt-get &>/dev/null; then
             apt-get install -y -qq git
@@ -312,7 +272,6 @@ install_git() {
         ui_error "Git 安装失败，请手动安装"
         exit 1
     fi
-    ui_success "Git $(git --version)"
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -339,13 +298,10 @@ install_angles_binary() {
     local binary_name="angles-${OS}-${ARCH}"
     local url="${ANGLES_REPO}/releases/latest/download/${binary_name}.tar.gz"
 
-    ui_info "检查预编译二进制 ${binary_name}..."
-
-    if ! curl -fsSL --connect-timeout 10 --head "$url" 2>/dev/null; then
+    if ! curl -fsSL -o /dev/null --connect-timeout 10 --head "$url" 2>/dev/null; then
         return 1
     fi
 
-    ui_info "下载 ${binary_name}..."
     local tmp; mktempfile tmp
     download_file "$url" "$tmp"
     tar xzf "$tmp" -C "$INSTALL_DIR" angles 2>/dev/null || {
@@ -353,23 +309,18 @@ install_angles_binary() {
         tar xzf "$tmp" -C "$tmpdir"
         cp "$tmpdir/angles" "$INSTALL_DIR/angles" 2>/dev/null || \
         cp "$tmpdir/${binary_name}" "$INSTALL_DIR/angles" 2>/dev/null || {
-            ui_warn "预编译二进制解压失败"
             return 1
         }
     }
 
     chmod +x "$INSTALL_DIR/angles"
-    ui_success "预编译二进制安装完成"
     return 0
 }
 
 install_angles_from_source() {
-    ui_info "从源码编译..."
-
     local tmpdir; tmpdir="$(mktemp -d)"; TMPFILES+=("$tmpdir")
     local repo_url="${ANGLES_REPO}"
 
-    ui_info "克隆仓库..."
     git clone --depth 1 "$repo_url" "$tmpdir/angles-cli"
 
     cd "$tmpdir/angles-cli"
@@ -389,7 +340,6 @@ install_angles_from_source() {
         fi
     fi
 
-    ui_info "编译中 (cargo $cargo_args)..."
     cargo $cargo_args 2>&1 | tail -5
 
     local binary=""
@@ -411,8 +361,6 @@ install_angles_from_source() {
     cp "$binary" "$INSTALL_DIR/angles"
     chmod +x "$INSTALL_DIR/angles"
     cd - > /dev/null
-
-    ui_success "编译安装完成"
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -448,11 +396,9 @@ setup_path() {
     fi
 
     export PATH="$PATH:$INSTALL_DIR"
-    ui_kv "PATH" "Added $INSTALL_DIR to $rc"
 
     if [[ -w /usr/local/bin ]] && [[ ! -e /usr/local/bin/angles ]]; then
-        ln -sf "$INSTALL_DIR/angles" /usr/local/bin/angles 2>/dev/null && \
-            ui_kv "Symlink" "/usr/local/bin/angles → $INSTALL_DIR/angles"
+        ln -sf "$INSTALL_DIR/angles" /usr/local/bin/angles 2>/dev/null
     fi
 }
 
@@ -466,15 +412,6 @@ verify_installation() {
         ui_error "angles 二进制不存在: $angles_bin"
         return 1
     fi
-
-    local ver
-    ver="$("$angles_bin" --version 2>/dev/null | head -1 || true)"
-    if [[ -z "$ver" ]]; then
-        ui_warn "angles --version 无输出，可能有问题"
-        return 1
-    fi
-
-    ui_success "angles $ver"
     return 0
 }
 
@@ -535,15 +472,12 @@ main() {
 
     ui_info "准备安装环境..."
     detect_downloader
-    print_banner
     detect_os_or_die
 
     local is_upgrade=false
     if check_existing_angles; then
         is_upgrade=true
     fi
-
-    show_install_plan
 
     if [[ "$DRY_RUN" == "1" ]]; then
         ui_success "Dry run 完成 (未做任何更改)"
@@ -560,11 +494,10 @@ main() {
     local prebuilt_available=false
     local _bn="angles-${OS}-${ARCH}"
     local _cu="${ANGLES_REPO}/releases/latest/download/${_bn}.tar.gz"
-    if curl -fsSL --connect-timeout 10 --head "$_cu" 2>/dev/null; then
+    if curl -fsSL -o /dev/null --connect-timeout 10 --head "$_cu" 2>/dev/null; then
         prebuilt_available=true
-        ui_info "预编译二进制可用，跳过编译工具 / Git / Rust 安装"
     else
-        ui_info "预编译不可用，将需要从源码编译"
+        prebuilt_available=false
     fi
 
     if [[ "$prebuilt_available" != "true" ]]; then
@@ -578,59 +511,28 @@ main() {
     fi
 
     # ── Step 2: Install Angles ──
-    progress_advance "安装 Angles Code CLI (二进制 / 源码编译)"
+    progress_advance "安装 Angles"
 
     mkdir -p "$INSTALL_DIR"
     mkdir -p "$ANGLES_HOME"
 
     if ! install_angles_binary; then
-        ui_info "预编译不可用，从源码编译"
         install_angles_from_source
     fi
 
     # ── Step 3: PATH ──
-    progress_advance "配置 PATH 环境变量"
+    progress_advance "配置 PATH"
 
     setup_path
 
     # ── Step 4: Verify & Gateway ──
-    progress_advance "验证安装 & 初始配置"
+    progress_advance "验证安装"
 
     if ! verify_installation; then
         exit 1
     fi
 
-    # ── Success ──
-    echo ""
-    if [[ "$is_upgrade" == "true" ]]; then
-        local upgrade_msgs=(
-            "升级完成！新版本已就绪。"
-            "焕然一新！更锋利的 🅰 到手。"
-            "代码已更新，bug 已退散。"
-            "升级成功！还是那个味，但更快了。"
-        )
-        echo -e "  ${MUTED}${upgrade_msgs[$((RANDOM % ${#upgrade_msgs[@]}))]}${NC}"
-    else
-        local install_msgs=(
-            "终于安家了！准备好大干一场了吗？"
-            "安装完成！你的终端从此不一样了。"
-            "🅰 就位！开始写代码吧。"
-            "搞定！angles 是你新的编码搭档。"
-            "欢迎加入 Angles！让 AI 替你干脏活。"
-        )
-        echo -e "  ${MUTED}${install_msgs[$((RANDOM % ${#install_msgs[@]}))]}${NC}"
-    fi
-    echo ""
-
-    # Show details
-    ui_section "安装详情"
-    ui_kv "版本"       "$("$INSTALL_DIR/angles" --version 2>/dev/null | head -1)"
-    ui_kv "位置"       "$INSTALL_DIR/angles"
-    ui_kv "配置"       "$ANGLES_HOME/config.json"
-    ui_kv "升级命令"   "angles update"
-    echo ""
-
-    # Run gateway if first install
+    # ── Run gateway if first install ──
     if [[ "$NO_GATEWAY" != "1" ]]; then
         if [[ ! -f "$ANGLES_HOME/config.json" ]]; then
             ui_info "启动设置向导..."
@@ -643,22 +545,17 @@ main() {
                     echo "  运行以下命令手动配置: angles gateway"
                 }
             fi
-        else
-            ui_info "已有配置，跳过向导"
         fi
     fi
 
-    # ── Final ──
+    # ── Done ──
     echo ""
-    echo -e "  ${SUCCESS}${BOLD}✅ 安装完成!${NC}"
+    local ver
+    ver="$("$INSTALL_DIR/angles" --version 2>/dev/null | head -1)"
+    echo -e "  ${SUCCESS}${BOLD}✅ ${ver}${NC}"
     echo ""
-    echo "  运行以下命令开始:"
+    echo -e "  运行 ${ACCENT}angles${NC} 开始对话"
     echo ""
-    echo -e "    ${ACCENT}source ~/.bashrc${NC}   # 或 ~/.zshrc"
-    echo -e "    ${ACCENT}angles${NC}              # 开始对话"
-    echo ""
-
-    show_footer
 }
 
 # ── Entry point ──
