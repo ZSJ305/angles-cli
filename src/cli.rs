@@ -51,6 +51,33 @@ pub enum Commands {
 
     /// 检查并更新 Angles CLI
     Update,
+
+    /// 管理 Skill（安装、创建、删除）
+    Skill {
+        #[command(subcommand)]
+        action: SkillAction,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum SkillAction {
+    /// 列出已安装的 Skill
+    List,
+
+    /// 从 GitHub URL 安装 Skill
+    Add {
+        /// GitHub URL（支持 blob/raw/tree 链接）
+        url: String,
+    },
+
+    /// 删除已安装的 Skill
+    Remove {
+        /// Skill 名称
+        name: String,
+    },
+
+    /// 创建新 Skill（交互式）
+    Create,
 }
 
 pub fn print_help() {
@@ -72,6 +99,11 @@ pub fn print_help() {
     println!("  angles resume    恢复历史会话");
     println!("  angles plan      显示/管理当前计划");
     println!("  angles update    检查并更新");
+    println!();
+    println!("  angles skill list    列出已安装的 Skill");
+    println!("  angles skill add     从 GitHub 安装 Skill");
+    println!("  angles skill create  创建新 Skill");
+    println!("  angles skill remove  删除 Skill");
     println!();
     println!("  angles serve     启动本地 HTTP 网关 (默认 :8080)");
     println!();

@@ -27,6 +27,7 @@ pub fn start(port: u16) -> Result<(), Box<dyn std::error::Error + Send + Sync>> 
             .route("/api/providers", get(list_providers))
             .route("/api/tools", get(list_tools))
             .route("/api/tools/:name", get(get_tool_detail))
+            .route("/api/skills", get(list_skills))
             .route("/api/budget", get(get_budget))
             .route("/api/sessions", get(list_sessions))
             .route("/api/sessions/:id", get(get_session))
@@ -228,6 +229,71 @@ async fn get_tool_detail(Path(name): Path<String>) -> impl IntoResponse {
         })),
         None => Json(serde_json::json!({"error": "tool not found"})),
     }
+}
+
+// ─── Skills list ───
+
+async fn list_skills() -> impl IntoResponse {
+    let skills_dir = dirs::home_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join(".angles")
+        .join("skills");
+    let mut skills: Vec<serde_json::Value> = Vec::new();
+
+    if skills_dir.exists() {
+        if let Ok(entries) = std::fs::read_dir(&skills_dir) {
+            let mut all: Vec<_> = entries.filter_map(|e| e.ok()).collect();
+            all.sort_by_key(|e| e.file_name());
+            for entry in all {
+                if !entry.path().is_dir() {
+                    continue;
+                }
+                let name = entry.file_name().to_string_lossy().to_string();
+                let skill_md = entry.path().join("SKILL.md");
+                let description = if skill_md.exists() {
+                    let content = std::fs::read_to_string(&skill_md).unwrap_or_default();
+                    extract_skill_description(&content)
+                } else {
+                    String::new()
+                };
+                let builtin = name == "skill-creator";
+                skills.push(serde_json::json!({
+                    "name": name,
+                    "description": description,
+                    "builtin": builtin,
+                }));
+            }
+        }
+    }
+    // Ensure builtin exists for API consumers too
+    if !skills.iter().any(|s| s["name"] == "skill-creator") {
+        crate::skill::ensure_builtin_public();
+        skills.insert(0, serde_json::json!({
+            "name": "skill-creator",
+            "description": "Guide for creating effective skills",
+            "builtin": true,
+        }));
+    }
+    Json(serde_json::json!({"skills": skills, "count": skills.len()}))
+}
+
+fn extract_skill_description(content: &str) -> String {
+    let lines: Vec<&str> = content.lines().collect();
+    let mut in_frontmatter = false;
+    for line in &lines {
+        let trimmed = line.trim();
+        if trimmed == "---" {
+            in_frontmatter = !in_frontmatter;
+            if !in_frontmatter { break; }
+            continue;
+        }
+        if in_frontmatter {
+            if let Some(rest) = trimmed.strip_prefix("description:") {
+                return rest.trim().trim_matches('"').trim_matches('\'').trim().to_string();
+            }
+        }
+    }
+    String::new()
 }
 
 // ─── Budget / token usage ───

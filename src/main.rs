@@ -6,6 +6,7 @@ mod instructions;
 mod provider;
 mod search;
 mod server;
+mod skill;
 mod tools;
 
 use clap::Parser;
@@ -119,6 +120,14 @@ fn main() {
             if let Err(e) = server::start(*port) {
                 eprintln!("❌ 网关服务器启动失败: {}", e);
                 std::process::exit(1);
+            }
+        }
+        Some(cli::Commands::Skill { action }) => {
+            match action {
+                cli::SkillAction::List => skill::list(),
+                cli::SkillAction::Add { url } => skill::add(url),
+                cli::SkillAction::Remove { name } => skill::remove(name),
+                cli::SkillAction::Create => skill::create(),
             }
         }
     }
