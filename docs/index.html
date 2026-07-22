@@ -536,18 +536,18 @@ footer .credit{
     <p class="lead" style="text-align:center;margin-left:auto;margin-right:auto">选你的平台，复制一行命令，结束。</p>
 
     <div class="tabs" role="tablist">
-      <button class="tab active" data-tab="npm">npm</button>
-      <button class="tab" data-tab="curl">curl</button>
+      <button class="tab active" data-tab="curl">curl</button>
+      <button class="tab" data-tab="npm">npm</button>
       <button class="tab" data-tab="brew">brew</button>
       <button class="tab" data-tab="win">Windows</button>
     </div>
 
-    <div class="code-block" id="code-npm">
-      <div class="cmd"><span class="pr">$</span> npm i -g <span class="ok">@angleschina/angles</span> && angles install</div>
+    <div class="code-block" id="code-curl">
+      <div class="cmd"><span class="pr">$</span> curl -fsSL https://zsj305.github.io/angles-cli/install.sh | bash</div>
       <button class="copy-btn">复制</button>
     </div>
-    <div class="code-block" id="code-curl" style="display:none">
-      <div class="cmd"><span class="pr">$</span> curl -fsSL https://zsj305.github.io/angles-cli/install.sh | bash</div>
+    <div class="code-block" id="code-npm" style="display:none">
+      <div class="cmd"><span class="pr">$</span> npm i -g <span class="ok">@angleschina/angles</span> && angles install</div>
       <button class="copy-btn">复制</button>
     </div>
     <div class="code-block" id="code-brew" style="display:none">
