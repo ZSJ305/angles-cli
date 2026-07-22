@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Angles Gateway — 控制台</title>
 <link rel="canonical" href="https://zsj305.github.io/angles-cli/gateway.html">
-<meta name="description" content="Angles Gateway 控制台：对话、产物、Skill、Token 设置、联网 API、Provider、安全策略的多视图控制中心。">
+<meta name="description" content="Angles Gateway 控制台：对话、产物、Skill、Token 设置、联网 API、Provider、安全策略。运行 angles serve 后连接本地网关。">
 <style>
 :root{
   --bg:#f7f7f4; --bg-2:#efeee8; --card:#ffffff; --card-2:#f3f1ea;
@@ -26,14 +26,13 @@
   }
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+html{-webkit-font-smoothing:antialiased}
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;overflow:hidden}
 code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
 a{color:var(--blue);text-decoration:none}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--muted-2)}
 
 /* ─── APP LAYOUT ─── */
 .app{display:grid;grid-template-columns:248px 1fr;grid-template-rows:56px 1fr;height:100vh;width:100vw}
@@ -41,15 +40,16 @@ a{color:var(--blue);text-decoration:none}
 /* Top bar */
 .topbar{
   grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
-  padding:0 20px;background:var(--bg);border-bottom:1px solid var(--border);
-  z-index:20;
+  padding:0 20px;background:var(--bg);border-bottom:1px solid var(--border);z-index:20;
 }
 .topbar .brand{font-family:"EB Garamond",Georgia,serif;font-size:1.25rem;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
 .topbar .brand .mark{font-family:ui-monospace,monospace;font-weight:700}
 .topbar .brand .slash{color:var(--muted);font-weight:400;font-size:.85rem}
 .topbar .right{display:flex;align-items:center;gap:14px;font-size:.82rem;color:var(--muted)}
 .topbar .right .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--card);border:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:.72rem}
-.topbar .right .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.topbar .right .pill .dot{width:6px;height:6px;border-radius:50%}
+.topbar .right .pill .dot.online{background:var(--green)}
+.topbar .right .pill .dot.offline{background:var(--muted-2)}
 .topbar .right a{color:var(--muted)}
 .topbar .right a:hover{color:var(--text)}
 
@@ -66,21 +66,16 @@ a{color:var(--blue);text-decoration:none}
 .nav-item{
   display:flex;align-items:center;gap:10px;
   padding:8px 10px;border-radius:8px;
-  color:var(--muted);font-size:.88rem;cursor:pointer;transition:all .15s;
-  user-select:none;
+  color:var(--muted);font-size:.88rem;cursor:pointer;transition:all .15s;user-select:none;
 }
 .nav-item .ic{width:16px;text-align:center;font-size:.9rem;opacity:.85}
 .nav-item:hover{background:var(--card);color:var(--text)}
 .nav-item.active{background:var(--card);color:var(--text);font-weight:600;box-shadow:inset 2px 0 0 var(--text)}
-.nav-item .cnt{margin-left:auto;font-size:.7rem;background:var(--bg);color:var(--muted-2);padding:1px 6px;border-radius:4px;font-family:"JetBrains Mono",monospace}
-
 .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);font-size:.76rem;color:var(--muted-2)}
 .sidebar-foot .ver{font-family:"JetBrains Mono",monospace}
 
-/* Main content */
-.main{
-  grid-row:2;background:var(--bg);overflow-y:auto;padding:0;
-}
+/* Main */
+.main{grid-row:2;background:var(--bg);overflow-y:auto}
 .view{display:none;animation:fade .3s ease}
 .view.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -93,125 +88,69 @@ a{color:var(--blue);text-decoration:none}
 
 /* Cards */
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
-.card-title{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-bottom:14px;font-weight:600;display:flex;align-items:center;gap:8px}
-.card-title .badge{background:var(--blue-dim);color:var(--blue-bright);padding:1px 7px;border-radius:4px;font-size:.66rem;letter-spacing:.04em}
+.card-title{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-bottom:14px;font-weight:600}
+
+/* Empty state */
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted-2)}
+.empty-state .big{font-size:2rem;margin-bottom:12px;opacity:.5}
+.empty-state .msg{font-size:.92rem;margin-bottom:16px}
+.empty-state code{background:var(--card-2);color:var(--blue-bright);padding:2px 8px;border-radius:5px;border:1px solid var(--border);font-size:.85em}
+.empty-state a{color:var(--blue);font-weight:600}
+
+/* KV */
+.kv{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:.86rem;gap:12px}
+.kv:last-child{border-bottom:none}
+.kv .k{color:var(--muted)}
+.kv .v{color:var(--text);font-family:"JetBrains Mono",monospace;text-align:right;word-break:break-all}
 
 /* Form */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-grid.full{grid-template-columns:1fr}
 .field{margin-bottom:14px}
 .field label{display:block;font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase}
-.field input,.field select,.field textarea{
-  width:100%;background:var(--bg-2);border:1px solid var(--border);
-  border-radius:8px;padding:9px 12px;color:var(--text);font-size:.88rem;
-  font-family:inherit;transition:border-color .15s;
-}
+.field input,.field select,.field textarea{width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:.88rem;font-family:inherit;transition:border-color .15s}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--text)}
-.field textarea{resize:vertical;min-height:54px;font-family:inherit}
+.field textarea{resize:vertical;min-height:54px}
 .field .hint{font-size:.76rem;color:var(--muted-2);margin-top:5px}
 .field .hint code{background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;font-size:.82em;border:1px solid var(--border)}
 
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:9px 18px;border-radius:8px;font-weight:600;font-size:.86rem;
-  cursor:pointer;border:none;transition:opacity .15s;font-family:inherit;
-}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-weight:600;font-size:.86rem;cursor:pointer;border:none;transition:opacity .15s;font-family:inherit}
 .btn-primary{background:var(--text);color:var(--bg)}
 .btn-primary:hover{opacity:.85}
 .btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border)}
 .btn-ghost:hover{border-color:var(--text)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-
-/* KV display */
-.kv{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:.86rem;gap:12px}
-.kv:last-child{border-bottom:none}
-.kv .k{color:var(--muted)}
-.kv .v{color:var(--text);font-family:"JetBrains Mono",monospace;max-width:62%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Chat */
-.chat-log{max-height:480px;overflow-y:auto;padding:6px 0}
+.chat-log{max-height:480px;overflow-y:auto;padding:6px 0;min-height:120px}
 .chat-msg{padding:11px 14px;margin-bottom:8px;border-radius:10px;font-size:.86rem;line-height:1.6}
 .chat-msg.user{background:var(--card-2);border:1px solid var(--border)}
 .chat-msg.bot{background:var(--blue-dim);border:1px solid rgba(74,108,247,.18)}
-.chat-msg .who{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);margin-bottom:4px;font-weight:600;letter-spacing:.04em}
+.chat-msg .who{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);margin-bottom:4px;font-weight:600}
 .chat-msg.bot .who{color:var(--blue)}
 .chat-input{display:flex;gap:10px;margin-top:8px}
 .chat-input input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:.88rem}
 .chat-input input:focus{outline:none;border-color:var(--text)}
+.chat-input input:disabled{opacity:.5}
 
-/* Token bar */
-.token-bar{height:8px;background:var(--bg-2);border-radius:4px;overflow:hidden;margin:8px 0 4px;border:1px solid var(--border)}
-.token-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--orange));border-radius:4px;transition:width .5s}
-.token-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
-.token-stat{background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
-.token-stat .num{font-family:"JetBrains Mono",monospace;font-size:1.4rem;font-weight:600;color:var(--text);line-height:1}
-.token-stat .lbl{font-family:"JetBrains Mono",monospace;font-size:.66rem;color:var(--muted-2);letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
+/* Tool grid */
+.item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.item-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s;border-left:3px solid var(--blue)}
+.item-card:hover{border-color:var(--text)}
+.item-card .name{font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--blue-bright);font-weight:600;margin-bottom:4px;word-break:break-all}
+.item-card .desc{font-size:.8rem;color:var(--muted);line-height:1.4}
+.item-card .cat{font-family:"JetBrains Mono",monospace;font-size:.66rem;color:var(--muted-2);margin-top:8px;letter-spacing:.04em}
 
-/* Skill grid */
-.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.skill{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:all .2s;border-left:3px solid var(--blue)}
-.skill:hover{border-color:var(--text);transform:translateY(-1px)}
-.skill .name{font-family:"JetBrains Mono",monospace;font-size:.82rem;color:var(--blue-bright);font-weight:600;margin-bottom:4px}
-.skill .desc{font-size:.8rem;color:var(--muted);line-height:1.4}
-.skill .meta{font-family:"JetBrains Mono",monospace;font-size:.68rem;color:var(--muted-2);margin-top:8px;letter-spacing:.04em}
-.skill .meta .on{color:var(--green)}
-.skill .meta .off{color:var(--muted-2)}
-
-/* Artifact list */
-.art-item{display:flex;align-items:center;gap:14px;padding:12px;border-radius:8px;background:var(--card);border:1px solid var(--border);margin-bottom:8px;transition:border-color .15s}
-.art-item:hover{border-color:var(--text)}
-.art-item .ic{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.art-item .ic.code{background:rgba(74,108,247,.12);color:var(--blue)}
-.art-item .ic.doc{background:rgba(42,157,79,.12);color:var(--green)}
-.art-item .ic.img{background:rgba(201,122,26,.12);color:var(--orange)}
-.art-item .ic.other{background:var(--bg-2);color:var(--muted)}
-.art-item .body{flex:1;min-width:0}
-.art-item .name{font-size:.86rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.art-item .sub{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--muted-2);margin-top:2px}
-.art-item .act{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);padding:4px 8px;border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:all .15s}
-.art-item .act:hover{color:var(--text);border-color:var(--text)}
-
-/* Provider cards */
-.prov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.prov{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:all .2s}
-.prov:hover{border-color:var(--text)}
-.prov .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.prov .nm{font-weight:600;font-size:.86rem}
-.prov .stat{font-family:"JetBrains Mono",monospace;font-size:.66rem;padding:2px 7px;border-radius:4px;background:rgba(42,157,79,.12);color:var(--green)}
-.prov .stat.off{background:var(--bg-2);color:var(--muted-2)}
-.prov .mdl{font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prov .lat{font-family:"JetBrains Mono",monospace;font-size:.68rem;color:var(--muted-2);margin-top:6px}
-
-/* Security toggle */
+/* Toggle */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px}
 .toggle-row:last-of-type{border-bottom:none}
 .toggle-row .lbl{font-size:.88rem;font-weight:500}
 .toggle-row .dlbl{font-size:.78rem;color:var(--muted-2);margin-top:2px}
-.toggle-row .sw{position:relative;width:40px;height:22px;flex-shrink:0}
-.toggle-row .sw input{opacity:0;width:0;height:0}
-.toggle-row .sw .slider{position:absolute;inset:0;background:var(--border-2);border-radius:999px;cursor:pointer;transition:.2s}
-.toggle-row .sw .slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;top:3px;background:var(--bg);border-radius:50%;transition:.2s}
-.toggle-row .sw input:checked + .slider{background:var(--green)}
-.toggle-row .sw input:checked + .slider::before{transform:translateX(18px)}
+.toggle-row .dlbl code{background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;font-size:.82em;border:1px solid var(--border)}
 
-/* API list */
-.api-block{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}
-.api-block .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.api-block .nm{font-weight:600;font-size:.88rem}
-.api-block .tag{font-family:"JetBrains Mono",monospace;font-size:.68rem;padding:2px 8px;border-radius:4px;background:var(--blue-dim);color:var(--blue-bright)}
-.api-list{list-style:none;margin:0;padding:0}
-.api-list li{font-family:"JetBrains Mono",monospace;font-size:.76rem;padding:6px 10px;background:var(--bg-2);border-radius:6px;margin-bottom:4px;display:flex;align-items:center;gap:10px}
-.api-list li .m{font-weight:700;padding:1px 6px;border-radius:3px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:.7rem}
-.api-list li .m.GET{color:var(--green)}
-.api-list li .m.POST{color:var(--blue)}
-.api-list li .m.PUT{color:var(--orange)}
-.api-list li .m.WS{color:var(--purple)}
-.api-list li .path{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.api-list li .d{color:var(--muted-2);font-size:.72rem}
-
-/* Toast */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--green);color:var(--green);padding:12px 18px;border-radius:10px;font-size:.86rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+/* Toast (only for real async results) */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:10px;font-size:.86rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200}
 .toast.show{opacity:1}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
 
 /* Mobile */
 .mobile-ham{display:none}
@@ -221,7 +160,6 @@ a{color:var(--blue);text-decoration:none}
   .sidebar.open{display:flex;transform:translateX(0)}
   .mobile-ham{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-right:10px;cursor:pointer;font-size:1.1rem}
   .form-grid{grid-template-columns:1fr}
-  .token-grid{grid-template-columns:1fr 1fr}
   .view-head,.view-body{padding-left:20px;padding-right:20px}
 }
 </style>
@@ -241,7 +179,7 @@ a{color:var(--blue);text-decoration:none}
       </div>
     </div>
     <div class="right">
-      <span class="pill"><span class="dot"></span> <span id="status-text">glm · GLM-5.2</span></span>
+      <span class="pill" id="status-pill"><span class="dot offline" id="status-dot"></span> <span id="status-text">未连接</span></span>
       <a href="index.html">← 返回主页</a>
     </div>
   </div>
@@ -251,17 +189,15 @@ a{color:var(--blue);text-decoration:none}
     <div class="nav-group">
       <h5>会话</h5>
       <div class="nav-item active" data-view="chat"><span class="ic">💬</span> 对话</div>
-      <div class="nav-item" data-view="history"><span class="ic">📜</span> 会话历史 <span class="cnt">12</span></div>
-      <div class="nav-item" data-view="artifacts"><span class="ic">📦</span> 产物 <span class="cnt">28</span></div>
+      <div class="nav-item" data-view="history"><span class="ic">📜</span> 会话历史</div>
+      <div class="nav-item" data-view="artifacts"><span class="ic">📦</span> 产物</div>
     </div>
-
     <div class="nav-group">
       <h5>能力</h5>
-      <div class="nav-item" data-view="skills"><span class="ic">⚡</span> Skill <span class="cnt">7</span></div>
-      <div class="nav-item" data-view="tools"><span class="ic">🛠</span> 工具 <span class="cnt">30</span></div>
+      <div class="nav-item" data-view="skills"><span class="ic">⚡</span> Skill</div>
+      <div class="nav-item" data-view="tools"><span class="ic">🛠</span> 工具</div>
       <div class="nav-item" data-view="network"><span class="ic">🌐</span> 联网 API</div>
     </div>
-
     <div class="nav-group">
       <h5>配置</h5>
       <div class="nav-item" data-view="providers"><span class="ic">🧠</span> 模型 Provider</div>
@@ -269,340 +205,233 @@ a{color:var(--blue);text-decoration:none}
       <div class="nav-item" data-view="tokens"><span class="ic">🎟️</span> Token 设置</div>
       <div class="nav-item" data-view="security"><span class="ic">🔒</span> 安全策略</div>
     </div>
-
     <div class="nav-group">
       <h5>诊断</h5>
       <div class="nav-item" data-view="diagnostics"><span class="ic">🩺</span> 诊断</div>
     </div>
-
     <div class="sidebar-foot">
       <div class="ver">angles v0.2.1</div>
-      <div style="margin-top:4px">控制台 · 本地 :8787</div>
+      <div style="margin-top:4px">控制台 · <code class="mono" style="font-size:.72rem">127.0.0.1:8787</code></div>
     </div>
   </aside>
 
   <!-- ═══ Main ═══ -->
   <main class="main">
 
-    <!-- ── Chat view ── -->
+    <!-- ── Chat ── -->
     <section class="view active" id="view-chat">
       <div class="view-head">
-        <div class="eyebrow">Session · Live</div>
+        <div class="eyebrow">Session</div>
         <h1>对话</h1>
         <div class="sub">通过本地网关与智能体对话。agent 会使用已配置的模型、工具与 Skill。</div>
       </div>
       <div class="view-body">
         <div class="card">
-          <div class="card-title">实时对话 <span class="badge">GLM-5.2</span></div>
-          <div class="chat-log" id="chat-log">
-            <div class="chat-msg bot"><div class="who">α angles</div>配置好后，在这里测试对话。agent 会读你的文件、改代码、跑测试、查文档——你做决策。</div>
-          </div>
+          <div class="card-title">实时对话</div>
+          <div class="chat-log" id="chat-log"></div>
           <div class="chat-input">
-            <input id="chat-input" placeholder="输入消息，Enter 发送…" onkeydown="if(event.key==='Enter')sendChat()">
-            <button class="btn btn-primary" onclick="sendChat()" id="send-btn">发送</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">快捷指令</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px">
-            <span class="mono" style="background:var(--bg-2);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:.78rem;cursor:pointer;color:var(--muted)" onclick="document.getElementById('chat-input').value='/plan 重构 auth 模块';sendChat()">/plan 重构 auth 模块</span>
-            <span class="mono" style="background:var(--bg-2);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:.78rem;cursor:pointer;color:var(--muted)" onclick="document.getElementById('chat-input').value='/search Rust async best practices 2026';sendChat()">/search Rust async</span>
-            <span class="mono" style="background:var(--bg-2);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:.78rem;cursor:pointer;color:var(--muted)" onclick="document.getElementById('chat-input').value='/doctor 系统体检';sendChat()">/doctor 系统体检</span>
+            <input id="chat-input" placeholder="输入消息，Enter 发送…" disabled
+              onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn btn-primary" onclick="sendChat()" id="send-btn" disabled>发送</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ── History view ── -->
+    <!-- ── History ── -->
     <section class="view" id="view-history">
       <div class="view-head">
-        <div class="eyebrow">Sessions · 12 records</div>
+        <div class="eyebrow">Sessions</div>
         <h1>会话历史</h1>
-        <div class="sub">所有对话会以哈希 ID 持久化。<code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">angles history</code> / <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">angles resume</code> 可以重开。</div>
+        <div class="sub">对话以哈希 ID 持久化在 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">~/.angles/</code> 下。</div>
       </div>
-      <div class="view-body" id="history-list"></div>
+      <div class="view-body" id="history-body">
+        <div class="empty-state">
+          <div class="big">📜</div>
+          <div class="msg">网关未连接，无法加载会话列表。<br>会话也可通过命令行查看：</div>
+          <pre style="display:inline-block;text-align:left;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-top:8px"><code>angles history     <span style="color:var(--muted)"># 列出会话</span>
+angles resume &lt;id&gt; <span style="color:var(--muted)"># 恢复会话</span></code></pre>
+        </div>
+      </div>
     </section>
 
-    <!-- ── Artifacts view ── -->
+    <!-- ── Artifacts ── -->
     <section class="view" id="view-artifacts">
       <div class="view-head">
-        <div class="eyebrow">Outputs · 28 items</div>
+        <div class="eyebrow">Outputs</div>
         <h1>产物</h1>
-        <div class="sub">智能体在对话中产出的代码、文档、图像——按时间倒序。</div>
+        <div class="sub">智能体在对话中产出的代码、文档、图像。</div>
       </div>
-      <div class="view-body" id="artifact-list"></div>
+      <div class="view-body" id="artifacts-body">
+        <div class="empty-state">
+          <div class="big">📦</div>
+          <div class="msg">网关未连接，无法加载产物列表。</div>
+        </div>
+      </div>
     </section>
 
-    <!-- ── Skills view ── -->
+    <!-- ── Skills ── -->
     <section class="view" id="view-skills">
       <div class="view-head">
-        <div class="eyebrow">Capabilities · 7 skills
- available</div>
+        <div class="eyebrow">Capabilities</div>
         <h1>Skill</h1>
-        <div class="sub">Skill 是可复用的指令集，让智能体在特定场景下按预定流程工作。存放在 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">~/.angles/skills/&lt;name&gt;/SKILL.md</code></div>
+        <div class="sub">可复用的指令集，存放在 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">~/.angles/skills/&lt;name&gt;/SKILL.md</code>。</div>
       </div>
-      <div class="view-body">
-        <div class="skill-grid" id="skill-grid"></div>
+      <div class="view-body" id="skills-body">
+        <div class="empty-state">
+          <div class="big">⚡</div>
+          <div class="msg">网关未连接，无法加载 Skill 列表。</div>
+        </div>
       </div>
     </section>
 
-    <!-- ── Tools view ── -->
+    <!-- ── Tools ── -->
     <section class="view" id="view-tools">
       <div class="view-head">
         <div class="eyebrow">Tools · 30 built-in</div>
         <h1>工具</h1>
-        <div class="sub">Agent 通过 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">angles-*</code> 前缀的工具操作环境，所有工具受审批策略管控。</div>
+        <div class="sub">Agent 通过 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">angles-*</code> 前缀的工具操作环境，受审批策略管控。</div>
       </div>
       <div class="view-body">
-        <div class="skill-grid" id="tool-grid"></div>
+        <div class="item-grid" id="tool-grid"></div>
       </div>
     </section>
 
-    <!-- ── Network / REST API view ── -->
+    <!-- ── Network API ── -->
     <section class="view" id="view-network">
       <div class="view-head">
-        <div class="eyebrow">Networking · Local gateway API</div>
+        <div class="eyebrow">Networking</div>
         <h1>联网 API</h1>
-        <div class="sub">本地网关（默认 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">127.0.0.1:8787</code>）暴露的 HTTP / WebSocket 端点，可集成到第三方应用或脚本。</div>
+        <div class="sub">运行 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">angles serve</code> 后，本地网关暴露的 HTTP / WebSocket 端点。</div>
       </div>
-      <div class="view-body" id="api-render"></div>
+      <div class="view-body">
+        <div class="card">
+          <div class="card-title">启动网关</div>
+          <pre style="background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;overflow-x:auto"><code>angles serve <span style="color:var(--muted)"># 默认监听 127.0.0.1:8787</span></code></pre>
+          <p style="margin-top:12px;color:var(--muted);font-size:.86rem">启动后本页面会自动连接。可在 config.json 中修改端口。</p>
+        </div>
+        <div class="card">
+          <div class="card-title">端点说明</div>
+          <p style="color:var(--muted);font-size:.86rem;line-height:1.7">网关启动后提供 Web 控制台（即本页面）和 REST API，用于集成到第三方应用或脚本。具体端点列表在 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">angles serve</code> 启动后于终端输出中查看。</p>
+        </div>
+      </div>
     </section>
 
-    <!-- ── Providers view ── -->
+    <!-- ── Providers ── -->
     <section class="view" id="view-providers">
       <div class="view-head">
         <div class="eyebrow">Models · 11 providers</div>
         <h1>模型 Provider</h1>
-        <div class="sub">从 Claude 到 GPT，从 DeepSeek 到 Qwen——一个 CLI 全打通。每个 Provider 的 base_url 与默认模型已预置。</div>
+        <div class="sub">从 Claude 到 GPT，从 DeepSeek 到 Qwen——一个 CLI 全打通。前 10 家有预置 base_url 和默认模型。</div>
       </div>
       <div class="view-body">
-        <div class="prov-grid" id="prov-grid"></div>
+        <div class="item-grid" id="prov-grid"></div>
         <div class="card" style="margin-top:16px">
           <div class="card-title">自定义 Provider</div>
-          <p style="color:var(--muted);font-size:.86rem;line-height:1.6">本地推理服务（Ollama / vLLM / LM Studio）提供 OpenAI 兼容端点即可接入。选「自定义」填入 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">http://localhost:11434/v1</code> 和模型名即可。</p>
+          <p style="color:var(--muted);font-size:.86rem;line-height:1.6">本地推理服务（Ollama / vLLM / LM Studio）提供 OpenAI 兼容端点即可接入。Gateway 向导中选「自定义」，填入 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">http://localhost:11434/v1</code> 和模型名即可。</p>
         </div>
       </div>
     </section>
 
-    <!-- ── Config view ── -->
+    <!-- ── Config ── -->
     <section class="view" id="view-config">
       <div class="view-head">
-        <div class="eyebrow">Configuration · <code class="mono" style="font-size:.78rem">~/.angles/config.json</code></div>
+        <div class="eyebrow">Configuration</div>
         <h1>基础配置</h1>
-        <div class="sub">所有字段保存在本地 config.json，不上传任何服务器。</div>
+        <div class="sub">存储在 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border);font-size:.82em">~/.angles/config.json</code>，不上传任何服务器。</div>
       </div>
       <div class="view-body">
         <div class="card">
-          <div class="card-title">当前运行时配置</div>
-          <div id="config-display"></div>
+          <div class="card-title">当前配置（来自 <code class="mono" style="font-size:.78rem">angles config</code>）</div>
+          <div id="config-display">
+            <div class="kv"><span class="k">语言</span><span class="v">zh-CN</span></div>
+            <div class="kv"><span class="k">Provider</span><span class="v">glm</span></div>
+            <div class="kv"><span class="k">Base URL</span><span class="v">https://api.siliconflow.cn/v1</span></div>
+            <div class="kv"><span class="k">协议</span><span class="v">chat</span></div>
+            <div class="kv"><span class="k">Model</span><span class="v">zai-org/GLM-5.2</span></div>
+            <div class="kv"><span class="k">API Key</span><span class="v">sk-****</span></div>
+            <div class="kv"><span class="k">Max Tokens</span><span class="v">16384</span></div>
+            <div class="kv"><span class="k">日预算</span><span class="v">1000000</span></div>
+            <div class="kv"><span class="k">Agent 人设</span><span class="v" style="font-size:.78rem">你是一个专业、高效的编码助手…</span></div>
+            <div class="kv"><span class="k">搜索引擎</span><span class="v">bing</span></div>
+            <div class="kv"><span class="k">审批策略</span><span class="v">untrusted</span></div>
+          </div>
         </div>
         <div class="card">
           <div class="card-title">修改配置</div>
-          <div class="form-grid">
+          <p style="color:var(--muted);font-size:.86rem;margin-bottom:14px">编辑配置请运行 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">angles gateway</code> 进入五步 TUI 向导，或直接编辑 <code class="mono" style="background:var(--card-2);color:var(--blue-bright);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">~/.angles/config.json</code>。网关启动后此表单可在线修改。</p>
+          <div class="form-grid" id="config-form" style="display:none">
             <div class="field">
               <label>Provider</label>
-              <select id="cfg-provider" onchange="onProviderChange()">
-                <option value="">加载中…</option>
-              </select>
-              <div class="hint">预置 11 家 + 自定义</div>
+              <select id="cfg-provider" onchange="onProviderChange()"></select>
             </div>
             <div class="field">
               <label>模型 Model</label>
               <input id="cfg-model" type="text" placeholder="model id">
-              <div class="hint">从下拉切换或手填，例如 <code>zai-org/GLM-5.2</code></div>
             </div>
           </div>
-          <div class="form-grid">
-            <div class="field">
-              <label>API Key</label>
-              <input id="cfg-apikey" type="password" placeholder="sk-...">
-              <div class="hint">留空则保留已存 Key</div>
-            </div>
-            <div class="field">
-              <label>Max Tokens</label>
-              <input id="cfg-maxtokens" type="number" value="16384" min="1024" step="1024">
-            </div>
-          </div>
-          <div class="field">
-            <label>Agent 人设</label>
-            <textarea id="cfg-persona" rows="2" placeholder="例如：你是一个专业、高效的编码助手…"></textarea>
-          </div>
-          <div class="form-grid">
-            <div class="field">
-              <label>搜索引擎</label>
-              <select id="cfg-search">
-                <option value="bing">Bing</option>
-                <option value="baidu">Baidu</option>
-                <option value="google">Google</option>
-                <option value="yahoo">Yahoo</option>
-                <option value="disabled">关闭</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>语言</label>
-              <select id="cfg-lang">
-                <option value="zh-CN">中文</option>
-                <option value="en">English</option>
-              </select>
-            </div>
-          </div>
-          <button class="btn btn-primary" onclick="saveConfig()">保存配置</button>
-          <button class="btn btn-ghost" onclick="runGatewayWizard()" style="margin-left:8px">重跑 Gateway 向导 →</button>
         </div>
       </div>
     </section>
 
-    <!-- ── Token view ── -->
+    <!-- ── Tokens ── -->
     <section class="view" id="view-tokens">
       <div class="view-head">
-        <div class="eyebrow">Budget · Daily limit</div>
+        <div class="eyebrow">Budget</div>
         <h1>Token 设置</h1>
         <div class="sub">每日 token 预算控制成本，超出后自动暂停对话。次日 00:00 重置。</div>
       </div>
-      <div class="view-body">
-        <div class="card">
-          <div class="card-title">今日用量</div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span class="mono" style="font-size:1.6rem;font-weight:600;color:var(--text)">312,847 <span style="color:var(--muted-2);font-size:.6em">/ 1,000,000</span></span>
-            <span class="mono" style="font-size:.78rem;color:var(--muted-2)">31.3%</span>
-          </div>
-          <div class="token-bar"><div class="token-fill" style="width:31.3%"></div></div>
-          <div class="token-grid">
-            <div class="token-stat"><div class="num">47k</div><div class="lbl">prompt</div></div>
-            <div class="token-stat"><div class="num">262k</div><div class="lbl">completion</div></div>
-            <div class="token-stat"><div class="num">3.8k</div><div class="lbl">cache-read</div></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">日预算限额</div>
-          <div class="form-grid">
-            <div class="field">
-              <label>Prompt + Completion 上限</label>
-              <input type="number" value="1000000" min="10000" step="50000">
-              <div class="hint">建议 500k–2M，超出后只读 chat</div>
-            </div>
-            <div class="field">
-              <label>单次请求最大 token</label>
-              <input type="number" value="16384" min="1024" step="1024">
-            </div>
-          </div>
-          <div class="field">
-            <label>触发警告的阈值</label>
-            <input type="range" min="50" max="95" value="80" style="width:100%;padding:6px 0">
-            <div class="hint">达到 <span class="mono" id="warn-val" style="color:var(--orange);font-weight:600">80</span>% 时顶部状态条变橙</div>
-          </div>
-          <button class="btn btn-primary">保存预算</button>
-        </div>
-        <div class="card">
-          <div class="card-title">近 7 天</div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:90px;align-items:flex-end">
-            <div style="background:var(--blue-dim);border-radius:4px;height:30%"></div>
-            <div style="background:var(--blue-dim);border-radius:4px;height:52%"></div>
-            <div style="background:var(--blue-dim);border-radius:4px;height:38%"></div>
-            <div style="background:var(--blue-dim);border-radius:4px;height:68%"></div>
-            <div style="background:var(--blue-dim);border-radius:4px;height:45%"></div>
-            <div style="background:var(--blue-dim);border-radius:4px;height:60%"></div>
-            <div style="background:var(--text);border-radius:4px;height:31%"></div>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--muted-2);text-align:center">
-            <span>7/15</span><span>7/16</span><span>7/17</span><span>7/18</span><span>7/19</span><span>7/20</span><span>7/21</span>
-          </div>
+      <div class="view-body" id="tokens-body">
+        <div class="empty-state">
+          <div class="big">🎟️</div>
+          <div class="msg">网关未连接，无法加载用量数据。<br>预算上限在 config.json 的 <code>daily_budget</code> 字段中设置。</div>
         </div>
       </div>
     </section>
 
-    <!-- ── Security view ── -->
+    <!-- ── Security ── -->
     <section class="view" id="view-security">
       <div class="view-head">
-        <div class="eyebrow">Safety · Approval policy</div>
+        <div class="eyebrow">Safety</div>
         <h1>安全策略</h1>
         <div class="sub">智能体在执行破坏性操作前，按策略决定是否请求人工确认。</div>
       </div>
       <div class="view-body">
         <div class="card">
           <div class="card-title">审批策略</div>
-          <div class="field">
-            <label>策略</label>
-            <select id="cfg-approval">
-              <option value="untrusted">untrusted — 只读自动执行，破坏性问用户（默认）</option>
-              <option value="on-request">on-request — agent 自行判断何时请示</option>
-              <option value="never">never — 全部自动执行（最快但最危险）</option>
-            </select>
-          </div>
-          <div class="hint" style="margin-top:6px">无论哪种策略，这些操作始终强制确认：<code>angles-deletefile</code>、<code>rm -rf</code>、<code>git push --force</code>、修改工作区外文件。</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">作用域 & 开关</div>
-          <div class="toggle-row">
-            <div>
-              <div class="lbl">限制在工作目录内</div>
-              <div class="dlbl">agent 修改 <code class="mono">cwd</code> 之外文件需要确认</div>
-            </div>
-            <label class="sw"><input type="checkbox" checked><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="lbl">允许无确认执行 <code class="mono">npm test</code> / <code class="mono">cargo test</code></div>
-              <div class="dlbl">只对 test/类型检查类只读命令放行</div>
-            </div>
-            <label class="sw"><input type="checkbox" checked><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="lbl">允许 <code class="mono">git commit</code></div>
-              <div class="dlbl">自动暂存并提交（<code class="mono">push</code> 依然总是问）</div>
-            </div>
-            <label class="sw"><input type="checkbox" checked><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="lbl">强制确认 <code class="mono">sudo</code></div>
-              <div class="dlbl">所有提权命令必须用户确认</div>
-            </div>
-            <label class="sw"><input type="checkbox" checked><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="lbl">读取 <code class="mono">AGENTS.md</code> 项目级约束</div>
-              <div class="dlbl">仓库内的特殊规则会被注入系统提示</div>
-            </div>
-            <label class="sw"><input type="checkbox" checked><span class="slider"></span></label>
+          <div class="kv"><span class="k">untrusted（默认）</span><span class="v" style="font-size:.78rem">只读安全命令自动执行，破坏性操作问用户</span></div>
+          <div class="kv"><span class="k">on-request</span><span class="v" style="font-size:.78rem">agent 自行判断何时请示</span></div>
+          <div class="kv"><span class="k">never</span><span class="v" style="font-size:.78rem">全部自动执行——最快但最危险</span></div>
+          <div style="margin-top:14px;padding:12px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;font-size:.82rem;color:var(--muted);line-height:1.6">
+            无论哪种策略，以下操作<strong style="color:var(--text)">始终强制确认</strong>：<br>
+            <code class="mono" style="color:var(--red)">angles-deletefile</code>、
+            <code class="mono" style="color:var(--red)">rm -rf</code>、
+            <code class="mono" style="color:var(--red)">git push --force</code>、
+            修改工作区外文件。
           </div>
         </div>
-
         <div class="card">
           <div class="card-title">API Key 存储</div>
           <div class="kv"><span class="k">存储位置</span><span class="v">~/.angles/config.json (0600)</span></div>
-          <div class="kv"><span class="k">替代方案</span><span class="v"><code class="mono">ANGLES_API_KEY</code> 环境变量</span></div>
-          <div class="kv"><span class="k">是否上报</span><span class="v" style="color:var(--green)">❌ 永远不上报</span></div>
-          <div class="kv"><span class="k">请求路径</span><span class="v">直接 → Provider，不经中转</span></div>
+          <div class="kv"><span class="k">替代方案</span><span class="v"><code class="mono">ANGLES_API_KEY</code></span></div>
+          <div class="kv"><span class="k">是否上报</span><span class="v" style="color:var(--green)">不上报</span></div>
+          <div class="kv"><span class="k">请求路径</span><span class="v">直连 Provider</span></div>
         </div>
       </div>
     </section>
 
-    <!-- ── Diagnostics view ── -->
+    <!-- ── Diagnostics ── -->
     <section class="view" id="view-diagnostics">
       <div class="view-head">
-        <div class="eyebrow">Health · <code class="mono" style="font-size:.78rem">angles doctor</code></div>
+        <div class="eyebrow">Health</div>
         <h1>诊断</h1>
-        <div class="sub">体检当前安装与网关连通性——配置完整性、API Key 有效性、网络与预算余量。</div>
+        <div class="sub">体检当前安装与网关连通性。</div>
       </div>
-      <div class="view-body">
-        <div class="card">
-          <div class="card-title"><span style="color:var(--green)">●</span> 通过项</div>
-          <div class="kv"><span class="k">config.json 存在且完整</span><span class="v" style="color:var(--green)">✓ OK</span></div>
-          <div class="kv"><span class="k">二进制版本</span><span class="v">0.2.1 (aarch64-apple-darwin)</span></div>
-          <div class="kv"><span class="k">PATH 中 angles 可达</span><span class="v" style="color:var(--green)">✓ /usr/local/bin/angles</span></div>
-          <div class="kv"><span class="k">到 base_url 可达</span><span class="v" style="color:var(--green)">✓ 218 ms</span></div>
-          <div class="kv"><span class="k">API Key 有效</span><span class="v" style="color:var(--green)">✓ 通过</span></div>
-          <div class="kv"><span class="k">每日预算余量</span><span class="v">687,153 / 1,000,000</span></div>
-        </div>
-        <div class="card">
-          <div class="card-title">操作</div>
-          <button class="btn btn-primary" onclick="toast('正在跑 angles doctor…')">运行 angles doctor</button>
-          <button class="btn btn-ghost" style="margin-left:8px" onclick="toast('测试连通性…')">测试 base_url 连通</button>
-          <button class="btn btn-ghost" style="margin-left:8px" onclick="toast('已复制版本号')">复制版本号</button>
+      <div class="view-body" id="diag-body">
+        <div class="empty-state">
+          <div class="big">🩺</div>
+          <div class="msg">网关未连接。<br>在终端运行诊断命令：</div>
+          <pre style="display:inline-block;text-align:left;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-top:8px"><code>angles doctor <span style="color:var(--muted)"># 诊断安装与配置</span></code></pre>
         </div>
       </div>
     </section>
@@ -613,337 +442,156 @@ a{color:var(--blue);text-decoration:none}
 <div class="toast" id="toast"></div>
 
 <script>
-const API = '';
+const API = '';  // Set to 'http://127.0.0.1:8787' when gateway is on another host
+let gatewayOnline = false;
 
-/* ─── Sample data ─── */
-const HISTORY = [
-  {id:'a3f9c8e1', t:'21:42',msg:'给 Express 项目加 JWT 鉴权',tools:9,dur:'47s',model:'GLM-5.2'},
-  {id:'7b2d4f0a', t:'20:15',msg:'用 Rust 写一个 HTTP 静态文件服务器',tools:14,dur:'2m18s',model:'GLM-5.2'},
-  {id:'c8e1a903', t:'19:03',msg:'refactor: 把 unwrap 改成 proper error handling',tools:7,dur:'1m03s',model:'DeepSeek-V3'},
-  {id:'f4a2b7c9', t:'昨天',msg:'写一个 MCP server 包装 GitHub issues',tools:22,dur:'5m41s',model:'Claude Sonnet 4'},
-  {id:'e1d8c5b2', t:'昨天',msg:'查找 Rust 1.85 async closure 的 breaking change',tools:3,dur:'8s',model:'GLM-5.2'},
-  {id:'9b7f3e2c', t:'7/19',msg:'install.sh 加 macOS arm64 预编译分支',tools:11,dur:'1m52s',model:'GLM-5.2'},
-  {id:'2c4a8f1d', t:'7/19',msg:'给 install.ps1 加 bash 兼容分支',tools:8,dur:'1m14s',model:'GLM-5.2'},
-  {id:'5d9b3e7a', t:'7/18',msg:'搜索 Cursor.com 的设计参考',tools:5,dur:'3s',model:'GPT-5'},
+/* ─── Static, real data (from angles source / docs) ─── */
+
+// 30 built-in tools — same list as tools.html, from the actual project
+var TOOLS = [
+  {c:"文件创建",n:"angles-createfile",d:"创建新文件并写入内容"},
+  {c:"文件创建",n:"angles-writefile",d:"覆盖写入文件"},
+  {c:"文件创建",n:"angles-appendfile",d:"向文件末尾追加"},
+  {c:"文件创建",n:"angles-insertline",d:"指定行号前插入一行"},
+  {c:"读取搜索",n:"angles-readfile",d:"读取文件，可指定起止行"},
+  {c:"读取搜索",n:"angles-searchfile",d:"按文件名 glob 搜索"},
+  {c:"读取搜索",n:"angles-grep",d:"文件内容正则搜索"},
+  {c:"读取搜索",n:"angles-head",d:"显示文件前 n 行"},
+  {c:"读取搜索",n:"angles-tail",d:"显示文件最后 n 行"},
+  {c:"修改删除",n:"angles-replace",d:"精确 diff 替换"},
+  {c:"修改删除",n:"angles-replaceall",d:"替换全部匹配"},
+  {c:"修改删除",n:"angles-deleteline",d:"删除指定行"},
+  {c:"修改删除",n:"angles-deletefile",d:"删除文件（始终确认）",danger:true},
+  {c:"修改删除",n:"angles-movedir",d:"移动 / 重命名"},
+  {c:"修改删除",n:"angles-copyfile",d:"复制文件"},
+  {c:"修改删除",n:"angles-mkdir",d:"创建目录"},
+  {c:"目录项目",n:"angles-ls",d:"列出目录内容"},
+  {c:"目录项目",n:"angles-tree",d:"树形结构显示目录"},
+  {c:"目录项目",n:"angles-pwd",d:"显示当前工作目录"},
+  {c:"目录项目",n:"angles-cd",d:"切换工作目录"},
+  {c:"目录项目",n:"angles-fileinfo",d:"文件详细信息"},
+  {c:"终端执行",n:"angles-run",d:"执行命令并返回输出"},
+  {c:"终端执行",n:"angles-runbg",d:"后台执行，返回 PID"},
+  {c:"终端执行",n:"angles-kill",d:"终止指定进程"},
+  {c:"网络搜索",n:"angles-fetch",d:"下载 URL 内容"},
+  {c:"网络搜索",n:"angles-websearch",d:"搜索引擎查询"},
+  {c:"Git",n:"angles-gitinit",d:"初始化 git 仓库"},
+  {c:"Git",n:"angles-gitcommit",d:"暂存并提交"},
+  {c:"Git",n:"angles-gitlog",d:"查看提交记录"},
+  {c:"Git",n:"angles-gitdiff",d:"查看未暂存更改"},
+  {c:"Git",n:"angles-gitbranch",d:"创建并切换分支"},
 ];
 
-const ARTIFACTS = [
-  {ic:'code',name:'src/middleware/auth.ts',sub:'TypeScript · 87 行 · a3f9c8e1'},
-  {ic:'code',name:'tests/auth.test.ts',sub:'TypeScript · 64 行 · a3f9c8e1'},
-  {ic:'doc',name:'OAUTH_DESIGN.md',sub:'Markdown · 2.4 kB · a3f9c8e1'},
-  {ic:'code',name:'src/main.rs (static server)',sub:'Rust · 142 行 · 7b2d4f0a'},
-  {ic:'doc',name:'REFACTOR_NOTES.md',sub:'Markdown · 1.1 kB · c8e1a903'},
-  {ic:'code',name:'mcp-github-issues/index.ts',sub:'TypeScript · 318 行 · f4a2b7c9'},
-  {ic:'other',name:'install.sh (arm64 分支)',sub:'Shell · diff +24/-3 · 9b7f3e2c'},
-  {ic:'img',name:'cursor-reference.png',sub:'PNG · 1.4 MB · 抓取 · 5d9b3e7a'},
+// 11 providers — from providers.toml, documented in docs.html
+var PROVIDERS = [
+  {nm:"GLM (智谱)",base:"https://open.bigmodel.cn/api/paas/v4",mdl:"glm-4-flash"},
+  {nm:"OpenAI",base:"https://api.openai.com/v1",mdl:"gpt-5"},
+  {nm:"Anthropic",base:"https://api.anthropic.com", mdl:"claude-sonnet-4"},
+  {nm:"DeepSeek",base:"https://api.deepseek.com/v1", mdl:"deepseek-chat"},
+  {nm:"Qwen (通义)",base:"https://dashscope.aliyuncs.com/compatible-mode/v1", mdl:"qwen-max"},
+  {nm:"Gemini (Google)",base:"https://generativelanguage.googleapis.com", mdl:"gemini-2.5-pro"},
+  {nm:"Grok (xAI)",base:"https://api.x.ai/v1",mdl:"grok-4"},
+  {nm:"MiniMax",base:"https://api.minimax.chat/v1",mdl:"abab6.5-chat"},
+  {nm:"OpenRouter",base:"https://openrouter.ai/api/v1",mdl:"auto"},
+  {nm:"Kimi (Moonshot)",base:"https://api.moonshot.cn/v1",mdl:"moonshot-v1-128k"},
+  {nm:"自定义",base:"(由用户填写)",mdl:"(由用户填写)"},
 ];
 
-const SKILLS = [
-  {name:'self-improving',desc:'失败/纠错时自动记录并闭环，下次避免重蹈覆辙',meta:'● enabled'},
-  {name:'pdf',desc:'PDF 读取、合并、拆分、旋转、表格抽取',meta:'● enabled'},
-  {name:'web-search',desc:'多搜索引擎路由（Bing 优先），实时信息检索',meta:'● enabled'},
-  {name:'web-content-extractor',desc:'抓取并清洗网页正文为 Markdown',meta:'● enabled'},
-  {name:'nano-banana',desc:'Google Gemini 图像生成 / 编辑',meta:'● enabled'},
-  {name:'ios-app-builder',desc:'SwiftUI + AppIcon 完整 Xcode 工程生成',meta:'● enabled'},
-  {name:'twitter-downloader',desc:'下载 X 推文文本 / 图片 / 视频',meta:'◐ optional'},
-];
-
-const TOOLS_DATA = [
-  {c:'文件创建',n:'angles-createfile',d:'创建新文件并写入内容'},
-  {c:'文件创建',n:'angles-writefile',d:'覆盖写入文件'},
-  {c:'文件创建',n:'angles-appendfile',d:'向文件末尾追加'},
-  {c:'文件创建',n:'angles-insertline',d:'指定行号前插入一行'},
-  {c:'读取搜索',n:'angles-readfile',d:'读取文件，可指定起止行'},
-  {c:'读取搜索',n:'angles-searchfile',d:'按文件名 glob 搜索'},
-  {c:'读取搜索',n:'angles-grep',d:'文件内容正则搜索'},
-  {c:'读取搜索',n:'angles-head',d:'显示文件前 n 行'},
-  {c:'读取搜索',n:'angles-tail',d:'显示文件最后 n 行'},
-  {c:'修改删除',n:'angles-replace',d:'精确 diff 替换'},
-  {c:'修改删除',n:'angles-replaceall',d:'替换全部匹配'},
-  {c:'修改删除',n:'angles-deleteline',d:'删除指定行'},
-  {c:'修改删除',n:'angles-deletefile',d:'删除文件（始终确认）',danger:true},
-  {c:'修改删除',n:'angles-movedir',d:'移动 / 重命名'},
-  {c:'修改删除',n:'angles-copyfile',d:'复制文件'},
-  {c:'修改删除',n:'angles-mkdir',d:'创建目录'},
-  {c:'目录项目',n:'angles-ls',d:'列出目录内容'},
-  {c:'目录项目',n:'angles-tree',d:'树形结构显示目录'},
-  {c:'目录项目',n:'angles-pwd',d:'显示当前工作目录'},
-  {c:'目录项目',n:'angles-cd',d:'切换工作目录'},
-  {c:'目录项目',n:'angles-fileinfo',d:'文件详细信息'},
-  {c:'终端执行',n:'angles-run',d:'执行命令并返回输出'},
-  {c:'终端执行',n:'angles-runbg',d:'后台执行，返回 PID'},
-  {c:'终端执行',n:'angles-kill',d:'终止指定进程'},
-  {c:'网络搜索',n:'angles-fetch',d:'下载 URL 内容'},
-  {c:'网络搜索',n:'angles-websearch',d:'搜索引擎查询'},
-  {c:'Git',n:'angles-gitinit',d:'初始化 git 仓库'},
-  {c:'Git',n:'angles-gitcommit',d:'暂存并提交'},
-  {c:'Git',n:'angles-gitlog',d:'查看提交记录'},
-  {c:'Git',n:'angles-gitdiff',d:'查看未暂存更改'},
-  {c:'Git',n:'angles-gitbranch',d:'创建并切换分支'},
-];
-
-const PROVIDERS = [
-  {nm:'GLM (智谱)',stat:'on',mdl:'zai-org/GLM-5.2',lat:'218 ms'},
-  {nm:'OpenAI',stat:'on',mdl:'gpt-5',lat:'402 ms'},
-  {nm:'Anthropic',stat:'on',mdl:'claude-sonnet-4',lat:'510 ms'},
-  {nm:'DeepSeek',stat:'on',mdl:'deepseek-v3',lat:'280 ms'},
-  {nm:'Qwen (通义)',stat:'off',mdl:'qwen-max',lat:'—'},
-  {nm:'Gemini (Google)',stat:'off',mdl:'gemini-2.5-pro',lat:'—'},
-  {nm:'Grok (xAI)',stat:'off',mdl:'grok-4',lat:'—'},
-  {nm:'MiniMax',stat:'off',mdl:'abab6.5',lat:'—'},
-  {nm:'OpenRouter',stat:'off',mdl:'auto',lat:'—'},
-  {nm:'Kimi (Moonshot)',stat:'off',mdl:'moonshot-v1-128k',lat:'—'},
-  {nm:'自定义',stat:'off',mdl:'custom endpoint',lat:'—'},
-];
-
-const APIS = [
-  {grp:'对话',tag:'Chat',routes:[
-    {m:'POST',p:'/api/chat',d:'发送一条消息，返回 agent 回复'},
-    {m:'POST',p:'/api/chat/stream',d:'流式响应（SSE）'},
-    {m:'WS',p:'/ws/chat',d:'WebSocket 双向对话'},
-    {m:'GET',p:'/api/sessions',d:'列出会话'},
-    {m:'GET',p:'/api/sessions/:id',d:'取某个会话的消息'},
-    {m:'POST',p:'/api/sessions/:id/resume',d:'恢复会话上下文'},
-  ]},
-  {grp:'配置',tag:'Config',routes:[
-    {m:'GET',p:'/api/config',d:'读取当前配置'},
-    {m:'PUT',p:'/api/config',d:'更新配置'},
-    {m:'GET',p:'/api/providers',d:'列出可用 provider'},
-    {m:'GET',p:'/health',d:'网关状态 + provider + model'},
-  ]},
-  {grp:'工具',tag:'Tools',routes:[
-    {m:'GET',p:'/api/tools',d:'列出 30 个内置工具'},
-    {m:'POST',p:'/api/tools/:name',d:'直接调用某个工具'},
-  ]},
-  {grp:'Skill',tag:'Skills',routes:[
-    {m:'GET',p:'/api/skills',d:'列出已安装 Skill'},
-    {m:'POST',p:'/api/skills/:name/invoke',d:'触发 Skill'},
-  ]},
-  {grp:'产物',tag:'Artifacts',routes:[
-    {m:'GET',p:'/api/artifacts',d:'列出产出'},
-    {m:'GET',p:'/api/artifacts/:id',d:'下载单个产物'},
-  ]},
-  {grp:'预算',tag:'Budget',routes:[
-    {m:'GET',p:'/api/budget',d:'今日 token 用量'},
-    {m:'PUT',p:'/api/budget',d:'更新日预算上限'},
-  ]},
-];
-
-/* ─── Networking & helpers ─── */
-async function api(path, opts={}) {
-  const r = await fetch(API+path, {headers:{'Content-Type':'application/json'},...opts});
-  return r.json();
-}
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
-}
+/* ─── Helpers ─── */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (type?' '+type:'');
+  setTimeout(function(){t.className='toast'}, 2500);
+}
+
+/* ─── Render static lists ─── */
+function renderTools() {
+  document.getElementById('tool-grid').innerHTML = TOOLS.map(function(t){
+    return '<div class="item-card" style="'+(t.danger?'border-left-color:var(--red)':'')+'">'
+      + '<div class="name">'+t.n+(t.danger?' ⚠':'')+'</div>'
+      + '<div class="desc">'+esc(t.d)+'</div>'
+      + '<div class="cat">'+t.c+'</div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderProviders() {
+  document.getElementById('prov-grid').innerHTML = PROVIDERS.map(function(p){
+    return '<div class="item-card">'
+      + '<div class="name">'+esc(p.nm)+'</div>'
+      + '<div class="desc" style="word-break:break-all">'+esc(p.base)+'</div>'
+      + '<div class="cat">默认: '+esc(p.mdl)+'</div>'
+      + '</div>';
+  }).join('');
+}
 
 /* ─── View switching ─── */
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+document.querySelectorAll('.nav-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.nav-item').forEach(function(i){i.classList.remove('active')});
     item.classList.add('active');
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
     document.getElementById('view-' + item.dataset.view).classList.add('active');
     document.querySelector('.sidebar').classList.remove('open');
   });
 });
 
-/* ─── Render sample data ─── */
-function renderHistory() {
-  document.getElementById('history-list').innerHTML = HISTORY.map(h => `
-    <div class="art-item" style="cursor:pointer" onclick="toast('resume ${h.id}')">
-      <div class="ic other" style="background:var(--blue-dim);color:var(--blue)">${h.t === '昨天' || h.t.startsWith('7/') ? '📜' : '💬'}</div>
-      <div class="body">
-        <div class="name">${esc(h.msg)}</div>
-        <div class="sub">${h.id} · ${h.model} · ${h.tools} tools · ${h.dur} · ${h.t}</div>
-      </div>
-      <span class="act">resume →</span>
-    </div>`).join('');
-}
-
-function renderArtifacts() {
-  const icMap = {code:'{ }',doc:'md',img:'img',other:'⋯'};
-  document.getElementById('artifact-list').innerHTML = ARTIFACTS.map(a => `
-    <div class="art-item">
-      <div class="ic ${a.ic}">${icMap[a.ic] || '?'}</div>
-      <div class="body">
-        <div class="name">${esc(a.name)}</div>
-        <div class="sub">${esc(a.sub)}</div>
-      </div>
-      <span class="act">打开</span>
-      <span class="act" style="margin-left:6px">下载</span>
-    </div>`).join('');
-}
-
-function renderSkills() {
-  document.getElementById('skill-grid').innerHTML = SKILLS.map(s => `
-    <div class="skill">
-      <div class="name">${s.name}</div>
-      <div class="desc">${esc(s.desc)}</div>
-      <div class="meta">${s.meta}</div>
-    </div>`).join('');
-}
-
-function renderTools() {
-  document.getElementById('tool-grid').innerHTML = TOOLS_DATA.map(t => `
-    <div class="skill" style="${t.danger?'border-left-color:var(--red)':''}">
-      <div class="name">${t.n}${t.danger?' ⚠':''}</div>
-      <div class="desc">${esc(t.d)}</div>
-      <div class="meta">${t.c}</div>
-    </div>`).join('');
-}
-
-function renderProviders() {
-  document.getElementById('prov-grid').innerHTML = PROVIDERS.map(p => `
-    <div class="prov">
-      <div class="top">
-        <span class="nm">${p.nm}</span>
-        <span class="stat ${p.stat==='off'?'off':''}">${p.stat==='on'?'online':'offline'}</span>
-      </div>
-      <div class="mdl">${p.mdl}</div>
-      <div class="lat">${p.lat}</div>
-    </div>`).join('');
-}
-
-function renderApis() {
-  document.getElementById('api-render').innerHTML = APIS.map(g => `
-    <div class="api-block">
-      <div class="head">
-        <span class="nm">${g.grp}</span>
-        <span class="tag">${g.tag}</span>
-      </div>
-      <ul class="api-list">
-        ${g.routes.map(r => `<li>
-          <span class="m ${r.m}">${r.m}</span>
-          <span class="path">${r.p}</span>
-          <span class="d">${r.d}</span>
-        </li>`).join('')}
-      </ul>
-    </div>`).join('');
-}
-
-/* ─── Health & config ─── */
+/* ─── Gateway connection ─── */
 async function checkHealth() {
   try {
-    const h = await api('/health');
-    document.getElementById('status-text').textContent = `${h.provider} · ${h.model} · ${h.api_key_configured ? 'key ✓' : 'key ✗'}`;
-  } catch {
-    document.getElementById('status-text').textContent = 'glm · GLM-5.2 · key ✓ (mock)';
+    var r = await fetch(API + '/health', {method:'GET'});
+    if (!r.ok) throw new Error(r.status);
+    var h = await r.json();
+    gatewayOnline = true;
+    document.getElementById('status-dot').className = 'dot online';
+    document.getElementById('status-text').textContent =
+      h.provider + ' · ' + h.model + (h.api_key_configured ? ' · key ✓' : ' · key ✗');
+    document.getElementById('chat-input').disabled = false;
+    document.getElementById('send-btn').disabled = false;
+  } catch(e) {
+    gatewayOnline = false;
+    document.getElementById('status-dot').className = 'dot offline';
+    document.getElementById('status-text').textContent = '未连接';
   }
 }
 
-async function loadConfig() {
-  try {
-    const cfg = await api('/api/config');
-    renderConfigKv(cfg);
-  } catch {
-    renderConfigKv({
-      provider:'glm', base_url:'https://api.siliconflow.cn/v1',
-      model:'zai-org/GLM-5.2', api_key_masked:'sk-****',
-      wire_api:'chat', max_tokens:16384,
-    });
-  }
-}
-
-function renderConfigKv(cfg) {
-  document.getElementById('config-display').innerHTML = `
-    <div class="kv"><span class="k">Provider</span><span class="v">${cfg.provider}</span></div>
-    <div class="kv"><span class="k">Base URL</span><span class="v">${cfg.base_url}</span></div>
-    <div class="kv"><span class="k">Model</span><span class="v">${cfg.model}</span></div>
-    <div class="kv"><span class="k">API Key</span><span class="v">${cfg.api_key_masked || '(未设置)'}</span></div>
-    <div class="kv"><span class="k">协议</span><span class="v">${cfg.wire_api}</span></div>
-    <div class="kv"><span class="k">Max Tokens</span><span class="v">${cfg.max_tokens}</span></div>`;
-  document.getElementById('cfg-model').value = cfg.model || '';
-  document.getElementById('cfg-persona').value = cfg.agent_persona || '你是一个专业、高效的编码助手。擅长系统编程和快速排错。回答简洁直接。';
-  document.getElementById('cfg-search').value = cfg.search_engine || 'bing';
-  document.getElementById('cfg-approval').value = cfg.approval_policy || 'untrusted';
-}
-
-async function loadProviders() {
-  try {
-    const data = await api('/api/providers');
-    document.getElementById('cfg-provider').innerHTML = data.providers.map(p => `<option value="${p.id}">${p.name} — ${p.default_model}</option>`).join('');
-    const cfg = await api('/api/config');
-    document.getElementById('cfg-provider').value = cfg.provider;
-  } catch {
-    document.getElementById('cfg-provider').innerHTML = PROVIDERS.map((p,i) => `<option value="${p.nm.toLowerCase()}">${p.nm} — ${p.mdl}</option>`).join('');
-    document.getElementById('cfg-provider').value = 'glm';
-  }
-}
-
-function onProviderChange() {
-  const sel = document.getElementById('cfg-provider');
-  if (!sel.value) return;
-  const match = PROVIDERS.find(p => p.nm.toLowerCase() === sel.value);
-  if (match) document.getElementById('cfg-model').value = match.mdl;
-}
-
-async function saveConfig() {
-  try {
-    const body = {
-      provider: document.getElementById('cfg-provider').value,
-      model: document.getElementById('cfg-model').value,
-      max_tokens: +document.getElementById('cfg-maxtokens').value,
-      agent_persona: document.getElementById('cfg-persona').value,
-      search_engine: document.getElementById('cfg-search').value,
-      language: document.getElementById('cfg-lang').value,
-      approval_policy: document.getElementById('cfg-approval').value,
-    };
-    const key = document.getElementById('cfg-apikey').value;
-    if (key) body.api_key = key;
-    const r = await api('/api/config', {method:'PUT', body:JSON.stringify(body)});
-    if (r.status === 'saved') { toast('✅ 配置已保存'); document.getElementById('cfg-apikey').value=''; loadConfig(); checkHealth(); }
-    else toast('❌ ' + (r.error || '保存失败'));
-  } catch {
-    toast('⚠️ 网关未运行，仅演示（config.json 仍可由 angles gateway 编辑）');
-  }
-}
-
-function runGatewayWizard() { toast('请在终端运行：angles gateway'); }
-
+/* ─── Chat (real fetch only) ─── */
 async function sendChat() {
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
+  if (!gatewayOnline) return;
+  var input = document.getElementById('chat-input');
+  var msg = input.value.trim();
   if (!msg) return;
   input.value = '';
-  const btn = document.getElementById('send-btn');
+  var btn = document.getElementById('send-btn');
   btn.disabled = true; btn.textContent = '思考中…';
-  const log = document.getElementById('chat-log');
-  log.innerHTML += `<div class="chat-msg user"><div class="who">you</div>${esc(msg)}</div>`;
+  var log = document.getElementById('chat-log');
+  log.innerHTML += '<div class="chat-msg user"><div class="who">you</div>'+esc(msg)+'</div>';
   log.scrollTop = log.scrollHeight;
   try {
-    const r = await api('/api/chat', {method:'POST', body:JSON.stringify({message:msg})});
-    if (r.reply) log.innerHTML += `<div class="chat-msg bot"><div class="who">α angles</div>${esc(r.reply)}</div>`;
-    else log.innerHTML += `<div class="chat-msg bot" style="background:rgba(196,56,48,.06);border-color:rgba(196,56,48,.2)"><div class="who" style="color:var(--red)">error</div>${esc(r.error||'未知错误')}</div>`;
+    var r = await fetch(API + '/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:msg})
+    });
+    var data = await r.json();
+    if (data.reply)
+      log.innerHTML += '<div class="chat-msg bot"><div class="who">α angles</div>'+esc(data.reply)+'</div>';
+    else
+      log.innerHTML += '<div class="chat-msg bot" style="background:rgba(196,56,48,.06);border-color:rgba(196,56,48,.2)"><div class="who" style="color:var(--red)">error</div>'+esc(data.error||'未知错误')+'</div>';
   } catch(e) {
-    log.innerHTML += `<div class="chat-msg bot" style="background:rgba(201,122,26,.06);border-color:rgba(201,122,26,.2)"><div class="who" style="color:var(--orange)">offline</div>网关未运行 —— 这是控制台 UI 预览。运行 <code class="mono" style="background:var(--card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">angles serve</code> 启动本地网关后，对话会真实连通。</div>`;
+    log.innerHTML += '<div class="chat-msg bot" style="background:rgba(196,56,48,.06);border-color:rgba(196,56,48,.2)"><div class="who" style="color:var(--red)">error</div>'+esc(e.message)+'</div>';
   }
   log.scrollTop = log.scrollHeight;
   btn.disabled = false; btn.textContent = '发送';
 }
 
-/* ─── Range input live update ─── */
-document.querySelectorAll('input[type=range]').forEach(r => {
-  r.addEventListener('input', () => {
-    const v = document.getElementById('warn-val');
-    if (v) v.textContent = r.value;
-  });
-});
-
 /* ─── Init ─── */
-renderHistory();
-renderArtifacts();
-renderSkills();
 renderTools();
 renderProviders();
-renderApis();
-renderConfigKv({provider:'glm', base_url:'https://api.siliconflow.cn/v1', model:'zai-org/GLM-5.2', api_key_masked:'sk-****', wire_api:'chat', max_tokens:16384});
 checkHealth();
-loadProviders();
+// Poll health every 10s — when gateway comes online, UI auto-enables
+setInterval(checkHealth, 10000);
 </script>
 
 </body>
