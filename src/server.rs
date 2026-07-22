@@ -4,7 +4,7 @@
 /// Inspired by OpenClaw's gateway: long-running daemon, local-only bind,
 /// control plane + message broker, Web UI for management.
 use axum::{
-    extract::Json,
+    extract::{Json, Path},
     http::StatusCode,
     response::{Html, IntoResponse},
     routing::{get, post},
@@ -25,6 +25,12 @@ pub fn start(port: u16) -> Result<(), Box<dyn std::error::Error + Send + Sync>> 
             .route("/health", get(health))
             .route("/api/config", get(get_config).put(update_config))
             .route("/api/providers", get(list_providers))
+            .route("/api/tools", get(list_tools))
+            .route("/api/tools/:name", get(get_tool_detail))
+            .route("/api/budget", get(get_budget))
+            .route("/api/sessions", get(list_sessions))
+            .route("/api/sessions/:id", get(get_session))
+            .route("/api/diagnostics", get(diagnostics))
             .route("/api/chat", post(chat))
             .layer(CorsLayer::permissive());
 
@@ -164,6 +170,184 @@ async fn chat(Json(req): Json<ChatRequest>) -> impl IntoResponse {
         Ok(Err(e)) => (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": format!("Task failed: {}", e)}))),
     }
+}
+
+// ─── Tools list (static, from source) ───
+
+/// (name, category, description, is_dangerous)
+const TOOLS: &[(&str, &str, &str, bool)] = &[
+    ("angles-createfile", "文件创建", "创建新文件并写入内容", false),
+    ("angles-writefile", "文件创建", "覆盖写入文件", false),
+    ("angles-appendfile", "文件创建", "向文件末尾追加", false),
+    ("angles-insertline", "文件创建", "指定行号前插入一行", false),
+    ("angles-readfile", "读取搜索", "读取文件，可指定起止行", false),
+    ("angles-searchfile", "读取搜索", "按文件名 glob 搜索", false),
+    ("angles-grep", "读取搜索", "文件内容正则搜索", false),
+    ("angles-head", "读取搜索", "显示文件前 n 行", false),
+    ("angles-tail", "读取搜索", "显示文件最后 n 行", false),
+    ("angles-replace", "修改删除", "精确 diff 替换", false),
+    ("angles-replaceall", "修改删除", "替换全部匹配", false),
+    ("angles-deleteline", "修改删除", "删除指定行", false),
+    ("angles-deletefile", "修改删除", "删除文件（始终确认）", true),
+    ("angles-movedir", "修改删除", "移动 / 重命名", false),
+    ("angles-copyfile", "修改删除", "复制文件", false),
+    ("angles-mkdir", "修改删除", "创建目录", false),
+    ("angles-ls", "目录项目", "列出目录内容", false),
+    ("angles-tree", "目录项目", "树形结构显示目录", false),
+    ("angles-pwd", "目录项目", "显示当前工作目录", false),
+    ("angles-cd", "目录项目", "切换工作目录", false),
+    ("angles-fileinfo", "目录项目", "文件详细信息", false),
+    ("angles-run", "终端执行", "执行命令并返回输出", false),
+    ("angles-runbg", "终端执行", "后台执行，返回 PID", false),
+    ("angles-kill", "终端执行", "终止指定进程", false),
+    ("angles-fetch", "网络搜索", "下载 URL 内容", false),
+    ("angles-websearch", "网络搜索", "搜索引擎查询", false),
+    ("angles-gitinit", "Git", "初始化 git 仓库", false),
+    ("angles-gitcommit", "Git", "暂存并提交", false),
+    ("angles-gitlog", "Git", "查看提交记录", false),
+    ("angles-gitdiff", "Git", "查看未暂存更改", false),
+    ("angles-gitbranch", "Git", "创建并切换分支", false),
+];
+
+async fn list_tools() -> impl IntoResponse {
+    let list: Vec<serde_json::Value> = TOOLS.iter().map(|(name, cat, desc, danger)| {
+        serde_json::json!({
+            "name": name,
+            "category": cat,
+            "description": desc,
+            "dangerous": danger,
+        })
+    }).collect();
+    Json(serde_json::json!({"tools": list, "count": list.len()}))
+}
+
+async fn get_tool_detail(Path(name): Path<String>) -> impl IntoResponse {
+    match TOOLS.iter().find(|(n, _, _, _)| *n == name) {
+        Some((n, cat, desc, danger)) => Json(serde_json::json!({
+            "name": n, "category": cat, "description": desc, "dangerous": danger
+        })),
+        None => Json(serde_json::json!({"error": "tool not found"})),
+    }
+}
+
+// ─── Budget / token usage ───
+
+async fn get_budget() -> impl IntoResponse {
+    let mut cfg = config::load_or_default();
+    config::check_daily_reset(&mut cfg);
+    let used = cfg.daily_tokens_used;
+    let budget = cfg.daily_token_budget;
+    let pct = if budget > 0 { (used as f64 / budget as f64 * 100.0).round() as u64 } else { 0 };
+    let remaining = if budget > used { budget - used } else { 0 };
+    Json(serde_json::json!({
+        "daily_budget": budget,
+        "daily_used": used,
+        "remaining": remaining,
+        "percent_used": pct,
+        "reset_date": cfg.daily_reset_date,
+    }))
+}
+
+// ─── Sessions ───
+
+async fn list_sessions() -> impl IntoResponse {
+    let sessions_dir = dirs::home_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join(".angles")
+        .join("sessions");
+    let mut sessions: Vec<serde_json::Value> = Vec::new();
+    if sessions_dir.exists() {
+        if let Ok(entries) = std::fs::read_dir(&sessions_dir) {
+            let mut all: Vec<_> = entries.filter_map(|e| e.ok()).collect();
+            all.sort_by_key(|e| e.file_name());
+            all.reverse(); // newest first
+            for entry in all {
+                let name = entry.file_name().to_string_lossy().to_string();
+                let meta = entry.metadata().ok();
+                let size = meta.as_ref().map(|m| m.len()).unwrap_or(0);
+                let modified = meta.as_ref()
+                    .and_then(|m| m.modified().ok())
+                    .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+                    .map(|d| d.as_secs())
+                    .unwrap_or(0);
+                sessions.push(serde_json::json!({
+                    "id": name,
+                    "size_bytes": size,
+                    "modified_unix": modified,
+                }));
+            }
+        }
+    }
+    Json(serde_json::json!({"sessions": sessions, "count": sessions.len()}))
+}
+
+async fn get_session(Path(id): Path<String>) -> impl IntoResponse {
+    let path = dirs::home_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join(".angles")
+        .join("sessions")
+        .join(&id);
+    if !path.exists() {
+        return Json(serde_json::json!({"error": "session not found"}));
+    }
+    match std::fs::read_to_string(&path) {
+        Ok(content) => Json(serde_json::json!({"id": id, "content": content})),
+        Err(e) => Json(serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+// ─── Diagnostics ───
+
+async fn diagnostics() -> impl IntoResponse {
+    let cfg = config::load_or_default();
+    let cfg_path = dirs::home_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join(".angles")
+        .join("config.json");
+    let key_set = !cfg.api_key.is_empty() || std::env::var("ANGLES_API_KEY").is_ok();
+
+    // Test connectivity
+    let net_ok = if !cfg.base_url.is_empty() && key_set {
+        let test_url = if cfg.base_url.ends_with("/v1") {
+            format!("{}/models", cfg.base_url)
+        } else {
+            format!("{}/v1/models", cfg.base_url.trim_end_matches('/'))
+        };
+        let key = if !cfg.api_key.is_empty() { cfg.api_key.clone() }
+            else { std::env::var("ANGLES_API_KEY").unwrap_or_default() };
+        match std::process::Command::new("curl").args([
+            "-s", "-o", "/dev/null", "-w", "%{http_code}",
+            "--connect-timeout", "5",
+            "-H", &format!("Authorization: Bearer {}", key),
+            &test_url,
+        ]).output() {
+            Ok(o) => {
+                let code = String::from_utf8_lossy(&o.stdout).trim().to_string();
+                code == "200" || code == "401" || code == "403"
+            }
+            Err(_) => false,
+        }
+    } else { false };
+
+    // Check git
+    let git_ok = std::process::Command::new("git").arg("--version").output().is_ok();
+    // Check ripgrep
+    let rg_ok = which::which("rg").is_ok();
+
+    Json(serde_json::json!({
+        "binary_installed": true,
+        "arch": std::env::consts::ARCH,
+        "os": std::env::consts::OS,
+        "config_exists": cfg_path.exists(),
+        "config_path": cfg_path.display().to_string(),
+        "api_key_configured": key_set,
+        "provider": cfg.provider,
+        "model": cfg.model,
+        "network_ok": net_ok,
+        "git_ok": git_ok,
+        "ripgrep_ok": rg_ok,
+        "version": env!("CARGO_PKG_VERSION"),
+    }))
 }
 
 // ─── Web Control UI ───
