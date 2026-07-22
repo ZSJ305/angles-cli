@@ -1,0 +1,20 @@
+[package]
+name = "angles-desktop"
+version = "0.1.0"
+edition = "2021"
+description = "Angles Code — Desktop AI coding agent (egui)"
+license = "MIT"
+
+[[bin]]
+name = "angles-desktop"
+path = "src/main.rs"
+
+[dependencies]
+eframe = "0.29"
+egui = "0.29"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+tokio = { version = "1", features = ["full"] }
+dirs = "5"
+chrono = "0.4"
