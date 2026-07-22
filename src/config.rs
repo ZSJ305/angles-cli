@@ -76,7 +76,7 @@ pub fn save(cfg: &Config) -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn display(cfg: &Config) {
     println!();
-    println!("  🅰  Angles Code CLI — 当前配置");
+    println!("  α  Angles Code CLI — 当前配置");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!("  语言:       {}", cfg.language);

@@ -34,7 +34,7 @@ pub fn list() {
     ensure_builtin();
     let dir = skills_dir();
     println!();
-    println!("  🅰  Angles Code CLI — 已安装的 Skill");
+    println!("  α  Angles Code CLI — 已安装的 Skill");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
@@ -89,7 +89,7 @@ pub fn add(url: &str) {
     let content = match fetch_url(&raw_url) {
         Ok(c) => c,
         Err(e) => {
-            eprintln!("❌ 下载失败: {}", e);
+            eprintln!("下载失败: {}", e);
             eprintln!("   URL: {}", raw_url);
             std::process::exit(1);
         }
@@ -114,7 +114,7 @@ pub fn add(url: &str) {
         .filter(|c| c.is_alphanumeric() || *c == '-' || *c == '_')
         .collect();
     if safe_name.is_empty() {
-        eprintln!("❌ 无法从 SKILL.md 中解析技能名称（缺少 frontmatter name 字段）");
+        eprintln!("无法从 SKILL.md 中解析技能名称（缺少 frontmatter name 字段）");
         std::process::exit(1);
     }
 
@@ -127,7 +127,7 @@ pub fn add(url: &str) {
     let desc = extract_description(&content);
 
     println!();
-    println!("  ✅ Skill 安装成功！");
+    println!("  Skill 安装成功！");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!("  名称:   {}", safe_name);
@@ -142,13 +142,13 @@ pub fn add(url: &str) {
 pub fn remove(name: &str) {
     let skill_dir = skills_dir().join(name);
     if !skill_dir.exists() {
-        eprintln!("❌ Skill '{}' 不存在", name);
+        eprintln!("Skill '{}' 不存在", name);
         eprintln!("   运行 `angles skill list` 查看已安装的 Skill");
         std::process::exit(1);
     }
 
     if name == "skill-creator" {
-        eprintln!("⚠️  skill-creator 是内置 Skill，不建议删除。");
+        eprintln!("skill-creator 是内置 Skill，不建议删除。");
         print!("   确认删除? (y/N) ");
         io::stdout().flush().unwrap();
         let mut input = String::new();
@@ -161,7 +161,7 @@ pub fn remove(name: &str) {
 
     fs::remove_dir_all(&skill_dir).expect("无法删除 skill 目录");
     println!();
-    println!("  🗑️  Skill '{}' 已删除", name);
+    println!("  Skill '{}' 已删除", name);
     println!();
 }
 
@@ -170,7 +170,7 @@ pub fn create() {
     ensure_builtin();
 
     println!();
-    println!("  🅰  Angles Skill Creator");
+    println!("  α  Angles Skill Creator");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!();
@@ -187,7 +187,7 @@ pub fn create() {
     let name = name.trim().to_string();
 
     if name.is_empty() {
-        eprintln!("❌ 名称不能为空");
+        eprintln!("名称不能为空");
         return;
     }
 
@@ -197,7 +197,7 @@ pub fn create() {
         .filter(|c| c.is_alphanumeric() || *c == '-' || *c == '_')
         .collect();
     if safe_name != name {
-        eprintln!("⚠️  名称包含非法字符，已自动清理为: {}", safe_name);
+        eprintln!("名称包含非法字符，已自动清理为: {}", safe_name);
     }
 
     // Step 2: Description
@@ -264,7 +264,7 @@ pub fn create() {
     println!();
     println!("  ─────────────────────────────────────────────");
     println!();
-    println!("  ✅ Skill 创建成功！");
+    println!("  Skill 创建成功！");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!("  名称:   {}", safe_name);

@@ -81,42 +81,42 @@ pub fn tool_definitions() -> Vec<serde_json::Value> {
 
 pub fn execute_tool(name: &str, args: &serde_json::Value) -> String {
     match name {
-        "angles-createfile" => tools::angles_createfile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-writefile" => tools::angles_writefile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-appendfile" => tools::angles_appendfile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-insertline" => tools::angles_insertline(args["path"].as_str().unwrap_or(""), args["line"].as_u64().unwrap_or(1) as usize, args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-readfile" => tools::angles_readfile(args["path"].as_str().unwrap_or(""), args["start"].as_u64().map(|v| v as usize), args["end"].as_u64().map(|v| v as usize)).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-head" => tools::angles_head(args["path"].as_str().unwrap_or(""), args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-tail" => tools::angles_tail(args["path"].as_str().unwrap_or(""), args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-searchfile" => tools::angles_searchfile(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-grep" => tools::angles_grep(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-replace" => tools::angles_replace(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-replaceall" => tools::angles_replaceall(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-deleteline" => tools::angles_deleteline(args["path"].as_str().unwrap_or(""), args["line"].as_u64().unwrap_or(1) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-deletefile" => tools::angles_deletefile(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-copyfile" => tools::angles_copyfile(args["src"].as_str().unwrap_or(""), args["dst"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-movedir" => tools::angles_movedir(args["src"].as_str().unwrap_or(""), args["dst"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-mkdir" => tools::angles_mkdir(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-ls" => tools::angles_ls(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-tree" => tools::angles_tree(args["dir"].as_str().unwrap_or(""), args["depth"].as_u64().unwrap_or(3) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-pwd" => tools::angles_pwd().unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-cd" => tools::angles_cd(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-fileinfo" => tools::angles_fileinfo(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-run" => tools::angles_run(args["command"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-runbg" => tools::angles_runbg(args["command"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-kill" => tools::angles_kill(args["pid"].as_u64().unwrap_or(0) as u32).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-fetch" => tools::angles_fetch(args["url"].as_str().unwrap_or(""), args["output"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
+        "angles-createfile" => tools::angles_createfile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-writefile" => tools::angles_writefile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-appendfile" => tools::angles_appendfile(args["path"].as_str().unwrap_or(""), args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-insertline" => tools::angles_insertline(args["path"].as_str().unwrap_or(""), args["line"].as_u64().unwrap_or(1) as usize, args["content"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-readfile" => tools::angles_readfile(args["path"].as_str().unwrap_or(""), args["start"].as_u64().map(|v| v as usize), args["end"].as_u64().map(|v| v as usize)).unwrap_or_else(|e| format!("{}", e)),
+        "angles-head" => tools::angles_head(args["path"].as_str().unwrap_or(""), args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("{}", e)),
+        "angles-tail" => tools::angles_tail(args["path"].as_str().unwrap_or(""), args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("{}", e)),
+        "angles-searchfile" => tools::angles_searchfile(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-grep" => tools::angles_grep(args["pattern"].as_str().unwrap_or(""), args["directory"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-replace" => tools::angles_replace(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-replaceall" => tools::angles_replaceall(args["path"].as_str().unwrap_or(""), args["old"].as_str().unwrap_or(""), args["new"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-deleteline" => tools::angles_deleteline(args["path"].as_str().unwrap_or(""), args["line"].as_u64().unwrap_or(1) as usize).unwrap_or_else(|e| format!("{}", e)),
+        "angles-deletefile" => tools::angles_deletefile(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-copyfile" => tools::angles_copyfile(args["src"].as_str().unwrap_or(""), args["dst"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-movedir" => tools::angles_movedir(args["src"].as_str().unwrap_or(""), args["dst"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-mkdir" => tools::angles_mkdir(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-ls" => tools::angles_ls(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-tree" => tools::angles_tree(args["dir"].as_str().unwrap_or(""), args["depth"].as_u64().unwrap_or(3) as usize).unwrap_or_else(|e| format!("{}", e)),
+        "angles-pwd" => tools::angles_pwd().unwrap_or_else(|e| format!("{}", e)),
+        "angles-cd" => tools::angles_cd(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-fileinfo" => tools::angles_fileinfo(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-run" => tools::angles_run(args["command"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-runbg" => tools::angles_runbg(args["command"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-kill" => tools::angles_kill(args["pid"].as_u64().unwrap_or(0) as u32).unwrap_or_else(|e| format!("{}", e)),
+        "angles-fetch" => tools::angles_fetch(args["url"].as_str().unwrap_or(""), args["output"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
         "angles-websearch" => {
             let query = args["query"].as_str().unwrap_or("");
             let url = search::search_url_from_cfg(query);
-            format!("🔍 搜索: {}", url)
+            format!("搜索: {}", url)
         }
-        "angles-gitinit" => tools::angles_gitinit(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-gitcommit" => tools::angles_gitcommit(args["msg"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-gitlog" => tools::angles_gitlog(args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-gitdiff" => tools::angles_gitdiff(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        "angles-gitbranch" => tools::angles_gitbranch(args["name"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("❌ {}", e)),
-        _ => format!("❌ 未知工具: {}", name),
+        "angles-gitinit" => tools::angles_gitinit(args["dir"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-gitcommit" => tools::angles_gitcommit(args["msg"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-gitlog" => tools::angles_gitlog(args["n"].as_u64().unwrap_or(10) as usize).unwrap_or_else(|e| format!("{}", e)),
+        "angles-gitdiff" => tools::angles_gitdiff(args["path"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        "angles-gitbranch" => tools::angles_gitbranch(args["name"].as_str().unwrap_or("")).unwrap_or_else(|e| format!("{}", e)),
+        _ => format!("未知工具: {}", name),
     }
 }
 
@@ -454,13 +454,13 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
     let mut daily_used: u64 = 0;
 
     println!();
-    println!("  🅰  Angles Code CLI v{}", env!("CARGO_PKG_VERSION"));
+    println!("  α  Angles Code CLI v{}", env!("CARGO_PKG_VERSION"));
     println!("  Provider: {} | Model: {} | Protocol: {}", cfg.provider, cfg.model, cfg.wire_api);
     println!("  输入消息开始对话，/quit 退出，/help 查看命令");
     println!();
 
     loop {
-        print!("  ❯ ");
+        print!("  > ");
         io::stdout().flush()?;
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
@@ -478,7 +478,7 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
                 continue;
             }
             "/config" => { crate::config::display(&cfg); continue; }
-            "/clear" => { messages.clear(); println!("  🗑️  对话已清空"); continue; }
+            "/clear" => { messages.clear(); println!("  对话已清空"); continue; }
             "/tokens" => { println!("  今日已用: {} / {} tokens", daily_used, cfg.daily_token_budget); continue; }
             _ => {}
         }
@@ -531,14 +531,14 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
 
             // Check daily budget
             if daily_used >= cfg.daily_token_budget {
-                println!("  ⚠️ 每日 token 预算已用完 ({}/{})", daily_used, cfg.daily_token_budget);
+                println!("  每日 token 预算已用完 ({}/{})", daily_used, cfg.daily_token_budget);
                 break;
             }
         }
     }
 
     println!();
-    println!("  👋 再见!");
+    println!("  再见!");
     Ok(())
 }
 

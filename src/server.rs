@@ -38,7 +38,7 @@ pub fn start(port: u16) -> Result<(), Box<dyn std::error::Error + Send + Sync>> 
         let addr = format!("127.0.0.1:{}", port);
         println!();
         println!("  ╔═══════════════════════════════════════════╗");
-        println!("  ║  🅰  Angles Gateway Server                ║");
+        println!("  ║  α  Angles Gateway Server                ║");
         println!("  ╚═══════════════════════════════════════════╝");
         println!();
         println!("  控制台:  http://127.0.0.1:{}/", port);

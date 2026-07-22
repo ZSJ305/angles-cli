@@ -11,7 +11,7 @@ pub fn run_wizard() -> Result<(), Box<dyn std::error::Error>> {
 
     println!();
     println!("  ╔═══════════════════════════════════════════╗");
-    println!("  ║      🅰  Angles Code CLI Setup            ║");
+    println!("  ║      α  Angles Code CLI Setup            ║");
     println!("  ╚═══════════════════════════════════════════╝");
     println!();
 
@@ -214,7 +214,7 @@ pub fn run_wizard() -> Result<(), Box<dyn std::error::Error>> {
 
     println!();
     println!("  ╔═══════════════════════════════════════════╗");
-    println!("  ║  ✅ Angles Code CLI 配置完成!              ║");
+    println!("  ║  Angles Code CLI 配置完成!              ║");
     println!("  ╚═══════════════════════════════════════════╝");
     println!();
     config::display(&cfg);

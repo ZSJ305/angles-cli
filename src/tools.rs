@@ -5,18 +5,18 @@ use std::path::Path;
 /// Run the doctor diagnostic.
 pub fn doctor() {
     println!();
-    println!("  🅰  Angles Code CLI — 诊断报告");
+    println!("  α  Angles Code CLI — 诊断报告");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
     // Binary
-    println!("  ✅ angles 二进制: 已安装");
+    println!("  angles 二进制: 已安装");
     println!("     架构: {} / {}", std::env::consts::ARCH, std::env::consts::OS);
 
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
     // Binary
-    println!("  ✅ angles 二进制: 已安装");
+    println!("  angles 二进制: 已安装");
 
     // Config check
     let cfg = crate::config::load_or_default();
@@ -25,19 +25,19 @@ pub fn doctor() {
         .join(".angles")
         .join("config.json");
     if cfg_path.exists() {
-        println!("  ✅ 配置文件: {}", cfg_path.display());
+        println!("  配置文件: {}", cfg_path.display());
         println!("     Provider: {}", cfg.provider);
         println!("     Model: {}", cfg.model);
     } else {
-        println!("  ⚠️  配置文件: 未找到 (运行 `angles gateway` 创建)");
+        println!("  配置文件: 未找到 (运行 `angles gateway` 创建)");
     }
 
     // API Key check
     let key_set = !cfg.api_key.is_empty() || std::env::var("ANGLES_API_KEY").is_ok();
     if key_set {
-        println!("  ✅ API Key: 已配置");
+        println!("  API Key: 已配置");
     } else {
-        println!("  ⚠️  API Key: 未配置 (运行 `angles gateway` 设置)");
+        println!("  API Key: 未配置 (运行 `angles gateway` 设置)");
     }
 
     // API connectivity test
@@ -58,14 +58,14 @@ pub fn doctor() {
             Ok(o) => {
                 let code = String::from_utf8_lossy(&o.stdout).trim().to_string();
                 match code.as_str() {
-                    "200" => println!("  ✅ API 连通: {} → 200 OK", cfg.base_url),
-                    "401" => println!("  ❌ API 连通: {} → 401 (API Key 无效)", cfg.base_url),
-                    "404" => println!("  ⚠️  API 连通: {} → 404 (端点不存在)", cfg.base_url),
-                    c if c.starts_with("2") => println!("  ✅ API 连通: {} → {}", cfg.base_url, c),
-                    c => println!("  ⚠️  API 连通: {} → HTTP {}", cfg.base_url, c),
+                    "200" => println!("  API 连通: {} → 200 OK", cfg.base_url),
+                    "401" => println!("  API 连通: {} → 401 (API Key 无效)", cfg.base_url),
+                    "404" => println!("  API 连通: {} → 404 (端点不存在)", cfg.base_url),
+                    c if c.starts_with("2") => println!("  API 连通: {} → {}", cfg.base_url, c),
+                    c => println!("  API 连通: {} → HTTP {}", cfg.base_url, c),
                 }
             }
-            _ => println!("  ❌ API 连通: 无法连接 {}", cfg.base_url),
+            _ => println!("  API 连通: 无法连接 {}", cfg.base_url),
         }
     }
 
@@ -73,18 +73,18 @@ pub fn doctor() {
     match Command::new("git").arg("--version").output() {
         Ok(o) if o.status.success() => {
             let ver = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            println!("  ✅ Git: {}", ver);
+            println!("  Git: {}", ver);
         }
-        _ => println!("  ⚠️  Git: 未安装"),
+        _ => println!("  Git: 未安装"),
     }
 
     // ripgrep
     match Command::new("rg").arg("--version").output() {
         Ok(o) if o.status.success() => {
             let ver = String::from_utf8_lossy(&o.stdout).lines().next().unwrap_or("").to_string();
-            println!("  ✅ ripgrep: {}", ver);
+            println!("  ripgrep: {}", ver);
         }
-        _ => println!("  ℹ️  ripgrep: 未安装 (angles-grep 将使用 grep 替代)"),
+        _ => println!("  ripgrep: 未安装 (angles-grep 将使用 grep 替代)"),
     }
 
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -101,7 +101,7 @@ pub fn angles_createfile(path: &str, content: &str) -> Result<String, String> {
         fs::create_dir_all(parent).map_err(|e| format!("创建目录失败: {}", e))?;
     }
     fs::write(path, content).map_err(|e| format!("写入失败: {}", e))?;
-    Ok(format!("✅ 已创建: {}", path))
+    Ok(format!("已创建: {}", path))
 }
 
 pub fn angles_writefile(path: &str, content: &str) -> Result<String, String> {
@@ -109,7 +109,7 @@ pub fn angles_writefile(path: &str, content: &str) -> Result<String, String> {
         fs::create_dir_all(parent).map_err(|e| format!("创建目录失败: {}", e))?;
     }
     fs::write(path, content).map_err(|e| format!("写入失败: {}", e))?;
-    Ok(format!("✅ 已写入: {}", path))
+    Ok(format!("已写入: {}", path))
 }
 
 pub fn angles_appendfile(path: &str, content: &str) -> Result<String, String> {
@@ -120,7 +120,7 @@ pub fn angles_appendfile(path: &str, content: &str) -> Result<String, String> {
         .open(path)
         .map_err(|e| format!("打开失败: {}", e))?;
     f.write_all(content.as_bytes()).map_err(|e| format!("追加失败: {}", e))?;
-    Ok(format!("✅ 已追加到: {}", path))
+    Ok(format!("已追加到: {}", path))
 }
 
 pub fn angles_readfile(path: &str, start: Option<usize>, end: Option<usize>) -> Result<String, String> {
@@ -143,7 +143,7 @@ pub fn angles_replace(path: &str, old: &str, new: &str) -> Result<String, String
         Some(pos) => {
             let replaced = format!("{}{}{}", &content[..pos], new, &content[pos + old.len()..]);
             fs::write(path, replaced).map_err(|e| format!("写入失败: {}", e))?;
-            Ok(format!("✅ 已替换 (1处): {}", path))
+            Ok(format!("已替换 (1处): {}", path))
         }
         None => Err(format!("未找到匹配文本: {}", old)),
     }
@@ -157,27 +157,27 @@ pub fn angles_replaceall(path: &str, old: &str, new: &str) -> Result<String, Str
     }
     let replaced = content.replace(old, new);
     fs::write(path, replaced).map_err(|e| format!("写入失败: {}", e))?;
-    Ok(format!("✅ 已替换 ({}处): {}", count, path))
+    Ok(format!("已替换 ({}处): {}", count, path))
 }
 
 pub fn angles_deletefile(path: &str) -> Result<String, String> {
     fs::remove_file(path).map_err(|e| format!("删除失败: {}", e))?;
-    Ok(format!("✅ 已删除: {}", path))
+    Ok(format!("已删除: {}", path))
 }
 
 pub fn angles_mkdir(dir: &str) -> Result<String, String> {
     fs::create_dir_all(dir).map_err(|e| format!("创建失败: {}", e))?;
-    Ok(format!("✅ 已创建目录: {}", dir))
+    Ok(format!("已创建目录: {}", dir))
 }
 
 pub fn angles_movedir(src: &str, dst: &str) -> Result<String, String> {
     fs::rename(src, dst).map_err(|e| format!("移动失败: {}", e))?;
-    Ok(format!("✅ 已移动: {} → {}", src, dst))
+    Ok(format!("已移动: {} → {}", src, dst))
 }
 
 pub fn angles_copyfile(src: &str, dst: &str) -> Result<String, String> {
     fs::copy(src, dst).map_err(|e| format!("复制失败: {}", e))?;
-    Ok(format!("✅ 已复制: {} → {}", src, dst))
+    Ok(format!("已复制: {} → {}", src, dst))
 }
 
 pub fn angles_run(cmd: &str) -> Result<String, String> {
@@ -230,7 +230,7 @@ pub fn angles_grep(pattern: &str, directory: &str) -> Result<String, String> {
 pub fn angles_websearch(query: &str, engine_url: &str) -> Result<String, String> {
     // For now, return the search URL for the user to open
     // Full scraping would require browser automation or search API
-    Ok(format!("🔍 搜索链接: {}\n（完整搜索功能需配合浏览器使用）", engine_url))
+    Ok(format!("搜索链接: {}\n（完整搜索功能需配合浏览器使用）", engine_url))
 }
 
 // ─── Additional tools (补齐到 30+) ───
@@ -241,7 +241,7 @@ pub fn angles_insertline(path: &str, line_num: usize, content: &str) -> Result<S
     let idx = line_num.saturating_sub(1).min(lines.len());
     lines.insert(idx, content.to_string());
     fs::write(path, lines.join("\n")).map_err(|e| format!("写入失败: {}", e))?;
-    Ok(format!("✅ 已在第 {} 行前插入: {}", line_num, path))
+    Ok(format!("已在第 {} 行前插入: {}", line_num, path))
 }
 
 pub fn angles_deleteline(path: &str, line_num: usize) -> Result<String, String> {
@@ -253,7 +253,7 @@ pub fn angles_deleteline(path: &str, line_num: usize) -> Result<String, String> 
     }
     lines.remove(idx);
     fs::write(path, lines.join("\n")).map_err(|e| format!("写入失败: {}", e))?;
-    Ok(format!("✅ 已删除第 {} 行: {}", line_num, path))
+    Ok(format!("已删除第 {} 行: {}", line_num, path))
 }
 
 pub fn angles_head(path: &str, n: usize) -> Result<String, String> {
@@ -317,7 +317,7 @@ pub fn angles_pwd() -> Result<String, String> {
 
 pub fn angles_cd(dir: &str) -> Result<String, String> {
     std::env::set_current_dir(dir).map_err(|e| format!("切换目录失败: {}", e))?;
-    Ok(format!("✅ 已切换到: {}", dir))
+    Ok(format!("已切换到: {}", dir))
 }
 
 pub fn angles_fileinfo(path: &str) -> Result<String, String> {
@@ -341,7 +341,7 @@ pub fn angles_runbg(cmd: &str) -> Result<String, String> {
         .spawn()
         .map_err(|e| format!("启动失败: {}", e))?;
     let pid = child.id();
-    Ok(format!("✅ 后台启动 (PID={}): {}", pid, cmd))
+    Ok(format!("后台启动 (PID={}): {}", pid, cmd))
 }
 
 pub fn angles_kill(pid: u32) -> Result<String, String> {
@@ -350,7 +350,7 @@ pub fn angles_kill(pid: u32) -> Result<String, String> {
         .arg(&pid_str)
         .output()
         .map_err(|e| format!("终止失败: {}", e))?;
-    Ok(format!("✅ 已发送终止信号: PID={}", pid))
+    Ok(format!("已发送终止信号: PID={}", pid))
 }
 
 pub fn angles_fetch(url: &str, output_path: &str) -> Result<String, String> {
@@ -359,7 +359,7 @@ pub fn angles_fetch(url: &str, output_path: &str) -> Result<String, String> {
         .output()
         .map_err(|e| format!("下载失败: {}", e))?;
     if result.status.success() {
-        Ok(format!("✅ 已下载: {} → {}", url, output_path))
+        Ok(format!("已下载: {} → {}", url, output_path))
     } else {
         Err(format!("下载失败: {}", String::from_utf8_lossy(&result.stderr)))
     }
@@ -370,7 +370,7 @@ pub fn angles_gitinit(dir: &str) -> Result<String, String> {
     let output = Command::new("git").args(["init", dir]).output()
         .map_err(|e| format!("git init 失败: {}", e))?;
     if output.status.success() {
-        Ok(format!("✅ Git 仓库已初始化: {}", dir))
+        Ok(format!("Git 仓库已初始化: {}", dir))
     } else {
         Err(format!("git init 失败: {}", String::from_utf8_lossy(&output.stderr)))
     }
@@ -382,7 +382,7 @@ pub fn angles_gitcommit(msg: &str) -> Result<String, String> {
     let output = Command::new("git").args(["commit", "-m", msg]).output()
         .map_err(|e| format!("git commit 失败: {}", e))?;
     if output.status.success() {
-        Ok(format!("✅ 已提交: {}", msg))
+        Ok(format!("已提交: {}", msg))
     } else {
         Err(format!("git commit 失败: {}", String::from_utf8_lossy(&output.stderr)))
     }
@@ -406,5 +406,5 @@ pub fn angles_gitdiff(path: &str) -> Result<String, String> {
 pub fn angles_gitbranch(name: &str) -> Result<String, String> {
     Command::new("git").args(["checkout", "-b", name]).output()
         .map_err(|e| format!("git branch 失败: {}", e))?;
-    Ok(format!("✅ 已创建并切换到分支: {}", name))
+    Ok(format!("已创建并切换到分支: {}", name))
 }

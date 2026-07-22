@@ -82,7 +82,7 @@ pub enum SkillAction {
 
 pub fn print_help() {
     println!();
-    println!("  🅰  Angles Code CLI — 终端 agentic 编码助手");
+    println!("  α  Angles Code CLI — 终端 agentic 编码助手");
     println!();
     println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!();
