@@ -197,19 +197,22 @@ impl eframe::App for App {
                         .hint_text("输入消息，Enter 发送...")
                         .font(egui::FontId::monospace(14.0))
                         .desired_width(f32::MAX)
-                        .text_color(theme::TEXT)
                 );
                 if response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) && send_enabled {
                     self.send_message();
                 }
-                let btn = ui.add_enabled(send_enabled, egui::Button::new("发送").fill(theme::RED).text_color(egui::Color32::BLACK));
+                let btn = ui.add_enabled(send_enabled,
+                    egui::Button::new(
+                        egui::RichText::new("发送").color(egui::Color32::BLACK)
+                    ).fill(theme::RED)
+                );
                 if btn.clicked() { self.send_message(); }
             });
             ui.add_space(6.0);
         });
 
         // Left sidebar
-        egui::SidePanel::left("sidebar").resizable(false).width(180.0).show(ctx, |ui| {
+        egui::SidePanel::left("sidebar").resizable(false).default_width(180.0).show(ctx, |ui| {
             ui.set_min_height(ui.available_height());
             ui.add_space(12.0);
             ui.vertical(|ui| {
@@ -224,10 +227,12 @@ impl eframe::App for App {
                         .color(if selected { theme::RED } else { theme::MUTED })
                         .font(egui::FontId::proportional(14.0))
                         .strong();
-                    let btn = ui.add(egui::Button::new(text)
-                        .fill(egui::Color32::TRANSPARENT)
-                        .min_size(egui::vec2(150.0, 34.0))
-                    );
+                ui.add(egui::Button::new(
+                    egui::RichText::new(label)
+                        .color(if selected { theme::RED } else { theme::MUTED })
+                        .font(egui::FontId::proportional(14.0))
+                        .strong()
+                ));
                     if btn.clicked() { self.sidebar_tab = tab; }
                 }
                 ui.add_space(20.0);
@@ -300,7 +305,6 @@ impl App {
             let mut selected = self.form_provider.clone();
             egui::ComboBox::from_id_salt("provider_combo")
                 .selected_text(&selected)
-                .width(200.0)
                 .show_ui(ui, |ui| {
                     for p in &self.provider_list {
                         ui.selectable_value(&mut selected, p.id.clone(), &p.name);
@@ -320,20 +324,24 @@ impl App {
             ui.end_row();
 
             ui.label(egui::RichText::new("API Key").color(theme::MUTED).font(egui::FontId::monospace(12.0)));
-            ui.text_edit_singleline(&mut self.form_apikey)
-                .password(true)
-                .hint_text("留空保留现有 key");
+            ui.add(
+                egui::TextEdit::singleline(&mut self.form_apikey)
+                    .password(true)
+                    .hint_text("留空保留现有 key")
+            );
             ui.end_row();
 
             ui.label(egui::RichText::new("人设").color(theme::MUTED).font(egui::FontId::monospace(12.0)));
-            ui.text_edit_multiline(&mut self.form_persona)
-                .desired_width(300.0)
-                .desired_rows(2);
+            ui.add(
+                egui::TextEdit::multiline(&mut self.form_persona)
+                    .desired_width(300.0)
+                    .desired_rows(2)
+            );
             ui.end_row();
         });
 
         ui.add_space(20.0);
-        if ui.add(egui::Button::new("保存").fill(theme::RED).text_color(egui::Color32::BLACK)).clicked() {
+        if ui.add(egui::Button::new(egui::RichText::new("保存").color(egui::Color32::BLACK)).fill(theme::RED)).clicked() {
             self.save_settings();
             self.messages.push(Message {
                 role: "progress".into(),

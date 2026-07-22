@@ -99,9 +99,10 @@ pub async fn exec_with_tools(
             } else {
                 result
             };
+            let tc = truncated.clone();
             progress.push(truncated);
 
-            messages.push(json!({"role": "tool", "tool_call_id": id, "content": truncated}));
+            messages.push(json!({"role": "tool", "tool_call_id": id, "content": tc}));
         }
     }
 
