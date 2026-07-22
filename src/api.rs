@@ -454,7 +454,7 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
     let mut daily_used: u64 = 0;
 
     println!();
-    println!("  🅰  Angles Code CLI v0.1.0");
+    println!("  🅰  Angles Code CLI v{}", env!("CARGO_PKG_VERSION"));
     println!("  Provider: {} | Model: {} | Protocol: {}", cfg.provider, cfg.model, cfg.wire_api);
     println!("  输入消息开始对话，/quit 退出，/help 查看命令");
     println!();
@@ -509,15 +509,19 @@ async fn start_chat_async(cfg: Config) -> Result<(), Box<dyn std::error::Error>>
 
             // Execute tool calls
             for tc in &result.tool_calls {
-                let short_args = if tc.arguments.len() > 80 { format!("{}...", &tc.arguments[..80]) } else { tc.arguments.clone() };
-                println!("  🔧 {}({})", tc.name, short_args);
+                let progress = tool_progress(&tc.name, &tc.arguments);
+                println!("  {}", progress);
 
                 let args: serde_json::Value = serde_json::from_str(&tc.arguments).unwrap_or(json!({}));
                 let tool_result = execute_tool(&tc.name, &args);
 
-                // Show first 5 lines
+                // Show first 3 lines, then ellipsis
                 for (i, line) in tool_result.lines().enumerate() {
-                    if i >= 5 { println!("  ... ({}行)", tool_result.lines().count()); break; }
+                    if i >= 3 {
+                        let total = tool_result.lines().count();
+                        if total > 3 { println!("  ... ({}行)", total); }
+                        break;
+                    }
                     println!("  {}", line);
                 }
                 println!();
@@ -542,10 +546,48 @@ async fn exec_once_async(cfg: Config, prompt: &str) -> Result<String, Box<dyn st
     let system_prompt = instructions::render(&cfg);
     let api_key = resolve_api_key(&cfg);
     let client = Client::new();
-    let messages = vec![Message { role: "user".into(), content: prompt.into(), tool_calls: None }];
+    let mut messages = vec![Message { role: "user".into(), content: prompt.into(), tool_calls: None }];
 
-    let result = stream_turn(&cfg, &system_prompt, &api_key, &client, &messages).await?;
-    Ok(result.content)
+    // Tool-call loop (max 20 iterations)
+    let mut final_content = String::new();
+    for _ in 0..20 {
+        let result = stream_turn(&cfg, &system_prompt, &api_key, &client, &messages).await?;
+
+        if !result.content.is_empty() {
+            final_content = result.content.clone();
+        }
+
+        messages.push(Message {
+            role: "assistant".into(),
+            content: result.content.clone(),
+            tool_calls: if result.tool_calls.is_empty() { None } else { Some(result.tool_calls.clone()) },
+        });
+
+        if result.tool_calls.is_empty() { break; }
+
+        // Execute tool calls with progress messages
+        for tc in &result.tool_calls {
+            let progress = tool_progress(&tc.name, &tc.arguments);
+            eprintln!("  {}", progress);
+
+            let args: serde_json::Value = serde_json::from_str(&tc.arguments).unwrap_or(json!({}));
+            let tool_result = execute_tool(&tc.name, &args);
+
+            for (i, line) in tool_result.lines().enumerate() {
+                if i >= 3 {
+                    let total = tool_result.lines().count();
+                    if total > 3 { eprintln!("  ... ({}行)", total); }
+                    break;
+                }
+                eprintln!("  {}", line);
+            }
+            eprintln!();
+
+            messages.push(Message { role: "tool".into(), content: tool_result, tool_calls: None });
+        }
+    }
+
+    Ok(final_content)
 }
 
 // ─── Single streaming turn — dispatches by wire_api ───
@@ -738,6 +780,66 @@ async fn stream_gemini(
     println!();
 
     Ok(ChatResult { content, tool_calls, usage })
+}
+
+/// Map tool name + raw JSON args into a human-readable progress line.
+/// Returns something like "正在读取 src/main.rs" instead of the raw tool call.
+fn tool_progress(name: &str, raw_args: &str) -> String {
+    let args: serde_json::Value = serde_json::from_str(raw_args).unwrap_or(json!({}));
+    let get = |k: &str| -> String { args[k].as_str().unwrap_or("").to_string() };
+
+    match name {
+        // 文件创建
+        "angles-createfile" => format!("正在创建 {}", get("path")),
+        "angles-writefile"  => format!("正在写入 {}", get("path")),
+        "angles-appendfile" => format!("正在追加 {}", get("path")),
+        "angles-insertline" => format!("正在插入 {} (第{}行)", get("path"), args["line"].as_u64().unwrap_or(0)),
+
+        // 读取搜索
+        "angles-readfile"    => format!("正在读取 {}", get("path")),
+        "angles-searchfile"  => format!("正在搜索文件 \"{}\"", get("pattern")),
+        "angles-grep"        => format!("正在搜索内容 \"{}\"", get("pattern")),
+        "angles-head"        => format!("正在读取 {} (头部)", get("path")),
+        "angles-tail"        => format!("正在读取 {} (尾部)", get("path")),
+
+        // 修改删除
+        "angles-replace"     => format!("正在修改 {}", get("path")),
+        "angles-replaceall"  => format!("正在批量替换 {}", get("path")),
+        "angles-deleteline"  => format!("正在删除第{}行 ({})", args["line"].as_u64().unwrap_or(0), get("path")),
+        "angles-deletefile"  => format!("正在删除 {}", get("path")),
+        "angles-movedir"     => format!("正在移动 {} → {}", get("src"), get("dst")),
+        "angles-copyfile"    => format!("正在复制 {} → {}", get("src"), get("dst")),
+        "angles-mkdir"       => format!("正在创建目录 {}", get("path")),
+
+        // 目录项目
+        "angles-ls"          => format!("正在列出 {}", if get("dir").is_empty() { "当前目录".into() } else { get("dir") }),
+        "angles-tree"        => format!("正在显示目录树 {}", if get("dir").is_empty() { "当前目录".into() } else { get("dir") }),
+        "angles-pwd"         => "正在获取当前路径".into(),
+        "angles-cd"          => format!("正在切换到 {}", get("dir")),
+        "angles-fileinfo"    => format!("正在查看文件信息 {}", get("path")),
+
+        // 终端执行
+        "angles-run"         => {
+            let cmd = get("command");
+            let short = if cmd.len() > 60 { format!("{}...", &cmd[..60]) } else { cmd };
+            format!("正在执行 {}", short)
+        }
+        "angles-runbg"       => format!("正在后台执行 {}", get("command")),
+        "angles-kill"        => format!("正在终止进程 {}", args["pid"].as_u64().unwrap_or(0)),
+
+        // 网络
+        "angles-fetch"       => format!("正在读取网页 {}", get("url")),
+        "angles-websearch"   => format!("正在搜索 \"{}\"", get("query")),
+
+        // Git
+        "angles-gitinit"     => "正在初始化 Git 仓库".into(),
+        "angles-gitcommit"   => format!("正在提交 {}", get("msg")),
+        "angles-gitlog"      => "正在查看提交记录".into(),
+        "angles-gitdiff"     => "正在查看文件变更".into(),
+        "angles-gitbranch"   => format!("正在创建分支 {}", get("name")),
+
+        _ => format!("正在执行 {}", name),
+    }
 }
 
 // ─── Helpers ───
