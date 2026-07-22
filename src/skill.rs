@@ -287,6 +287,7 @@ pub fn ensure_builtin_public() {
 }
 
 /// Convert a GitHub URL to a raw URL.
+fn github_to_raw(url: &str) -> String {
     // Already raw
     if url.contains("raw.githubusercontent.com") {
         return url.to_string();
