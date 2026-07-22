@@ -60,7 +60,34 @@ has_tty()       { [[ -r /dev/tty ]] && [[ -w /dev/tty ]]; }
 progress_advance() {
     local step_name="$1"
     PROGRESS_CURRENT=$((PROGRESS_CURRENT + 1))
-    echo -e "  ${ACCENT}${BOLD}[${PROGRESS_CURRENT}/${PROGRESS_TOTAL}]${NC} ${step_name}"
+    local pct=$((PROGRESS_CURRENT * 100 / PROGRESS_TOTAL))
+    local elapsed=$(( SECONDS - INSTALL_START_TIME ))
+    local remaining=""
+
+    if [[ "$PROGRESS_CURRENT" -gt 1 && "$elapsed" -gt 0 ]]; then
+        local rate=$(( elapsed / PROGRESS_CURRENT ))
+        local left=$(( rate * (PROGRESS_TOTAL - PROGRESS_CURRENT) ))
+        if [[ "$left" -gt 60 ]]; then
+            remaining="~$(( left / 60 ))分${left % 60}秒"
+        else
+            remaining="~${left}秒"
+        fi
+    elif [[ "$elapsed" -gt 0 ]]; then
+        remaining="计算中..."
+    else
+        remaining="--"
+    fi
+
+    local filled=$(( pct * 30 / 100 ))
+    local empty=$(( 30 - filled ))
+    local bar=""
+    local i
+    for ((i=0; i<filled; i++)); do bar+="█"; done
+    for ((i=0; i<empty;  i++)); do bar+="░"; done
+
+    echo ""
+    echo -e "  ${ACCENT}${bar}${NC} ${BOLD}${pct}%${NC}  ${MUTED}[${PROGRESS_CURRENT}/${PROGRESS_TOTAL}]${NC}  ${step_name}  ${MUTED}剩余 ${remaining}${NC}"
+    echo ""
 }
 
 # ── Downloader ──
@@ -160,22 +187,22 @@ windows_redirect_and_exit() {
 
 install_build_tools_linux() {
     if command -v apt-get &>/dev/null; then
-        apt-get update -qq
-        apt-get install -y -qq build-essential pkg-config libssl-dev curl git 2>/dev/null
+        apt-get update -qq &>/dev/null
+        apt-get install -y -qq build-essential pkg-config libssl-dev curl git &>/dev/null
     elif command -v apk &>/dev/null; then
-        apk add --no-cache build-base openssl-dev curl git
+        apk add --no-cache build-base openssl-dev curl git &>/dev/null
     elif command -v dnf &>/dev/null; then
-        dnf install -y gcc gcc-c++ make openssl-devel curl git 2>/dev/null
+        dnf install -y gcc gcc-c++ make openssl-devel curl git &>/dev/null
     elif command -v yum &>/dev/null; then
-        yum install -y gcc gcc-c++ make openssl-devel curl git 2>/dev/null
+        yum install -y gcc gcc-c++ make openssl-devel curl git &>/dev/null
     elif command -v pacman &>/dev/null; then
-        pacman -Sy --noconfirm base-devel openssl curl git 2>/dev/null
+        pacman -Sy --noconfirm base-devel openssl curl git &>/dev/null
     elif command -v zypper &>/dev/null; then
-        zypper install -y gcc gcc-c++ make libopenssl-devel curl git 2>/dev/null
+        zypper install -y gcc gcc-c++ make libopenssl-devel curl git &>/dev/null
     elif command -v emerge &>/dev/null; then
-        emerge --ask=n sys-devel/gcc dev-libs/openssl net-misc/curl dev-vcs/git 2>/dev/null
+        emerge --ask=n sys-devel/gcc dev-libs/openssl net-misc/curl dev-vcs/git &>/dev/null
     elif command -v xbps-install &>/dev/null; then
-        xbps-install -Sy base-devel openssl curl git 2>/dev/null
+        xbps-install -Sy base-devel openssl curl git &>/dev/null
     else
         ui_warn "未识别的包管理器，请确保已安装: gcc, openssl-dev, curl, git"
         return 1
@@ -229,12 +256,12 @@ install_rust() {
 
     if is_promptable; then
         if has_tty; then
-            /bin/bash "$tmp" -y --default-toolchain stable < /dev/tty
+            /bin/bash "$tmp" -y --default-toolchain stable </dev/tty &>/dev/null
         else
-            /bin/bash "$tmp" -y --default-toolchain stable
+            /bin/bash "$tmp" -y --default-toolchain stable &>/dev/null
         fi
     else
-        /bin/bash "$tmp" -y --default-toolchain stable < /dev/null
+        /bin/bash "$tmp" -y --default-toolchain stable </dev/null &>/dev/null
     fi
 
     if [[ -f "$HOME/.cargo/env" ]]; then
@@ -259,13 +286,13 @@ install_git() {
     if check_git; then return 0; fi
     if [[ "$OS" == "linux" ]]; then
         if command -v apt-get &>/dev/null; then
-            apt-get install -y -qq git
+            apt-get install -y -qq git &>/dev/null
         elif command -v apk &>/dev/null; then
-            apk add --no-cache git
+            apk add --no-cache git &>/dev/null
         elif command -v dnf &>/dev/null; then
-            dnf install -y git
+            dnf install -y git &>/dev/null
         elif command -v pacman &>/dev/null; then
-            pacman -Sy --noconfirm git
+            pacman -Sy --noconfirm git &>/dev/null
         fi
     fi
     if ! check_git; then
@@ -340,7 +367,7 @@ install_angles_from_source() {
         fi
     fi
 
-    cargo $cargo_args 2>&1 | tail -5
+    cargo $cargo_args &>/dev/null
 
     local binary=""
     for candidate in \
